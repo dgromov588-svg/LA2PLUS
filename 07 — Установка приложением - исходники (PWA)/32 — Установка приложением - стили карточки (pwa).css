@@ -1,0 +1,218 @@
+/**
+ * LA2PLUS • установка приложением: карточка в кабинете и подсказка.
+ *
+ * Стили намеренно без зависимостей: карточка живёт в кабинете игрока, а
+ * подсказка «как установить» — общая. Классы с префиксом pwa-, чтобы ничего
+ * не перебить.
+ */
+
+/* ---------- карточка «Приложение на телефон» в кабинете ---------- */
+
+/* Блок стоит в обычном потоке страницы (не плавает поверх), поэтому ничего
+   не перекрывает. Внешний вид берёт от .dash-card кабинета. */
+.pwa-card[hidden] { display: none }
+
+.pwa-card .dash-card__title h3 { margin: 0; }
+
+/* Заголовок в две строки, а не «ПРИЛОЖЕНИЕ НА ТЕЛЕФ…»: в кабинете общий
+   стиль обрезает заголовки карточек одной строкой с многоточием. */
+/* Специфичность как у общего правила .dash-card .dash-card__head h3,
+   иначе заголовок остаётся обрезанным в одну строку. */
+.pwa-card .dash-card__head .dash-card__title h3 {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.3;
+  font-size: 0.8rem;
+}
+
+/* Медаль поменьше: карточка узкая, на телефоне 390px иначе не хватает места */
+.pwa-card .dash-medal { width: 34px; height: 34px; }
+.pwa-card .dash-medal::before { width: 26px; height: 26px; }
+.pwa-card .dash-medal .icon { width: 16px; height: 16px; }
+
+.pwa-card__close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  color: #9d968a;
+  background: transparent;
+  border: 1px solid rgba(213, 173, 104, .28);
+  transition: color .14s ease, border-color .14s ease;
+}
+
+.pwa-card__close:hover { color: #f0d9a8; border-color: rgba(213, 173, 104, .6) }
+.pwa-card__close[hidden] { display: none }
+
+.pwa-card__body { padding: 14px 2px 4px }
+
+.pwa-card__text {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #e8e2d6;
+}
+
+.pwa-card__note {
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: #8d877c;
+}
+
+.pwa-card__foot { display: flex; flex-wrap: wrap; gap: 12px }
+
+.pwa-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.pwa-card__btn .icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+.pwa-card__btn:focus-visible {
+  outline: 2px solid #f0d9a8;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .pwa-card__text { font-size: 0.86rem; }
+  .pwa-card__foot .pwa-card__btn { width: 100%; justify-content: center; }
+}
+
+/* ---------- подсказка «как установить» ---------- */
+
+.pwa-sheet { position: fixed; inset: 0; z-index: 1200 }
+.pwa-sheet[hidden] { display: none }
+
+.pwa-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 9, .72);
+  backdrop-filter: blur(2px);
+}
+
+.pwa-sheet__box {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(520px, 100%);
+  padding: 26px 22px calc(22px + env(safe-area-inset-bottom, 0px));
+  color: #e8e2d6;
+  background: linear-gradient(180deg, #141821 0%, #0b0e14 100%);
+  border: 1px solid rgba(213, 173, 104, .22);
+  border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -18px 50px rgba(0, 0, 0, .55);
+  animation: pwaUp .22s ease;
+}
+
+@media (min-width: 861px) {
+  .pwa-sheet__box {
+    bottom: 50%;
+    transform: translate(-50%, 50%);
+    border-radius: 16px;
+    border-bottom: 1px solid rgba(213, 173, 104, .22);
+  }
+}
+
+@keyframes pwaUp { from { opacity: 0; transform: translate(-50%, 14px) } }
+
+.pwa-sheet__x {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  color: #9d968a;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, .12);
+}
+
+.pwa-sheet__kicker {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #d5ad68;
+}
+
+.pwa-sheet__title {
+  margin: 0 0 16px;
+  font-family: Cinzel, Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: #f4efe4;
+}
+
+.pwa-sheet__steps {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #b9b2a5;
+}
+
+.pwa-sheet__steps b { color: #f4efe4; font-weight: 600 }
+
+.pwa-sheet__ico {
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
+  color: #d5ad68;
+}
+
+.pwa-sheet__hint {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: #7d776d;
+}
+
+.pwa-sheet__warn {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #f0c98b;
+  background: rgba(213, 173, 104, .08);
+  border: 1px solid rgba(213, 173, 104, .28);
+  border-radius: 10px;
+}
+
+.pwa-sheet__foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+/* когда подсказка открыта, страница не прокручивается под ней */
+body.pwa-sheet-open { overflow: hidden }
+
+/* кнопка не печатается */
+@media print { .pwa-card, .pwa-sheet { display: none !important } }
+
+/* Кнопка «Понятно»: в кабинете это .btn--gold.
+   Если набор кнопок на странице другой, вид не должен разваливаться. */
+.pwa-sheet__foot .btn {
+  padding: 11px 22px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}

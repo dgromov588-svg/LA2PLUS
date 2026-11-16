@@ -1,0 +1,463 @@
+/* ==========================================================================
+   LA2PLUS • панель управления — золотая тема (Aurum)
+   Подключается один раз на любой странице панели через //cabinet/panel-style.
+   Все правила начинаются с panel-*, поэтому остальной сайт не затрагивается.
+   ========================================================================== */
+
+.panel-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 6px 0 14px;
+}
+
+.panel-head h2,
+.panel-head .section__title {
+    margin: 0;
+}
+
+.panel-hint {
+    color: #a9a396;
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.panel-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11.5px;
+    color: #c8a469;
+}
+
+.panel-center {
+    text-align: center;
+}
+
+.panel-yes {
+    color: #6fd79f;
+    font-weight: 700;
+}
+
+.panel-no {
+    color: #e87b7b;
+    font-weight: 700;
+}
+
+.panel-dash {
+    color: #6d6a63;
+}
+
+.panel-warn {
+    border: 1px solid rgba(232, 184, 92, .34);
+    background: rgba(232, 184, 92, .08);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: #e8d9b4;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.panel-list {
+    margin: 0;
+    padding-left: 18px;
+    color: #b9b3a6;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.panel-list li {
+    margin-bottom: 6px;
+}
+
+/* ---------- таблицы в золотой рамке ---------- */
+
+.panel-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.panel-box .table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.panel-box .table th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(232, 227, 216, .62);
+    background: rgba(10, 13, 18, .92);
+    border-bottom: 1px solid rgba(213, 173, 104, .22);
+    padding: 10px 12px;
+    white-space: nowrap;
+}
+
+.panel-box .table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .055);
+    color: #e8e3d8;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.panel-box .table tbody tr:hover td {
+    background: rgba(213, 173, 104, .07);
+}
+
+.panel-box .table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+/* ---------- карточки ролей ---------- */
+
+.panel-roles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 12px;
+    margin: 0 0 16px;
+}
+
+.panel-role-card {
+    position: relative;
+    border: 1px solid rgba(213, 173, 104, .18);
+    border-radius: 14px;
+    background: linear-gradient(165deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .01));
+    padding: 14px 16px;
+    transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.panel-role-card:hover {
+    border-color: rgba(213, 173, 104, .42);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -18px rgba(213, 173, 104, .55);
+}
+
+.panel-role-card.is-owner {
+    border-color: rgba(240, 211, 155, .46);
+    background: linear-gradient(165deg, rgba(213, 173, 104, .16), rgba(213, 173, 104, .03));
+}
+
+.panel-role-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: #f0d39b;
+    font-size: 13.5px;
+}
+
+.panel-role-card p {
+    margin: 0 0 10px;
+    color: #a9a396;
+    font-size: 12.5px;
+    line-height: 1.5;
+    min-height: 52px;
+}
+
+.panel-role-card__rank {
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: rgba(200, 164, 105, .72);
+}
+
+/* ---------- чипы и метки ---------- */
+
+.panel-chip {
+    display: inline-block;
+    min-width: 22px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(213, 173, 104, .32);
+    background: rgba(213, 173, 104, .12);
+    color: #f0d39b;
+    font-size: 11px;
+    line-height: 1.6;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.panel-chip--owner {
+    margin-left: 6px;
+    background: linear-gradient(160deg, rgba(235, 206, 148, .92), rgba(185, 143, 74, .85));
+    border-color: rgba(240, 211, 155, .7);
+    color: #1b1408;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+.panel-tag {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: rgba(232, 227, 216, .74);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.panel-tag--online {
+    border-color: rgba(111, 215, 159, .42);
+    background: rgba(111, 215, 159, .12);
+    color: #9de8bc;
+}
+
+.panel-tag--danger {
+    border-color: rgba(232, 123, 123, .42);
+    background: rgba(232, 123, 123, .12);
+    color: #f0a4a4;
+}
+
+/* ---------- формы панели ---------- */
+
+.panel-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.panel-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12px;
+    color: rgba(232, 227, 216, .68);
+    min-width: 180px;
+}
+
+.panel-form input[type="text"],
+.panel-form input[type="number"],
+.panel-form input[type="search"],
+.panel-form select,
+.panel-form textarea {
+    background: rgba(0, 0, 0, .36);
+    border: 1px solid rgba(213, 173, 104, .22);
+    border-radius: 10px;
+    color: #e8e3d8;
+    padding: 9px 12px;
+    font-size: 13px;
+    transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.panel-form input:focus,
+.panel-form select:focus,
+.panel-form textarea:focus {
+    outline: 0;
+    border-color: rgba(240, 211, 155, .55);
+    box-shadow: 0 0 0 3px rgba(213, 173, 104, .16);
+}
+
+.panel-form select option {
+    background: #0b0f14;
+    color: #e8e3d8;
+}
+
+/* ---------- кнопки: золотая и контурная ---------- */
+
+.panel-box .btn--gold,
+.panel-form .btn--gold {
+    border: 1px solid rgba(240, 211, 155, .5);
+    background: linear-gradient(160deg, #ebce94, #b98f4a);
+    color: #1b1408;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 10px 24px -16px rgba(240, 211, 155, .9);
+    transition: filter .16s ease, transform .16s ease;
+}
+
+.panel-box .btn--gold:hover,
+.panel-form .btn--gold:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.panel-box .btn--outline {
+    border: 1px solid rgba(213, 173, 104, .34);
+    background: rgba(213, 173, 104, .08);
+    color: #f0d39b;
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    transition: border-color .16s ease, background .16s ease;
+}
+
+.panel-box .btn--outline:hover {
+    border-color: rgba(240, 211, 155, .6);
+    background: rgba(213, 173, 104, .16);
+}
+
+/* ---------- навигация панели ---------- */
+
+.panel-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+    margin: 0 0 18px;
+    border: 1px solid rgba(213, 173, 104, .16);
+    border-radius: 14px;
+    background: linear-gradient(165deg, rgba(255, 255, 255, .045), rgba(255, 255, 255, .01));
+}
+
+.panel-nav__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    color: rgba(232, 227, 216, .78);
+    font-size: 13px;
+    border: 1px solid transparent;
+    transition: background .16s ease, color .16s ease, border-color .16s ease;
+}
+
+.panel-nav__item:hover {
+    background: rgba(255, 255, 255, .05);
+    color: #f0d39b;
+}
+
+.panel-nav__item.is-active {
+    background: rgba(213, 173, 104, .15);
+    border-color: rgba(213, 173, 104, .38);
+    color: #f0d39b;
+    font-weight: 600;
+}
+
+.panel-nav__item .icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* ---------- сетки и карточки-показатели ---------- */
+
+.panel-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.panel-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.panel-stat {
+    border: 1px solid rgba(213, 173, 104, .18);
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(165deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .01));
+}
+
+.panel-stat__label {
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(232, 227, 216, .55);
+}
+
+.panel-stat__value {
+    margin-top: 6px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #f0d39b;
+    font-variant-numeric: tabular-nums;
+}
+
+.panel-box {
+    border: 1px solid rgba(213, 173, 104, .18);
+    border-radius: 16px;
+    background: linear-gradient(165deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .01));
+    padding: 16px 18px;
+}
+
+.panel-box__title {
+    margin: 0 0 12px;
+    font-size: 15px;
+    color: #f0d39b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ---------- постраничный переход ---------- */
+
+.panel-pager {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+/* ---------- мобильная версия ---------- */
+
+@media (max-width: 720px) {
+    .panel-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-roles {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .panel-role-card p {
+        min-height: 0;
+    }
+
+    .panel-form label {
+        min-width: 100%;
+    }
+
+    .panel-nav {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .panel-nav__item {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 460px) {
+    .panel-roles {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- печать: убираем фон и свечение ---------- */
+
+@media print {
+    .panel-box,
+    .panel-role-card,
+    .panel-stat {
+        background: #fff;
+        border-color: #ccc;
+        box-shadow: none;
+    }
+
+    .panel-box__title,
+    .panel-role-card__top,
+    .panel-stat__value {
+        color: #222;
+    }
+}
