@@ -1,0 +1,31 @@
+<?php
+/**
+ * Правки в protected/config/main.php → urlManager.rules.
+ *
+ * Вставлять после строки
+ *     'cabinet/panel/panelAnalyticsLive' => 'cabinet/panel/panelAnalyticsLive',
+ * (она уже есть в конфиге — блок «Панель управления (сотрудники)»).
+ *
+ * Ничего другого в main.php менять не нужно: модуль panel уже подключён,
+ * import application.components.* уже подключён, классы подхватятся сами.
+ */
+
+// ------------------- НАЧАЛО БЛОКА -------------------
+                // Владельцы проекта (только для владельца из superAdminId)
+                'cabinet/panel/panelOwners' => 'cabinet/panel/panelOwners',
+
+                // JSON аналитики из базы и живые счётчики шапки
+                'cabinet/panel/panelAnalyticsData' => 'cabinet/panel/panelAnalyticsData',
+                'cabinet/panel/panelLiveJson' => 'cabinet/panel/panelLiveJson',
+// ------------------- КОНЕЦ БЛОКА -------------------
+
+/**
+ * Порядок важен: правила проверяются сверху вниз. Строки выше по файлу
+ * (например, 'cabinet/panel/staff' => 'panel/staff/index') не перекрывают
+ * новые адреса, потому что имена не совпадают.
+ *
+ * Старые адреса продолжают работать:
+ *   panel/staff/index  — раздел «Сотрудники» (модуль panel)
+ *   panel/staff/log    — журнал
+ *   panel/analytics/data, panel/analytics/live — новые JSON-эндпоинты модуля
+ */

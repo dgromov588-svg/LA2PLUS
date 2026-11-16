@@ -1,0 +1,206 @@
+/* ==========================================================================
+   LA2PLUS ADMIN — три визуальные темы
+   Переключаются data-theme на <html>: aurum | ember | frost
+   ========================================================================== */
+
+/* ---------- 1. AURUM: золото на чёрном, свечение тёплое, «как бренд сайта» ---------- */
+html[data-theme="aurum"]{
+  --bg:#080A0D;
+  --card-bg:linear-gradient(165deg,rgba(255,255,255,.055),rgba(255,255,255,.012));
+  --modal-bg:linear-gradient(170deg,#141A23,#0A0E13);
+  --top-bg:rgba(9,12,16,.82);
+  --side-bg:rgba(8,11,15,.72);
+  --th-bg:rgba(10,13,18,.92);
+  --input-bg:rgba(0,0,0,.36);
+  --toast-bg:rgba(14,20,26,.96);
+
+  --tx:#E8E3D8;
+  --mut:rgba(232,227,216,.62);
+  --mut-2:rgba(232,227,216,.36);
+  --line:rgba(213,173,104,.20);
+  --line-faint:rgba(255,255,255,.055);
+  --side-line:rgba(213,173,104,.16);
+  --hover:rgba(255,255,255,.04);
+  --hover-2:rgba(255,255,255,.07);
+  --row-hover:rgba(213,173,104,.075);
+  --active-bg:rgba(213,173,104,.15);
+  --active-line:rgba(213,173,104,.38);
+  --focus:rgba(213,173,104,.18);
+
+  --accent:#D5AD68;
+  --accent-dim:rgba(213,173,104,.72);
+  --accent-strong:#F0D39B;
+  --accent-line:rgba(240,211,155,.42);
+  --accent-ink:#1B1408;
+  --btn-primary-bg:linear-gradient(160deg,#EBCE94,#B98F4A);
+  --avatar-bg:linear-gradient(140deg,#3C3018,#1C1710);
+  --word-gradient:linear-gradient(100deg,#B98F4A,#F6E4BE,#C9A25C,#F0D39B,#B98F4A);
+
+  --ok:#6FD79F; --warn:#E8B85C; --bad:#E87B7B; --info:#7FB6E8;
+
+  --glow:rgba(213,173,104,.34);
+  --glow-strong:rgba(240,211,155,.55);
+  --aura-a:rgba(213,173,104,.20);
+  --aura-b:rgba(180,120,52,.13);
+  --aura-c:rgba(90,70,40,.12);
+  --aura-op:.62; --aura-blur:96px; --aura-blend:screen;
+  --grain-op:.045;
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.5'/></svg>");
+
+  --radius:14px; --side-w:74px; --scrim:rgba(3,5,8,.74);
+  --serif:'Cinzel','Georgia','Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+/* ---------- 2. EMBER: багрово-золотая «лавка кузнеца», свечение пульсирует ---------- */
+html[data-theme="ember"]{
+  --bg:#0C0708;
+  --card-bg:linear-gradient(165deg,rgba(255,90,60,.06),rgba(255,255,255,.008));
+  --modal-bg:linear-gradient(170deg,#1A0F10,#0C0708);
+  --top-bg:rgba(14,8,9,.85);
+  --side-bg:rgba(13,7,8,.75);
+  --th-bg:rgba(15,8,9,.94);
+  --input-bg:rgba(0,0,0,.42);
+  --toast-bg:rgba(24,12,12,.97);
+
+  --tx:#EFE2DA;
+  --mut:rgba(239,226,218,.62);
+  --mut-2:rgba(239,226,218,.34);
+  --line:rgba(232,120,72,.22);
+  --line-faint:rgba(255,255,255,.055);
+  --side-line:rgba(232,120,72,.18);
+  --hover:rgba(255,120,80,.055);
+  --hover-2:rgba(255,120,80,.10);
+  --row-hover:rgba(232,120,72,.09);
+  --active-bg:rgba(232,120,72,.17);
+  --active-line:rgba(255,160,110,.42);
+  --focus:rgba(232,120,72,.20);
+
+  --accent:#F08A3C;
+  --accent-dim:rgba(240,138,60,.74);
+  --accent-strong:#FFC98A;
+  --accent-line:rgba(255,201,138,.45);
+  --accent-ink:#1A0C04;
+  --btn-primary-bg:linear-gradient(160deg,#FFC98A,#D9603A);
+  --avatar-bg:linear-gradient(140deg,#41200F,#1C0F0A);
+  --word-gradient:linear-gradient(100deg,#D9603A,#FFD9A8,#F08A3C,#FFC98A,#C2412A);
+
+  --ok:#7FE0A6; --warn:#FFC061; --bad:#FF7A6B; --info:#9FBEEB;
+
+  --glow:rgba(240,110,50,.40);
+  --glow-strong:rgba(255,150,80,.60);
+  --aura-a:rgba(232,96,44,.24);
+  --aura-b:rgba(150,30,20,.18);
+  --aura-c:rgba(90,40,10,.16);
+  --aura-op:.70; --aura-blur:88px; --aura-blend:screen;
+  --grain-op:.06;
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.55'/></svg>");
+
+  --radius:13px; --side-w:74px; --scrim:rgba(8,2,2,.78);
+  --serif:'Cinzel','Georgia','Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+/* в EMBER ореол дышит быстрее и «выступает» за логотип */
+html[data-theme="ember"] .aura__blob--logo{animation-duration:8s,18s}
+html[data-theme="ember"] .side__mark{filter:drop-shadow(0 0 14px var(--glow-strong)) drop-shadow(0 0 34px var(--glow))}
+
+/* ---------- 3. FROST: серебро и лёд, строгая «финансовая» подача ---------- */
+html[data-theme="frost"]{
+  --bg:#070B10;
+  --card-bg:linear-gradient(165deg,rgba(160,215,255,.055),rgba(255,255,255,.008));
+  --modal-bg:linear-gradient(170deg,#111C26,#080D12);
+  --top-bg:rgba(7,12,18,.84);
+  --side-bg:rgba(7,11,16,.78);
+  --th-bg:rgba(8,13,19,.94);
+  --input-bg:rgba(0,0,0,.40);
+  --toast-bg:rgba(10,18,25,.97);
+
+  --tx:#DCE9F2;
+  --mut:rgba(220,233,242,.62);
+  --mut-2:rgba(220,233,242,.34);
+  --line:rgba(140,200,240,.18);
+  --line-faint:rgba(255,255,255,.05);
+  --side-line:rgba(140,200,240,.15);
+  --hover:rgba(160,215,255,.05);
+  --hover-2:rgba(160,215,255,.09);
+  --row-hover:rgba(120,200,255,.07);
+  --active-bg:rgba(120,200,255,.14);
+  --active-line:rgba(150,220,255,.36);
+  --focus:rgba(140,210,255,.18);
+
+  --accent:#7FD3F0;
+  --accent-dim:rgba(127,211,240,.72);
+  --accent-strong:#C4ECFF;
+  --accent-line:rgba(196,236,255,.40);
+  --accent-ink:#04202B;
+  --btn-primary-bg:linear-gradient(160deg,#C4ECFF,#5BB8DD);
+  --avatar-bg:linear-gradient(140deg,#12303E,#0A1820);
+  --word-gradient:linear-gradient(100deg,#5BB8DD,#E4F7FF,#7FD3F0,#C4ECFF,#4FA8CC);
+
+  --ok:#5FD9A6; --warn:#E8C766; --bad:#F08296; --info:#8FB8FF;
+
+  --glow:rgba(120,200,255,.32);
+  --glow-strong:rgba(180,230,255,.52);
+  --aura-a:rgba(110,190,235,.20);
+  --aura-b:rgba(60,120,190,.14);
+  --aura-c:rgba(40,90,140,.12);
+  --aura-op:.55; --aura-blur:110px; --aura-blend:screen;
+  --grain-op:.03;
+  --grain:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.4'/></svg>");
+
+  --radius:11px; --side-w:74px; --scrim:rgba(2,6,10,.76);
+  --serif:'Cinzel','Georgia','Times New Roman',serif;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html[data-theme="frost"] .aura__blob--logo{animation-duration:18s,34s}
+html[data-theme="frost"] .h__title{letter-spacing:0}
+
+/* ---------- логотип: общий переливающийся знак ---------- */
+.brand-mark{position:relative;width:100%;height:100%}
+.brand-mark svg{width:100%;height:100%;display:block;overflow:visible}
+.brand-mark .bm-ring{animation:bm-spin 16s linear infinite;transform-origin:50% 50%}
+.brand-mark .bm-sweep{animation:bm-sweep 5.5s ease-in-out infinite}
+.brand-mark .bm-core{animation:bm-breathe 4.2s ease-in-out infinite}
+@keyframes bm-spin{to{transform:rotate(360deg)}}
+@keyframes bm-sweep{
+  0%{transform:translate(-140%,-140%) rotate(24deg);opacity:0}
+  18%{opacity:.95}
+  55%{opacity:.55}
+  100%{transform:translate(140%,140%) rotate(24deg);opacity:0}
+}
+@keyframes bm-breathe{0%,100%{opacity:.75}50%{opacity:1}}
+
+/* свечение вокруг логотипа под каркасом */
+.side__logo::after{content:'';position:absolute;inset:-14px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,var(--glow-strong) 0%,transparent 66%);
+  opacity:.5;filter:blur(14px);z-index:0;animation:logo-halo 10s ease-in-out infinite}
+@keyframes logo-halo{0%,100%{opacity:.32;transform:scale(.94)}50%{opacity:.62;transform:scale(1.10)}}
+
+/* ---------- селектор темы ---------- */
+.theme-pick{display:flex;gap:5px;padding:3px;border-radius:11px;border:1px solid var(--line);background:var(--hover)}
+.theme-pick button{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;
+  font-size:12px;color:var(--mut);transition:.14s}
+.theme-pick button:hover{color:var(--tx)}
+.theme-pick button.on{background:var(--active-bg);color:var(--tx);box-shadow:inset 0 0 0 1px var(--active-line)}
+.theme-pick i{width:11px;height:11px;border-radius:50%;display:block;flex:0 0 11px}
+html[data-theme="aurum"] .theme-pick i[data-swatch="au"]{background:linear-gradient(140deg,#F0D39B,#B98F4A);box-shadow:0 0 8px rgba(213,173,104,.7)}
+html[data-theme="ember"] .theme-pick i[data-swatch="em"]{background:linear-gradient(140deg,#FFC98A,#D9603A);box-shadow:0 0 8px rgba(240,110,50,.7)}
+html[data-theme="frost"] .theme-pick i[data-swatch="fr"]{background:linear-gradient(140deg,#C4ECFF,#5BB8DD);box-shadow:0 0 8px rgba(120,200,255,.7)}
+
+/* ---------- декоративное свечение в карточках KPI ---------- */
+.kpi::before{content:'';position:absolute;right:-30px;top:-40px;width:130px;height:130px;border-radius:50%;
+  background:radial-gradient(circle,var(--glow) 0%,transparent 70%);opacity:.6;pointer-events:none;transition:.3s}
+.kpi:hover::before{opacity:1;transform:scale(1.15)}
+
+/* плавное перетекание цвета у больших цифр */
+.hero-num{position:relative;background:var(--word-gradient);background-size:250% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:word-shimmer 9s linear infinite}
+
+/* свотчи тем видны всегда, независимо от активной темы */
+.theme-pick i[data-swatch="au"]{background:linear-gradient(140deg,#F0D39B,#B98F4A)}
+.theme-pick i[data-swatch="em"]{background:linear-gradient(140deg,#FFC98A,#D9603A)}
+.theme-pick i[data-swatch="fr"]{background:linear-gradient(140deg,#C4ECFF,#5BB8DD)}

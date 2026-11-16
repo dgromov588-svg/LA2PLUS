@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080A0D">
+<meta name="robots" content="noindex, nofollow">
+<title>Нет связи — LA2PLUS</title>
+<link rel="icon" href="/design/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" href="/design/assets/icons/favicon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="/design/assets/icons/favicon-180.png">
+<style>
+  /* Автономная страница без внешних зависимостей */
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:radial-gradient(circle at 50% 30%,#141821 0%,#080A0D 62%,#05070a 100%);
+    color:#e8e2d6;font-family:"Inter",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    display:flex;align-items:center;justify-content:center;padding:26px;text-align:center}
+  .box{max-width:420px;width:100%}
+  .mark{font-family:Georgia,"DejaVu Serif",serif;font-weight:700;font-size:30px;letter-spacing:.06em;
+    background:linear-gradient(180deg,#f4e0b4,#d5ad68 55%,#a4813f);-webkit-background-clip:text;
+    background-clip:text;color:transparent;margin-bottom:22px}
+  .icon{width:64px;height:64px;margin:0 auto 20px;border-radius:50%;
+    border:1px solid rgba(213,173,104,.35);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 34px rgba(213,173,104,.12) inset}
+  .icon svg{width:28px;height:28px;stroke:#d5ad68;fill:none;stroke-width:1.6;
+    stroke-linecap:round;stroke-linejoin:round}
+  h1{font-size:21px;font-weight:600;margin-bottom:10px;color:#f2ede2}
+  p{font-size:14px;line-height:1.65;color:#9d968a;margin-bottom:22px}
+  .btn{display:inline-block;padding:12px 24px;border-radius:10px;text-decoration:none;
+    font-size:14px;font-weight:600;color:#0b0d12;cursor:pointer;
+    background:linear-gradient(180deg,#f0d9a8,#d5ad68);border:1px solid rgba(213,173,104,.6);
+    transition:transform .1s ease, filter .15s ease}
+  .btn:hover{filter:brightness(1.06)}
+  .btn:active{transform:translateY(1px)}
+  .hint{margin-top:18px;font-size:12px;color:#6f6a61}
+</style>
+</head>
+<body>
+<main class="box" role="main">
+  <div class="mark">LA2PLUS</div>
+  <div class="icon">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 8.5a13 13 0 0 1 18 0"/>
+      <path d="M6.5 12.5a8 8 0 0 1 11 0"/>
+      <path d="M10 16.4a3.2 3.2 0 0 1 4 0"/>
+      <circle cx="12" cy="20" r=".9" fill="#d5ad68" stroke="none"/>
+    </svg>
+  </div>
+  <h1>Нет связи с интернетом</h1>
+  <p>Страница не загрузилась, потому что пропало интернет-соединение. Проверьте сеть и повторите попытку — баланс и данные кабинета всегда защищены и запрашиваются напрямую с сервера.</p>
+  <button type="button" class="btn" id="retryBtn" onclick="location.reload()">Попробовать снова</button>
+  <p class="hint">Как только появится интернет, страница обновится автоматически.</p>
+</main>
+<script>
+  // Автоматический перезапуск при появлении связи
+  window.addEventListener('online', function() {
+    location.reload();
+  });
+</script>
+</body>
+</html>

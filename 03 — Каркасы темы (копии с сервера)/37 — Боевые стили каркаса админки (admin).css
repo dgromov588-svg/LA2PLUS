@@ -1,0 +1,302 @@
+/* Каркас админки LA2PLUS: отдельная от игрового кабинета вёрстка.
+   Тёмная панель управления: узкая колонка разделов + рабочая область. */
+
+:root {
+    --adm-bg: #0b0d12;
+    --adm-panel: #12151d;
+    --adm-panel-2: #171b25;
+    --adm-line: rgba(217, 178, 95, .18);
+    --adm-line-soft: rgba(255, 255, 255, .07);
+    --adm-gold: #d9b25f;
+    --adm-gold-dim: rgba(217, 178, 95, .12);
+    --adm-text: #e8e6e3;
+    --adm-muted: #8b8f9a;
+    --adm-danger: #e0574f;
+}
+
+body.adm {
+    margin: 0;
+    background: var(--adm-bg);
+    color: var(--adm-text);
+    font: 15px/1.5 -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    min-height: 100vh;
+}
+
+body.adm a { color: inherit; text-decoration: none; }
+body.adm .icon { width: 18px; height: 18px; flex: 0 0 auto; fill: currentColor; }
+
+/* Верхняя полоса */
+.adm-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 22px;
+    background: var(--adm-panel);
+    border-bottom: 1px solid var(--adm-line);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.adm-top__brand { display: flex; align-items: baseline; gap: 10px; }
+.adm-top__logo { font-weight: 700; letter-spacing: 2px; color: var(--adm-gold); font-size: 17px; }
+.adm-top__tag {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--adm-muted);
+    border: 1px solid var(--adm-line);
+    border-radius: 4px;
+    padding: 2px 7px;
+}
+
+.adm-top__right { display: flex; align-items: center; gap: 14px; }
+.adm-top__role {
+    font-size: 12px;
+    letter-spacing: .4px;
+    color: var(--adm-gold);
+    background: var(--adm-gold-dim);
+    border-radius: 20px;
+    padding: 5px 12px;
+    white-space: nowrap;
+}
+.adm-top__exit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--adm-muted);
+    padding: 7px 13px;
+    border: 1px solid var(--adm-line-soft);
+    border-radius: 8px;
+    transition: .15s;
+}
+.adm-top__exit:hover { color: var(--adm-text); border-color: var(--adm-gold); }
+
+/* Двухколоночный каркас */
+.adm-shell {
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+    align-items: start;
+    min-height: calc(100vh - 61px);
+}
+
+.adm-side {
+    position: sticky;
+    top: 61px;
+    align-self: start;
+    padding: 20px 14px;
+    border-right: 1px solid var(--adm-line-soft);
+    min-height: calc(100vh - 61px);
+    background: var(--adm-panel);
+}
+
+.adm-side__label {
+    margin: 0 0 10px 10px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.6px;
+    color: var(--adm-muted);
+}
+
+.adm-nav { display: flex; flex-direction: column; gap: 2px; }
+.adm-nav__item {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--adm-muted);
+    border-left: 2px solid transparent;
+    transition: .15s;
+}
+.adm-nav__item:hover { color: var(--adm-text); background: var(--adm-panel-2); }
+.adm-nav__item.is-active {
+    color: var(--adm-gold);
+    background: var(--adm-gold-dim);
+    border-left-color: var(--adm-gold);
+    font-weight: 600;
+}
+.adm-nav__badge {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--adm-danger);
+    color: #fff;
+    border-radius: 10px;
+    padding: 1px 7px;
+}
+
+/* Рабочая область */
+.adm-main {
+    padding: 24px 26px 60px;
+    min-width: 0;
+    max-width: 1400px;
+}
+
+.adm-crumbs { display: flex; gap: 8px; font-size: 12px; color: var(--adm-muted); margin-bottom: 14px; }
+.adm-crumbs a { color: var(--adm-gold); }
+
+/* Карточки и блоки панели в новом каркасе */
+body.adm .panel-nav { display: none; }        /* навигация уже в сайдбаре */
+body.adm .panel-box,
+body.adm .panel-card {
+    background: var(--adm-panel);
+    border: 1px solid var(--adm-line-soft);
+    border-radius: 12px;
+}
+body.adm .panel-stat {
+    background: var(--adm-panel-2);
+    border: 1px solid var(--adm-line-soft);
+    border-radius: 10px;
+}
+body.adm h1, body.adm h2, body.adm h3 { color: var(--adm-text); }
+body.adm .panel-head h1, body.adm .panel-head h2 { color: var(--adm-gold); }
+body.adm table { width: 100%; border-collapse: collapse; font-size: 14px; }
+body.adm th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    color: var(--adm-muted);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--adm-line-soft);
+    white-space: nowrap;
+}
+body.adm td { padding: 11px 12px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
+body.adm tr:hover td { background: rgba(255,255,255,.02); }
+
+body.adm .btn,
+body.adm .btn--outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    border: 1px solid var(--adm-line);
+    background: var(--adm-gold-dim);
+    color: var(--adm-gold);
+    cursor: pointer;
+}
+body.adm .btn:hover { background: rgba(217, 178, 95, .2); }
+body.adm .btn--sm { padding: 5px 11px; font-size: 12px; }
+
+body.adm input[type=text], body.adm input[type=search], body.adm input[type=number],
+body.adm input[type=email], body.adm select, body.adm textarea {
+    background: var(--adm-panel-2);
+    border: 1px solid var(--adm-line-soft);
+    border-radius: 8px;
+    color: var(--adm-text);
+    padding: 9px 12px;
+    font-size: 14px;
+    max-width: 100%;
+}
+body.adm input:focus, body.adm select:focus, body.adm textarea:focus {
+    outline: none;
+    border-color: var(--adm-gold);
+}
+
+
+/* ============================================================
+   Сообщения об операциях (FlashMessages: «Роль обновлена» и т.п.)
+   Кабинетные стили .alert привязаны к .cms-content и здесь не работают,
+   поэтому в админке они свои.
+   ============================================================ */
+body.adm .alert {
+    position: relative;
+    margin: 0 0 16px;
+    padding: 12px 40px 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    background: var(--adm-panel-2);
+    border: 1px solid var(--adm-line);
+    border-left: 3px solid var(--adm-gold);
+    color: var(--adm-text);
+}
+body.adm .alert-success { border-left-color: #5fbf83; }
+body.adm .alert-danger,
+body.adm .alert-error { border-left-color: var(--adm-danger); }
+body.adm .alert .close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    background: none;
+    border: 0;
+    color: var(--adm-muted);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+}
+body.adm .alert .close:hover { color: var(--adm-text); }
+
+/* Уведомления-тосты панели на тёмном фоне админки */
+body.adm .toast-container { z-index: 60; }
+
+/* Широкие таблицы прокручиваются внутри своего блока, страница не едет вбок */
+body.adm .panel-table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+body.adm .panel-table-scroll table { min-width: 560px; }
+
+body.adm img { max-width: 100%; height: auto; }
+.adm-crumbs { flex-wrap: wrap; }
+.adm-main > * { max-width: 100%; }
+
+/* Кнопки-иконки в шапке не ломаются на узком экране */
+@media (max-width: 480px) {
+    .adm-top__tag { display: none; }
+    .adm-top__role { font-size: 11px; padding: 4px 9px; }
+    .adm-crumbs { font-size: 11px; }
+}
+
+/* Мобильная версия: сайдбар превращается в горизонтальную ленту */
+@media (max-width: 900px) {
+    .adm-shell { grid-template-columns: 1fr; }
+    .adm-side {
+        position: static;
+        min-height: 0;
+        border-right: 0;
+        border-bottom: 1px solid var(--adm-line-soft);
+        padding: 12px;
+    }
+    .adm-side__label { display: none; }
+    /* Меню на телефоне — сетка в две колонки: все разделы видны сразу,
+       без горизонтальной прокрутки (в ней пряталась половина пунктов). */
+    .adm-side { display: block; overflow: visible; }
+    .adm-nav {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        overflow: visible;
+        margin-bottom: 6px;
+    }
+    .adm-nav__item {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-left: 0;
+        border-bottom: 1px solid var(--adm-line-soft);
+        border-radius: 7px;
+        padding: 7px 10px;
+        font-size: 12.5px;
+        background: var(--adm-panel-2);
+        gap: 0;
+        justify-content: center;
+    }
+    /* на телефоне иконки разделов прячем: экономим высоту, подписи и так понятны */
+    .adm-nav__item .icon { display: none; }
+    .adm-top__exit .icon { width: 20px; height: 20px; }
+    .adm-nav { gap: 5px; }
+    .adm-side { padding: 10px 10px 6px; }
+    .adm-nav__item.is-active {
+        border-left: 0;
+        border-bottom-color: var(--adm-gold);
+        background: var(--adm-gold-dim);
+    }
+    .adm-main { padding: 16px 14px 40px; }
+    .adm-top { padding: 12px 14px; }
+    .adm-top__exit span { display: none; }
+    .adm-top__exit { padding: 8px; }
+}

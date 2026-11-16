@@ -1,0 +1,43 @@
+AddDefaultCharset UTF-8
+
+# PWA: манифест и service worker не кэшируем — иначе браузер держит старую версию
+<FilesMatch "^(manifest\.json|service-worker\.js|pwa\.js)$">
+  FileETag None
+  <IfModule mod_headers.c>
+    Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+  </IfModule>
+</FilesMatch>
+
+Options -Indexes
+DirectoryIndex index.php
+SetEnv LA2PLUS_PRIVATE_GUARD 1
+RewriteEngine On
+
+# Deny before testing existing files/directories.
+RewriteRule ^cms-private(?:/|$) - [F,L,NC]
+RewriteRule (^|/)\. - [F,L]
+# Only the front controller may execute PHP.
+RewriteCond %{REQUEST_URI} !^/index\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/deposit-utopay\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/deposit-wayforpay\.php$ [NC]
+# Приёмники уведомлений платёжных систем (Trybit, PayOp, PayPalych):
+# без этих исключений шлюзы получают 403 и оплаты не зачисляются.
+RewriteCond %{REQUEST_URI} !^/deposit-trybit\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/deposit-payop\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/deposit-paypalych\.php$ [NC]
+# NOWPayments присылает IPN на этот адрес:
+RewriteCond %{REQUEST_URI} !^/deposit-nowpayments\.php$ [NC]
+RewriteCond %{REQUEST_URI} !^/deposit-cron\.php$ [NC]
+RewriteRule \.(?:php[0-9]?|phtml|phar)(?:/|$) - [F,L,NC]
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L]
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php72” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php72___lsphp .php .php7 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

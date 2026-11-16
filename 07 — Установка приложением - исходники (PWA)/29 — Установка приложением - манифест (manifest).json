@@ -1,0 +1,57 @@
+{
+  "name": "LA2PLUS — Lineage 2",
+  "short_name": "LA2PLUS",
+  "id": "/?source=pwa",
+  "description": "Личный кабинет LA2PLUS: баланс, персонажи, пополнение, тикеты и новости сервера.",
+  "lang": "ru",
+  "dir": "ltr",
+  "start_url": "/cabinet/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#080A0D",
+  "theme_color": "#080A0D",
+  "categories": ["games", "entertainment"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/design/assets/icons/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/design/assets/icons/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/design/assets/icons/favicon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Кабинет",
+      "short_name": "Кабинет",
+      "url": "/cabinet/",
+      "icons": [{ "src": "/design/assets/icons/favicon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Пополнить баланс",
+      "short_name": "Пополнить",
+      "url": "/cabinet/wallet/",
+      "icons": [{ "src": "/design/assets/icons/favicon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Тикеты",
+      "short_name": "Тикеты",
+      "url": "/cabinet/tickets/",
+      "icons": [{ "src": "/design/assets/icons/favicon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
