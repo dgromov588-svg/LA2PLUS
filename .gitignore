@@ -2,3 +2,5 @@
 /implementation/baseline/
 /implementation/test-output/
 *.local.json
+/launcher/dist/
+/launcher/cmd/launcher/*.syso
