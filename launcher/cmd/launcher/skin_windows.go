@@ -21,6 +21,7 @@ import (
 	"golang.org/x/sys/windows"
 	"la2plus/launcher/assets"
 	"la2plus/launcher/internal/release"
+	"la2plus/launcher/internal/update"
 )
 
 // State is shared with the updater; only the UI goroutine mutates these values.
@@ -184,7 +185,11 @@ func (s *launcherSkin) paint(c *walk.Canvas, _ walk.Rectangle) error {
 	// The same landscape as the project's main page, without third-party branding.
 	source := s.background.Size()
 	cropH := source.Width * 470 / 1120
-	c.DrawBitmapPartWithOpacity(s.background, s.rect(0, 70, 1120, 470), walk.Rectangle{Y: (source.Height - cropH) / 2, Width: source.Width, Height: cropH}, 225)
+	// Source bitmap coordinates are always pixels, independent of monitor DPI.
+	// Only the destination rectangle is converted from logical UI units.
+	if err := c.DrawBitmapPartWithOpacityPixels(s.background, walk.RectangleFrom96DPI(s.rect(0, 70, 1120, 470), c.DPI()), walk.Rectangle{Y: (source.Height - cropH) / 2, Width: source.Width, Height: cropH}, 225); err != nil {
+		return fmt.Errorf("background at %d DPI: %w", c.DPI(), err)
+	}
 	fill(c, s.rect(0, 0, 1120, 70), ink)
 	fill(c, s.rect(0, 510, 1120, 250), ink)
 	// Softly darken the scene at the lower edge without changing the source artwork.
@@ -343,6 +348,9 @@ func (s *launcherSkin) layout() {
 	s.ox = (b.Width - int(1120*s.scale)) / 2
 	s.oy = (b.Height - int(760*s.scale)) / 2
 	s.canvas.SetBounds(b)
+	// Win32 inserts new child windows below existing siblings. Keep the full-window
+	// scene behind the independently focusable controls after every resize.
+	win.SetWindowPos(s.canvas.Handle(), win.HWND_BOTTOM, 0, 0, 0, 0, win.SWP_NOMOVE|win.SWP_NOSIZE|win.SWP_NOACTIVATE)
 	for _, button := range s.buttons {
 		r := button.bounds
 		button.w.SetBounds(s.rect(r.X, r.Y, r.Width, r.Height))
@@ -503,27 +511,58 @@ func (s *launcherSkin) proof(path string) error {
 	}
 	// Hosted Windows runners have no interactive desktop: screen BitBlt is black.
 	// Render the same native GDI paint callbacks into a bitmap for visual inspection.
-	img, err := s.renderPreview()
-	if err != nil {
-		return err
-	}
-	out, err := os.Create(path + ".png")
-	if err != nil {
-		return err
-	}
-	err = png.Encode(out, img)
-	out.Close()
-	if err != nil {
-		return err
+	for _, dpi := range []int{96, 120, 144, 192} {
+		img, err := s.renderPreviewAtDPI(dpi)
+		if err != nil {
+			return err
+		}
+		suffix := ".png"
+		if dpi != 96 {
+			suffix = fmt.Sprintf("-%ddpi.png", dpi)
+		}
+		out, err := os.Create(path + suffix)
+		if err != nil {
+			return err
+		}
+		err = png.Encode(out, img)
+		out.Close()
+		if err != nil {
+			return err
+		}
 	}
 	names := []string{}
 	for _, b := range s.buttons {
 		if b.w == nil || b.w.Bounds().Width <= 0 {
 			return fmt.Errorf("unlaid-out control: %s", b.text)
 		}
+		if win.GetParent(b.w.Handle()) != win.GetParent(s.canvas.Handle()) {
+			return fmt.Errorf("unexpected control parent: %s", b.text)
+		}
+		r := b.w.BoundsPixels()
+		x, y := r.X+r.Width/2, r.Y+r.Height/2
+		point := uintptr(uint64(uint32(x)) | uint64(uint32(y))<<32)
+		hit, _, _ := nativeChildAt.Call(uintptr(win.GetParent(b.w.Handle())), point, 0x0001 /* CWP_SKIPINVISIBLE */)
+		if win.HWND(hit) != b.w.Handle() {
+			return fmt.Errorf("control obscured by sibling: %s", b.text)
+		}
+		if b.w == nil || b.w.Bounds().Width <= 0 {
+			return fmt.Errorf("unlaid-out control: %s", b.text)
+		}
 		names = append(names, b.text)
 	}
-	return os.WriteFile(path, []byte("LA2PLUS native skinned GUI initialized\n"+strings.Join(names, "\n")), 0600)
+	// Regression: a completed file scan must not show 100% game download.
+	initialStatus, initialDetail, initialVersion := s.a.status.Text(), s.a.detail.Text(), s.a.version.Text()
+	s.a.progress.SetValue(100)
+	s.a.showAvailable(update.Plan{Missing: []release.File{{Path: "system_ru/L2.exe"}}, DownloadBytes: 1024, DiskBytes: 2048})
+	if s.a.progress.value != 0 || s.a.play.enabled || !s.a.action.enabled {
+		return fmt.Errorf("pending download displayed as completed")
+	}
+	s.a.status.SetText(initialStatus)
+	s.a.detail.SetText(initialDetail)
+	s.a.version.SetText(initialVersion)
+	s.a.action.SetText("БЫСТРОЕ ОБНОВЛЕНИЕ")
+	s.a.progress.SetValue(0)
+	return os.WriteFile(path, []byte("Native HWND hit targets and GDI rendering verified at 96/120/144/192 DPI\n"+strings.Join(names, "\n")), 0600)
 }
 
 // Walk requires a layout object even when the scene positions its children itself.
@@ -573,6 +612,7 @@ func (s *launcherSkin) fitMonitor() {
 
 var (
 	buttonControls       = windows.NewLazySystemDLL("comctl32.dll")
+	nativeChildAt        = windows.NewLazySystemDLL("user32.dll").NewProc("ChildWindowFromPointEx")
 	setButtonSubclass    = buttonControls.NewProc("SetWindowSubclass")
 	defButtonSubclass    = buttonControls.NewProc("DefSubclassProc")
 	removeButtonSubclass = buttonControls.NewProc("RemoveWindowSubclass")
@@ -592,9 +632,9 @@ func init() {
 	})
 }
 
-func (s *launcherSkin) renderPreview() (*image.RGBA, error) {
+func (s *launcherSkin) renderPreviewAtDPI(dpi int) (*image.RGBA, error) {
 	bounds := s.canvas.ClientBounds()
-	bmp, err := walk.NewBitmap(walk.Size{Width: bounds.Width, Height: bounds.Height})
+	bmp, err := walk.NewBitmapForDPI(walk.SizeFrom96DPI(walk.Size{Width: bounds.Width, Height: bounds.Height}, dpi), dpi)
 	if err != nil {
 		return nil, err
 	}
@@ -609,7 +649,7 @@ func (s *launcherSkin) renderPreview() (*image.RGBA, error) {
 	}
 	for _, b := range s.buttons {
 		r := b.w.ClientBounds()
-		part, e := walk.NewBitmap(walk.Size{Width: r.Width, Height: r.Height})
+		part, e := walk.NewBitmapForDPI(walk.SizeFrom96DPI(walk.Size{Width: r.Width, Height: r.Height}, dpi), dpi)
 		if e != nil {
 			return nil, e
 		}

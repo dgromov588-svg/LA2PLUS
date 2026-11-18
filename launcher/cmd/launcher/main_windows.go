@@ -125,6 +125,7 @@ func (a *client) check(install, full bool) {
 				}
 			}
 			if err == nil {
+				a.mw.Synchronize(func() { a.progress.SetValue(0); a.status.SetText("Загрузка клиента") })
 				err = a.engine.Download(ctx, p)
 			}
 			if err == nil && platform.GameRunning(a.prefs.Folder) {
@@ -168,15 +169,21 @@ func (a *client) check(install, full bool) {
 				a.detail.SetText("Проверка завершена. Выберите язык клиента и нажмите «Начать игру».")
 				a.progress.SetValue(100)
 			} else {
-				a.action.SetText("СКАЧАТЬ КЛИЕНТ")
-				a.status.SetText(fmt.Sprintf("Доступно файлов: %d", len(p.Missing)))
-				a.detail.SetText("К загрузке: " + size(p.DownloadBytes) + " · требуется место: " + size(p.DiskBytes))
+				a.showAvailable(p)
 				if !install && !full && (a.prefs.AutoUpdate == nil || *a.prefs.AutoUpdate) && p.State.Version != "" && !platform.GameRunning(a.prefs.Folder) {
 					a.check(true, false)
 				}
 			}
 		})
 	}()
+}
+func (a *client) showAvailable(p update.Plan) {
+	a.ready = false
+	a.play.SetEnabled(false)
+	a.progress.SetValue(0)
+	a.action.SetText("СКАЧАТЬ КЛИЕНТ")
+	a.status.SetText(fmt.Sprintf("Готов к загрузке: %d файлов", len(p.Missing)))
+	a.detail.SetText("К загрузке: " + size(p.DownloadBytes) + " · требуется место: " + size(p.DiskBytes))
 }
 func (a *client) choose() {
 	if a.busy {
