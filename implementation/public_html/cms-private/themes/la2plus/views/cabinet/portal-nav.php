@@ -1,6 +1,6 @@
 <?php $tr=['PortalRuntime','translate']; ?>
 <nav class="portal-nav" aria-label="<?php echo CHtml::encode($tr('Кабинет','Account','Кабінет')); ?>">
-  <a class="portal-brand" href="/cabinet/">LA2<span>PLUS</span></a>
+  <a class="portal-brand" href="/cabinet/"><?php echo BrandLogo::html('nav'); ?></a>
   <a href="/cabinet/"><?php echo $tr('Главная','Home','Головна'); ?></a>
   <a href="/rating/"><?php echo $tr('Рейтинг','Rankings','Рейтинг'); ?></a>
   <a href="/cabinet/portal/warehouse"><?php echo $tr('Склад','Warehouse','Склад'); ?></a>

@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="/design/css/pages/portal.css?v=2">
   <link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=2">
   <style>body.portal-page{margin:0;background:linear-gradient(180deg,rgba(7,10,18,.68),rgba(7,10,18,.95)),url('/design/assets/images/env-hero-2.jpg') center top/cover fixed}.portal-legacy{max-width:1400px;margin:auto;padding:0 24px 50px}.portal-legacy-nav{padding-bottom:0}.portal-legacy-nav .portal-nav{margin-bottom:0}body.portal-page>.portal-footer{text-align:center;color:#858b96;font-size:.75rem;padding:20px}.portal-language{display:flex;justify-content:flex-end;gap:10px;max-width:1400px;margin:auto;padding:16px 24px 0}.portal-language button{background:none;border:0;color:#d0b170;cursor:pointer;font-size:.7rem}.portal-language+.portal{padding-top:20px}</style>
+<link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
 </head>
 <body class="portal-page">
   <?php $this->widget('app.widgets.UserNotifications.UserNotifications'); ?>

@@ -1,0 +1,18 @@
+/* Single official brand mark. The shimmer is clipped to the original transparent artwork. */
+.brand-logo{position:relative;display:inline-grid;grid-template-columns:minmax(0,1fr);width:180px;max-width:100%;aspect-ratio:3/1;vertical-align:middle;isolation:isolate;line-height:0;flex-shrink:0}
+.brand-logo>.brand-logo__image{display:block;grid-area:1/1;width:100%;max-width:100%;height:auto;aspect-ratio:3/1;object-fit:contain;filter:drop-shadow(0 0 7px #8275ef28);user-select:none}
+.brand-logo>.brand-logo__sheen{position:absolute;inset:0;display:block;pointer-events:none;background:linear-gradient(105deg,transparent 35%,#b9d5ff55 44%,#fff3bdcc 49%,#d6d7ff88 53%,transparent 63%);background-size:300% 100%;background-position:180% 0;-webkit-mask-image:var(--brand-logo-mask);mask-image:var(--brand-logo-mask);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;mix-blend-mode:screen;opacity:.65;animation:la2plus-logo-shimmer 8s ease-in-out infinite}
+.brand-logo--display{width:290px}.brand-logo--header{width:160px}.brand-logo--hero{width:560px}.brand-logo--preloader{width:320px}
+.portal-nav .portal-brand .brand-logo{width:180px}
+.portal-nav .portal-brand{line-height:0;padding-top:7px;padding-bottom:22px}
+.auth-top .auth-logo{display:inline-flex;align-items:center;line-height:0}
+.auth-top .auth-logo .brand-logo{width:220px}
+.portal-hero .portal-hero-sigil{flex:0 0 250px;max-width:32%;height:auto;border:0;border-radius:0;outline:0;box-shadow:none;transform:none}
+.portal-hero-sigil .brand-logo{width:100%}
+.auth-story .auth-orbit{width:280px;max-width:100%;height:auto;border:0;outline:0;border-radius:0;box-shadow:none;animation:none;margin:42px 0}
+.auth-orbit .brand-logo{width:100%}
+.header__logo .brand-logo{max-width:100%}.hero__title .brand-logo{max-width:min(560px,90vw)}
+@keyframes la2plus-logo-shimmer{0%,24%{background-position:180% 0}66%,100%{background-position:-80% 0}}
+@media(max-width:850px){.portal-hero .portal-hero-sigil{flex-basis:200px;max-width:30%}}
+@media(max-width:600px){.portal-nav .portal-brand .brand-logo{width:175px}.portal-nav .portal-brand{padding:4px 10px 14px}.auth-top .auth-logo .brand-logo{width:165px}.brand-logo--header{width:140px}}
+@media(prefers-reduced-motion:reduce){.brand-logo>.brand-logo__sheen{animation:none;opacity:0}}

@@ -19,9 +19,10 @@ ob_start();
 ?>
 <link rel="stylesheet" href="/design/css/pages/portal.css?v=2">
 <link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=2">
+<link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
 <div class="portal portal--atelier" data-portal-root>
   <nav class="portal-nav" aria-label="<?php echo $e($tr('Кабинет','Account','Кабінет')); ?>">
-    <a class="portal-brand" href="<?php echo $e($url('index')); ?>">LA2<span>PLUS</span></a>
+    <a class="portal-brand" href="<?php echo $e($url('index')); ?>"><?php echo BrandLogo::html('nav'); ?></a>
     <?php foreach (['index'=>['Главная','Home','Головна'],'warehouse'=>['Склад','Warehouse','Склад'],'exchange'=>['Биржа','Exchange','Біржа'],'security'=>['Настройки','Settings','Налаштування']] as $action=>$labels) { ?>
     <a href="<?php echo $e($url($action)); ?>" <?php if ($page===($action==='index'?'home':$action)) echo 'aria-current="page"'; ?>><?php echo $e($tr(...$labels)); ?></a>
     <?php } ?>
@@ -42,7 +43,7 @@ ob_start();
     <h1><?php echo $e($tr(...($titles[$page]??$titles['home']))); ?></h1>
     <p><?php echo $e($tr('Персонажи, достижения и возможности — в одном месте.','Characters, progress and possibilities — all in one place.','Персонажі, досягнення та можливості — в одному місці.')); ?></p>
     <div class="portal-hero-meta"><span class="portal-server-pill"><i aria-hidden="true"></i> Interlude <b>×20</b></span><span><?php echo $e($tr('С возвращением','Welcome back','З поверненням')); ?>, <?php echo $literal(user()->get('login')); ?></span></div></div>
-    <div class="portal-hero-sigil" aria-hidden="true"><span>LA2</span><small>PLUS</small></div>
+    <div class="portal-hero-sigil" aria-hidden="true"><?php echo BrandLogo::html('display',true); ?></div>
   </header>
   <div class="portal-status" data-portal-status role="status" aria-live="polite" hidden></div>
   <?php if (!$verified) { ?>

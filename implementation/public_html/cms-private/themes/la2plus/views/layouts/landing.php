@@ -26,7 +26,7 @@ $home = app()->createUrl('/index/default/index');
   <meta property="og:site_name" content="LA2PLUS">
 
   <link rel="icon" href="/design/assets/favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="/design/assets/images/logo.png">
+  <link rel="apple-touch-icon" href="<?php echo BrandLogo::assetUrl(); ?>">
 
   <?php // Установка сайта приложением (PWA): манифест, иконки, кнопка «на главный экран».
         // Подключается одним блоком, чтобы кабинет и панель не расходились. ?>
@@ -55,6 +55,7 @@ $home = app()->createUrl('/index/default/index');
 <meta name="la2plus-ratings-url" content="<?php echo CHtml::encode(app()->createUrl('/index/default/ratings')); ?>">
 <?php // Проверка владения доменом для Trybit (добавление проекта в кабинете мерчанта) ?>
 <meta name="trybit-verification" content="<?php echo CHtml::encode(defined('LA2PLUS_TRYBIT_VERIFICATION') ? LA2PLUS_TRYBIT_VERIFICATION : 'smr9zdz2crwmrkz2t26w78sr03x99r1h'); ?>">
+<link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
 </head>
 
 <body class="<?php echo $isHome ? 'landing' : 'cms-page cms-offset'; ?>">
@@ -63,7 +64,7 @@ $home = app()->createUrl('/index/default/index');
   <!-- PRELOADER -->
   <div id="preloader" class="preloader" aria-hidden="true">
     <div class="preloader__inner">
-      <img src="/design/assets/images/logo.png" alt="LA2PLUS" class="preloader__logo-img" width="320" height="120">
+      <?php echo BrandLogo::html('preloader',true); ?>
       <div class="preloader__bar"><span class="preloader__progress"></span></div>
       <p class="preloader__text">LOADING WORLD...</p>
     </div>
@@ -77,7 +78,7 @@ $home = app()->createUrl('/index/default/index');
   <header class="header" id="header">
     <div class="header__container container">
       <a href="<?php echo $home; ?>" class="header__logo">
-        <img src="/design/assets/images/logo.png" alt="LA2PLUS" class="header__logo-img" width="160" height="48">
+        <?php echo BrandLogo::html('header'); ?>
       </a>
 
       <nav class="header__nav" id="mainNav" aria-label="<?php echo Yii::t('main', 'layout.mainNavigation') ?>">
@@ -151,7 +152,7 @@ $home = app()->createUrl('/index/default/index');
 
       <div class="hero__content container">
         <h1 class="hero__title" id="heroTitle">
-          <img src="/design/assets/images/logo.png" alt="LA2PLUS" class="hero__logo-img" width="560" height="200">
+          <?php echo BrandLogo::html('hero'); ?>
         </h1>
         <!-- Тексты первого экрана: за ними тёмный круг-подложка (.hero__text::before) -->
         <div class="hero__text">
