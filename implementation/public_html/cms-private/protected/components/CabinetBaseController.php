@@ -37,6 +37,8 @@ class CabinetBaseController extends Controller
         if (class_exists('PortalRuntime') && PortalRuntime::enabled()) {
             $this->layout='//layouts/portal';
             $controller=strtolower($this->getId()); $name=strtolower($action->getId());
+            $section=PortalRuntime::sections()->forRoute($controller,$name);
+            if ($section!==null) PortalRuntime::sections()->requireEnabled($section);
             // Legacy teleport is a GET link; use the PIN-confirmed POST dialog instead.
             if ($controller==='characters' && $name==='teleport') $this->redirect(['/cabinet/portal/index']);
             if (in_array(str_replace('-','',$controller),['shoputopay','wayforpayshop'],true) && $name==='buy') $this->redirect(['/cabinet/deposit/index']);

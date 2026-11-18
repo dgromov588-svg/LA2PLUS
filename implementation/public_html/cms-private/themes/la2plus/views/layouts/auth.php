@@ -5,7 +5,7 @@
 <link rel="icon" href="/design/assets/favicon.png"><link rel="stylesheet" href="/design/css/base.css"><link rel="stylesheet" href="/design/css/pages/portal-auth.css?v=2">
 <link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
 </head><body class="portal-auth">
-<header class="auth-top"><a class="auth-logo" href="/"><?php echo BrandLogo::html('nav'); ?></a><a href="/rating/">Рейтинг проекта <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></a></header>
+<header class="auth-top"><a class="auth-logo" href="/"><?php echo BrandLogo::html('nav'); ?></a><?php if (PortalRuntime::sections()->enabled('rating')) { ?><a href="/rating/">Рейтинг проекта <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></a><?php } ?></header>
 <main class="auth-shell"><section class="auth-story"><span class="auth-eyebrow">LINEAGE II · INTERLUDE</span><h1>Твой следующий<br> великий <em>шаг.</em></h1><p>Собирай союзников. Управляй своими персонажами.<br> Создавай историю в мире LA2PLUS.</p><div class="auth-orbit" aria-hidden="true"><?php echo BrandLogo::html('display',true); ?></div><div class="auth-story-foot"><span class="auth-dot"></span> Один аккаунт. Все возможности проекта.</div></section>
 <section class="auth-panel"><?php echo $content; ?></section></main>
 <footer class="auth-footer">© <?php echo date('Y'); ?> LA2PLUS <span>Игровой центр</span></footer>

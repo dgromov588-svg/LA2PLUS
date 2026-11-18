@@ -14,8 +14,8 @@ class StagingGuard
    if (user()->isGuest) throw new CHttpException(401,'Сначала войдите в тестовый кабинет.');
    request()->validateCsrfToken($event);
    header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');
-   try {$result=StagingGameAdapter::topup((int)user()->getId(),PortalMoney::cents(request()->getPost('amount')),(string)request()->getPost('request_key'));echo json_encode(['ok'=>true,'result'=>$result],JSON_UNESCAPED_UNICODE);}
-   catch (Throwable $e) {http_response_code(400);echo json_encode(['ok'=>false,'error'=>$e->getMessage()],JSON_UNESCAPED_UNICODE);}
+   try {PortalRuntime::sections()->requireOperation('demoTopup');$result=StagingGameAdapter::topup((int)user()->getId(),PortalMoney::cents(request()->getPost('amount')),(string)request()->getPost('request_key'));echo json_encode(['ok'=>true,'result'=>$result],JSON_UNESCAPED_UNICODE);}
+   catch (Throwable $e) {http_response_code($e instanceof CHttpException?$e->statusCode:400);echo json_encode(['ok'=>false,'error'=>$e->getMessage()],JSON_UNESCAPED_UNICODE);}
    app()->end();
   }
   if ($path==='') {app()->request->redirect('/cabinet/');return;}

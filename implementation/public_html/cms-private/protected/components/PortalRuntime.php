@@ -2,6 +2,12 @@
 class PortalRuntime
 {
     private static $store;
+    private static $sections;
+    public static function sections()
+    {
+        if (!self::$sections) self::$sections=new CabinetSections(self::store());
+        return self::$sections;
+    }
     public static function store()
     {
         if (!self::$store) { db()->active=true; self::$store=new PortalStore(db()->getPdoInstance(),db()->tablePrefix); }

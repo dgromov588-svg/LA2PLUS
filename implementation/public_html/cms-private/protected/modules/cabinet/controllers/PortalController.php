@@ -27,11 +27,16 @@ class PortalController extends CabinetBaseController
             $store=PortalRuntime::store(); $security=new PortalSecurity($store);
             $uid=PortalRuntime::uid(); $gs=PortalRuntime::gs();
             $op=(string)request()->getPost('op'); $key=(string)request()->getPost('request_key');
+            PortalRuntime::sections()->requireOperation($op);
             $get=function ($name,$default='') { return request()->getPost($name,$default); };
             $result=[];
             $verify=function () use ($get) { return PortalRuntime::verifyPassword((string)$get('current_password')); };
             if (in_array($op,['buy','sell','cancel','withdraw','transfer','deliver','import','teleport','coins'],true)) $security->requirePin($uid,(string)$get('pin'));
             switch ($op) {
+                case 'sectionToggle':
+                    $this->owner();
+                    $result=PortalRuntime::sections()->set($uid,(string)$get('section'),(string)$get('enabled'));
+                    break;
                 case 'code':
                     $purpose=(string)$get('purpose');
                     if (strpos($purpose,'password:')===0) PortalRuntime::account((int)substr($purpose,9));

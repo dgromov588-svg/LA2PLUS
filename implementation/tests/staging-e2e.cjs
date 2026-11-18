@@ -19,7 +19,7 @@ const dir=path.resolve(__dirname,'../../work/staging'),creds=JSON.parse(fs.readF
  }
  const ok=async(op,fields={},requestKey)=>{const r=await post(op,fields,requestKey);check(r.ok,op+(r.error?': '+r.error:''));return r.result};
  await go('/cabinet/portal/exchange/?tab=wallet');
- const balance=async()=>Number((await p.locator('.portal-overview .portal-card').nth(3).locator('strong').innerText()).replace(/[^0-9.]/g,''));
+ const balance=async()=>Number((await p.locator('[data-portal-card="exchange-wallet"] strong').innerText()).replace(/[^0-9.]/g,''));
  const before=await balance(),creditKey=key();
  await ok('demoTopup',{amount:'5.00'},creditKey);await ok('demoTopup',{amount:'5.00'},creditKey);await p.reload({waitUntil:'networkidle'});
  check(Math.abs(await balance()-before-5)<0.001,'Demo top-up credits once without a real provider');
