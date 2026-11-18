@@ -193,9 +193,10 @@ func (s *launcherSkin) paint(c *walk.Canvas, _ walk.Rectangle) error {
 	fill(c, s.rect(0, 0, 1120, 70), ink)
 	fill(c, s.rect(0, 510, 1120, 250), ink)
 	// Softly darken the scene at the lower edge without changing the source artwork.
-	for i := 0; i < 80; i++ {
-		opacity := byte(i * 3)
-		c.DrawBitmapWithOpacity(s.dark, s.rect(0, 430+i, 1120, 1), opacity)
+	gradient := walk.RectangleFrom96DPI(s.rect(0, 430, 1120, 80), c.DPI())
+	for y := 0; y < gradient.Height; y++ {
+		opacity := byte(y * 240 / gradient.Height)
+		c.DrawBitmapWithOpacityPixels(s.dark, walk.Rectangle{X: gradient.X, Y: gradient.Y + y, Width: gradient.Width, Height: 1}, opacity)
 	}
 	line(c, s.rect(30, 70, 1060, 0), edge)
 	c.DrawImageStretched(s.logo, s.rect(365, 108, 390, 130))
@@ -253,9 +254,12 @@ func (b *skinButton) paint(c *walk.Canvas, _ walk.Rectangle) error {
 		if brush != nil {
 			defer brush.Dispose()
 		}
-		for y := 2; brush != nil && y < h-2; y++ {
-			dx := cut * int(math.Abs(float64(2*y-h))) / int(math.Max(1, float64(h)))
-			c.FillRectangle(brush, walk.Rectangle{X: dx + 2, Y: y, Width: w - 2*dx - 4, Height: 1})
+		// Paint contiguous physical rows. Logical 1px rows leave gaps at 125/150% DPI.
+		pixels := walk.RectangleFrom96DPI(q, c.DPI())
+		pixelCut := cut * c.DPI() / 96
+		for y := 2; brush != nil && y < pixels.Height-2; y++ {
+			dx := pixelCut * int(math.Abs(float64(2*y-pixels.Height))) / int(math.Max(1, float64(pixels.Height)))
+			c.FillRectanglePixels(brush, walk.Rectangle{X: dx + 2, Y: y, Width: pixels.Width - 2*dx - 4, Height: 1})
 		}
 		pen, _ := walk.NewCosmeticPen(walk.PenSolid, color)
 		if pen != nil {
