@@ -254,7 +254,7 @@
     {
       "path": "cms-private/themes/la2plus/views/layouts/landing.php",
       "previous_sha256": "993bddefd8eac106b4ab61643614e0ff8a18f85555e600fcf8baeafcf1d33df5",
-      "sha256": "820e5c8133bc0e94be5caec10677643a3752b5b6050b5d560d892976a80ff45f"
+      "sha256": "720afdf8f0ecb9abbe33518c801c7e032159c92c8aa4137fd9f93ba8fa4e6df5"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/portal.php",
@@ -335,6 +335,11 @@
       "path": "design/js/coin-shop.js",
       "previous_sha256": null,
       "sha256": "07e39a38b7b7c03161058fffbb9d7c5979d1698a1fabb2d7c63b17ad3a1e3f37"
+    },
+    {
+      "path": "design/js/config.js",
+      "previous_sha256": "598bfb6327be78aa4e5de26b6ce7eb20660dfecfef1d797f70acfed32bef1e0f",
+      "sha256": "2b4bb783cdad779466ad2b556a6e874a4d2ae84ab32d529095175a21af5ce8dd"
     },
     {
       "path": "design/js/portal.js",
