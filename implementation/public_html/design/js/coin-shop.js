@@ -5,10 +5,13 @@
   const amount=root.querySelector('#coin-amount'),slider=root.querySelector('#coin-slider'),pay=root.querySelector('[data-coin-pay]'),message=root.querySelector('[data-coin-message]');
   const country=root.querySelector('[data-country]'),currency=root.querySelector('select[data-currency]');
   for(const code of ['EUR','UAH','GBP','PLN','KZT','TRY','BRL','GEL','MDL','AMD','AZN','CAD','AUD','CHF','AED','INR','MXN','RON','CZK'])currency.add(new Option(code,code));
+  let provider=root.querySelector('[data-provider][aria-pressed="true"]')?.dataset.provider||'trybit';
+  root.querySelectorAll('[data-provider]:not(:disabled)').forEach(button=>button.addEventListener('click',()=>{provider=button.dataset.provider;root.querySelectorAll('[data-provider]').forEach(b=>{b.setAttribute('aria-pressed',b===button?'true':'false');b.classList.toggle('is-selected',b===button);});}));
   let quote=null, sequence=0, timer, busy=false, rates={USD:1}, lastAttempt=null;
   const tell=(text,error=false)=>{message.textContent=text;message.classList.toggle('is-error',error);};
   async function request(op,coins,key) {
-    const body=new URLSearchParams({op,coins,gs_id:String(settings.gs),request_key:key||settings.key,[settings.csrfName]:settings.csrfToken});
+    const body=new URLSearchParams({op,coins,provider,gs_id:String(settings.gs),request_key:key||settings.key,[settings.csrfName]:settings.csrfToken});
+    if(op==='coinPurchase'){body.set('quote_usd',quote.usd);body.set('quote_total',String(quote.total));}
     const response=await fetch('/cabinet/portal/request/',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/x-www-form-urlencoded','X-Requested-With':'XMLHttpRequest',Accept:'application/json'},body});
     const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||'Не удалось завершить запрос.');return data.result;
   }
@@ -31,9 +34,9 @@
   if(pay)pay.addEventListener('click',async()=>{
     if(busy||!quote||!amount.reportValidity())return;
     // Preserve the same key and payload after an ambiguous network failure.
-    const coins=String(quote.coins);if(!lastAttempt||lastAttempt.coins!==coins)lastAttempt={coins,key:Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('')};
+    const coins=String(quote.coins);if(!lastAttempt||(lastAttempt.coins!==coins||lastAttempt.provider!==provider))lastAttempt={coins,provider,key:Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('')};
     busy=true;pay.disabled=true;amount.disabled=true;slider.disabled=true;root.querySelectorAll('[data-tier]').forEach(b=>b.disabled=true);
-    try{const result=await request('demoCoinTopup',lastAttempt.coins,lastAttempt.key);tell(result.message);lastAttempt=null;}
+    try{const result=await request(settings.demo?'demoCoinTopup':'coinPurchase',lastAttempt.coins,lastAttempt.key);if(result.url){const url=new URL(result.url);if(url.protocol!=='https:')throw new Error('Неверная ссылка оплаты.');try{sessionStorage.setItem('la2plus.coin.order',String(result.id));}catch(_){}location.assign(url.href);return;}tell(result.message);lastAttempt=null;}
     catch(error){tell(error.message+' При ошибке сети повторите запрос с той же суммой.',true);}
     finally{busy=false;pay.disabled=!quote;amount.disabled=false;slider.disabled=false;root.querySelectorAll('[data-tier]').forEach(b=>b.disabled=false);}
   });
@@ -44,5 +47,19 @@
     const available=data.rates||data.data?.rates||{};for(const[code,rate]of Object.entries(available)){if(/^[A-Z]{3}$/.test(code)&&Number(rate)>0){rates[code]=Number(rate);if(!Array.from(currency.options).some(option=>option.value===code))currency.add(new Option(code,code));}}
     try{const saved=localStorage.getItem('la2plus.coin.currency');if(Array.from(currency.options).some(option=>option.value===saved))currency.value=saved;}catch(_){}localPrice();
   }).catch(()=>localPrice());
+  let storedOrder=0;try{storedOrder=Number(sessionStorage.getItem('la2plus.coin.order')||0);}catch(_){}
+  let orderId=Number(settings.pendingOrder||storedOrder||0);
+  const pending=root.querySelector('[data-coin-pending]'),check=root.querySelector('[data-coin-check]');
+  async function checkOrder(){
+    if(!orderId||!check)return;check.disabled=true;
+    try{
+      const body=new URLSearchParams({op:'coinPaymentStatus',order_id:String(orderId),[settings.csrfName]:settings.csrfToken});
+      const response=await fetch('/cabinet/portal/request/',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/x-www-form-urlencoded','X-Requested-With':'XMLHttpRequest',Accept:'application/json'},body});
+      const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||'Не удалось проверить платёж.');
+      root.querySelector('[data-coin-order-state]').textContent=data.result.state==='paid'?`Платёж подтверждён. Начислено ${data.result.total} CoL.`:'Заказ №'+orderId+': ожидаем подтверждение платежа.';
+      if(data.result.state==='paid'){try{sessionStorage.removeItem('la2plus.coin.order');}catch(_){}orderId=0;}
+    }catch(error){tell(error.message,true);}finally{check.disabled=false;}
+  }
+  if(orderId>0&&pending){pending.hidden=false;check.addEventListener('click',checkOrder);checkOrder();}
   update();
 })();

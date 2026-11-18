@@ -22,10 +22,14 @@ class PortalSchema
             'portal_withdrawals' => "id $id, user_id BIGINT NOT NULL, amount BIGINT NOT NULL, fee BIGINT NOT NULL, net BIGINT NOT NULL, address VARCHAR(64) NOT NULL, state VARCHAR(24) NOT NULL, txid VARCHAR(64) NULL UNIQUE, actor_id BIGINT NULL, created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL",
             'portal_deliveries' => "id $id, user_id BIGINT NOT NULL, item_id BIGINT NOT NULL, gs_id BIGINT NOT NULL, char_id BIGINT NOT NULL, operation_key VARCHAR(128) NOT NULL UNIQUE, state VARCHAR(24) NOT NULL, receipt VARCHAR(255) NULL, created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL",
             'portal_payments' => "id $id, user_id BIGINT NOT NULL, amount BIGINT NOT NULL, invoice_id VARCHAR(128) NULL UNIQUE, payment_url TEXT NULL, state VARCHAR(24) NOT NULL, created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL",
+            'portal_attendance'=>'owner_id BIGINT NOT NULL, gs_id BIGINT NOT NULL, next_day INTEGER NOT NULL DEFAULT 1, last_claim_date VARCHAR(10) NULL, PRIMARY KEY(owner_id,gs_id)',
+            'portal_attendance_time'=>'owner_id BIGINT NOT NULL, gs_id BIGINT NOT NULL, char_id BIGINT NOT NULL, day_date VARCHAR(10) NOT NULL, last_value BIGINT NOT NULL, changed_at BIGINT NOT NULL, earned INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(owner_id,gs_id,char_id,day_date)',
+            'portal_coin_orders' => "id $id, user_id BIGINT NOT NULL, gs_id BIGINT NOT NULL, amount BIGINT NOT NULL, coins BIGINT NOT NULL, bonus BIGINT NOT NULL, total BIGINT NOT NULL, provider VARCHAR(24) NOT NULL DEFAULT 'trybit', payment_id VARCHAR(128) NULL, invoice_id VARCHAR(128) NULL UNIQUE, payment_url TEXT NULL, state VARCHAR(24) NOT NULL, created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL",
             'portal_audit' => "id $id, actor_id BIGINT NOT NULL, action VARCHAR(80) NOT NULL, target VARCHAR(128) NOT NULL, details TEXT NOT NULL, created_at BIGINT NOT NULL",
         ];
         foreach ($tables as $name => $columns) $db->exec("CREATE TABLE IF NOT EXISTS {$prefix}{$name} ($columns)$tail");
         $indexes=[
+            'portal_coin_orders'=>['owner'=>['user_id','id'],'pending'=>['state','id']],
             'portal_items'=>['owner'=>['user_id','gs_id','state','id']],
             'portal_lots'=>['catalog'=>['gs_id','state','id'],'seller'=>['seller_id','id'],'buyer'=>['buyer_id','id']],
             'portal_codes'=>['challenge'=>['user_id','purpose','id']],
@@ -44,7 +48,7 @@ class PortalSchema
             if (!$exists) $db->exec('CREATE INDEX '.$name.' ON '.$prefix.$table.'('.implode(',',$columns).')');
         }
         $settings = [
-            'schema_version' => '1', 'cabinet_enabled' => '0', 'market_enabled' => '0',
+            'coin_topup_enabled'=>'0','coin_topup_verified'=>'0','schema_version' => '1', 'cabinet_enabled' => '0', 'market_enabled' => '0',
             'warehouse_enabled' => '0', 'topup_enabled' => '0', 'withdrawals_enabled' => '0',
             'sale_fee_percent' => '10', 'bridge_url' => '', 'bridge_verified' => '0',
         ];

@@ -10,6 +10,7 @@ class PortalRuntime
     }
     public static function store()
     {
+        if(class_exists('PortalProduction'))PortalProduction::bootstrap();
         if (!self::$store) { db()->active=true; self::$store=new PortalStore(db()->getPdoInstance(),db()->tablePrefix); }
         return self::$store;
     }

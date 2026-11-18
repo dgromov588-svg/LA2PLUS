@@ -1,0 +1,1 @@
+<main class="portal"><section class="portal-card portal-narrow"><span class="portal-eyebrow"><?php echo (int)$code; ?></span><h1>Страница недоступна</h1><p><?php echo CHtml::encode($message); ?></p><a class="btn btn--gold" href="/cabinet/">Открыть личный кабинет</a></section></main>

@@ -38,7 +38,9 @@ class FrontendBaseController extends Controller
         if (class_exists('PortalRuntime') && PortalRuntime::enabled() && $this->getModule() && $this->getModule()->getId()==='deposit') {
             $controller=strtolower(str_replace(['-','_'],'',$this->getId()));
             $name=strtolower($action->getId());
+            if($controller==='wayforpaygateway'&&$name==='return'&&request()->getQuery('portal')==='1')$this->redirect('/cabinet/deposit/',true,303);
             if ($name==='pay' && in_array($controller,['gateway','utopaygateway','wayforpaygateway'],true)) PortalRuntime::sections()->requireEnabled('deposit');
+            if($name==='buy'&&in_array($controller,['wayforpayshop','utopayshop'],true))throw new CHttpException(410,'Используйте новый магазин кабинета.');
             if ($name==='buy' && $controller==='wayforpayshop') {
                 PortalRuntime::sections()->requireEnabled('shop');
                 PortalRuntime::sections()->requireEnabled('deposit');

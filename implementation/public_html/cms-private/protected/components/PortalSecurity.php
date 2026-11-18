@@ -24,7 +24,7 @@ class PortalSecurity
     }
     public function issue($user,$purpose,callable $verifyPassword,callable $send)
     {
-        if (!preg_match('/^(pin|verify_email|password:[0-9]+)$/D',$purpose)) throw new InvalidArgumentException('Неверная операция.');
+        if (!preg_match('/^(pin|verify_email|password:[0-9]+|admin_password:[0-9]+)$/D',$purpose)) throw new InvalidArgumentException('Неверная операция.');
         $this->requirePassword($user,$verifyPassword);
         $code=(string)random_int(100000,999999);
         $id=$this->store->atomic(function () use ($user,$purpose,$code) {

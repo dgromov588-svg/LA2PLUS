@@ -12,9 +12,8 @@ class CabinetSections
             'warehouse'=>['label'=>['Склад','Warehouse','Склад'],'description'=>'Покупки, награды и выдача предметов персонажам.'],
             'exchange'=>['label'=>['Биржа','Exchange','Біржа'],'description'=>'Лоты, покупки, кошелёк биржи и заявки вывода.'],
             'deposit'=>['label'=>['Пополнение баланса','Top up','Поповнення балансу'],'description'=>'Страница пополнения и перевод CoL персонажу.'],
-            'wallet'=>['label'=>['Кошелёк','Wallet','Гаманець'],'description'=>'Общий кошелёк группы и внутренние переводы.'],
             'shop'=>['label'=>['Магазин','Shop','Магазин'],'description'=>'Каталог товаров и покупки с баланса кабинета.'],
-            'calendar'=>['label'=>['Календарь','Calendar','Календар'],'description'=>'Сезонный календарь и получение ежедневных наград.'],
+            'calendar'=>['label'=>['Календарь','Calendar','Календар'],'description'=>'Бесплатный календарь ежедневных наград на 28 дней.'],
             'bonuses'=>['label'=>['Бонусы и промокоды','Bonuses and codes','Бонуси та промокоди'],'description'=>'Активация промокодов и бонусы проекта.'],
             'referrals'=>['label'=>['Рефералы','Referrals','Реферали'],'description'=>'Приглашения друзей и реферальная программа.'],
             'support'=>['label'=>['Поддержка','Support','Підтримка'],'description'=>'Обращения игроков и переписка с поддержкой.'],
@@ -56,15 +55,16 @@ class CabinetSections
     public function forRoute($controller,$action)
     {
         $controller=strtolower(str_replace(['-','_'],'',$controller));$action=strtolower(str_replace(['-','_'],'',$action));
-        if ($controller==='portal') return in_array($action,['warehouse','exchange'],true)?$action:null;
+        if ($controller==='portal' && $action==='characters')return 'accounts';
+        if ($controller==='portal') return array_key_exists($action,self::catalog())?$action:null;
         if ($controller==='default') return in_array($action,['calendar','calendarbuy','calendarclaim'],true)?'calendar':null;
-        $map=['accounts'=>'accounts','characters'=>'accounts','deposit'=>'deposit','shopcoin'=>'deposit','shoputopay'=>'shop','utopayshop'=>'shop','wayforpayshop'=>'shop','wallet'=>'wallet','shop'=>'shop','bonuses'=>'bonuses','referals'=>'referrals','tickets'=>'support','transactionhistory'=>'history','messages'=>'messages'];
+        $map=['accounts'=>'accounts','characters'=>'accounts','deposit'=>'deposit','shopcoin'=>'deposit','shoputopay'=>'shop','utopayshop'=>'shop','wayforpayshop'=>'shop','shop'=>'shop','bonuses'=>'bonuses','referals'=>'referrals','tickets'=>'support','transactionhistory'=>'history','messages'=>'messages'];
         return $map[$controller]??null;
     }
     public function requireOperation($operation)
     {
         $map=[
-            'coinQuote'=>['deposit'],'demoCoinTopup'=>['deposit'],'hide'=>['accounts'],'teleport'=>['accounts'],
+            'createAccount'=>['accounts'],'calendarStatus'=>['calendar'],'calendarClaim'=>['calendar','warehouse'],'supportCreate'=>['support'],'supportReply'=>['support'],'supportClose'=>['support'],'messageRead'=>['messages'],'promo'=>['bonuses'],'shopBuy'=>['shop','warehouse'],'coinPurchase'=>['deposit'],'coinQuote'=>['deposit'],'demoCoinTopup'=>['deposit'],'hide'=>['accounts'],'teleport'=>['accounts'],
             'buy'=>['exchange'],'sell'=>['exchange'],'cancel'=>['exchange'],'withdraw'=>['exchange'],'transfer'=>['exchange'],
             'inventory'=>['exchange'],'import'=>['exchange','warehouse'],'payment'=>['exchange'],'paymentStatus'=>['exchange'],'demoTopup'=>['exchange'],
             'deliver'=>['warehouse'],'coins'=>['warehouse','deposit'],

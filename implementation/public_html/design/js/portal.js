@@ -120,4 +120,6 @@
       notify('Баланс обновлён.',false);
     } catch(error) {notify(error.message,true);} finally {refresh.disabled=false;}
   });
+  const referral=root.querySelector('[data-copy-referral-button]');
+  if(referral)referral.addEventListener('click',async()=>{const field=root.querySelector('[data-copy-referral]');try{await navigator.clipboard.writeText(field.value);notify('Ссылка скопирована.',false);}catch(_){field.focus();field.select();notify('Выделенная ссылка готова для копирования.',false);}});
 })();

@@ -1,23 +1,9 @@
-<?php $legacy=strtolower($this->getId())!=='portal'; ?>
-<!doctype html>
-<html lang="<?php echo CHtml::encode(app()->language); ?>">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#080a0d"><meta name="robots" content="noindex,nofollow">
-  <title><?php echo CHtml::encode($this->getPageTitle()); ?></title>
-  <link rel="icon" href="/design/assets/favicon.png">
-  <link rel="stylesheet" href="/design/css/base.css?v=20261026-update">
-  <link rel="stylesheet" href="/design/css/components/buttons.css?v=20261026-update">
-  <link rel="stylesheet" href="/design/css/pages/cms.css?v=20261026-update">
-  <link rel="stylesheet" href="/design/css/pages/portal.css?v=2">
-  <link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=sections-1">
-  <style>body.portal-page{margin:0;background:linear-gradient(180deg,rgba(7,10,18,.68),rgba(7,10,18,.95)),url('/design/assets/images/env-hero-2.jpg') center top/cover fixed}.portal-legacy{max-width:1400px;margin:auto;padding:0 24px 50px}.portal-legacy-nav{padding-bottom:0}.portal-legacy-nav .portal-nav{margin-bottom:0}body.portal-page>.portal-footer{text-align:center;color:#858b96;font-size:.75rem;padding:20px}.portal-language{display:flex;justify-content:flex-end;gap:10px;max-width:1400px;margin:auto;padding:16px 24px 0}.portal-language button{background:none;border:0;color:#d0b170;cursor:pointer;font-size:.7rem}.portal-language+.portal{padding-top:20px}</style>
-<link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
-</head>
-<body class="portal-page">
-  <?php if (PortalRuntime::sections()->enabled('messages')) $this->widget('app.widgets.UserNotifications.UserNotifications'); ?>
-  <div class="portal-language" aria-label="Language"><?php foreach (['ru'=>'RU','en'=>'EN','ua'=>'UA'] as $code=>$label) { ?><button type="button" data-portal-language="<?php echo $code; ?>"><?php echo $label; ?></button><?php } ?></div>
-  <?php if ($legacy) { ?><div class="portal portal-legacy-nav"><?php $this->renderPartial('//cabinet/portal-nav'); ?></div><main class="portal-legacy"><?php echo $content; ?></main><?php } else echo $content; ?>
-  <footer class="portal-footer">© <?php echo date('Y'); ?> LA2PLUS · <a href="/">На сайт</a> · <?php if (PortalRuntime::sections()->enabled('support')) { ?><a href="/cabinet/tickets/">Поддержка</a><?php } ?></footer>
-  <script>document.querySelectorAll('[data-portal-language]').forEach(function(b){b.addEventListener('click',function(){document.cookie='lang='+b.dataset.portalLanguage+'; path=/; max-age=31536000; samesite=lax';location.reload()})});</script>
+<!doctype html><html lang="<?php echo CHtml::encode(app()->language); ?>"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080a0d"><meta name="robots" content="noindex,nofollow"><title><?php echo CHtml::encode($this->getPageTitle()); ?></title>
+<link rel="icon" href="/design/assets/favicon.png"><link rel="stylesheet" href="/design/css/base.css?v=20261026-update"><link rel="stylesheet" href="/design/css/components/buttons.css?v=20261026-update"><link rel="stylesheet" href="/design/css/pages/portal.css?v=2"><link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=production-2"><link rel="stylesheet" href="/design/css/pages/portal-fresh.css?v=1"><link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
+</head><body class="portal-page portal-page--fresh">
+<header class="portal-topbar"><div class="portal-topbar-inner"><div class="portal-topbar-tools"><a href="/cabinet/" class="portal-topbar-brand" aria-label="LA2PLUS — главная кабинета"><?php echo BrandLogo::html('nav'); ?></a><span class="portal-topbar-server">INTERLUDE <b>×20</b></span><div class="portal-topbar-right"><div class="portal-language" aria-label="Язык"><?php foreach(['ru'=>'RU','en'=>'EN','ua'=>'UA'] as $code=>$label){ ?><button type="button" data-portal-language="<?php echo $code; ?>"><?php echo $label; ?></button><?php } ?></div><?php if(RoleService::can('panel.view')){ ?><a href="/admin/settings/" class="portal-topbar-link">Админка</a><?php } ?><a href="/" class="portal-topbar-site">На сайт</a><?php echo CHtml::beginForm('/cabinet/portal/logout/','post',['class'=>'portal-logout-form']); ?><button type="submit">Выйти</button><?php echo CHtml::endForm(); ?></div></div><?php echo CabinetNavigation::html(isset($this->portalPage)?$this->portalPage:''); ?></div></header>
+<?php echo $content; ?>
+<footer class="portal-footer">© <?php echo date('Y'); ?> LA2PLUS<?php if(PortalRuntime::sections()->enabled('support')){ ?> · <a href="/cabinet/portal/support/">Поддержка</a><?php } ?> · <a href="https://forum.la2plus.com/">Форум</a></footer>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.getRegistrations().then(function(registrations){registrations.forEach(function(registration){if(new URL(registration.active?.scriptURL||registration.installing?.scriptURL||location.origin).pathname==='/service-worker.js')registration.unregister()})}).catch(function(){});document.querySelectorAll('[data-portal-language]').forEach(function(b){b.addEventListener('click',function(){document.cookie='lang='+b.dataset.portalLanguage+'; path=/; max-age=31536000; samesite=lax';location.reload()})});</script>
 </body></html>

@@ -1,12 +1,14 @@
 <?php
 class PortalController extends CabinetBaseController
 {
+    public $portalPage='home';
     public $layout='//layouts/portal';
     private function page($page)
     {
         if (!PortalRuntime::enabled()) throw new CHttpException(503,'Обновление кабинета ещё не включено.');
+        $this->portalPage=$page;
         $store=PortalRuntime::store();
-        $this->render('//cabinet/portal',['page'=>$page,'store'=>$store,'accounts'=>PortalRuntime::accounts()]);
+        $this->render('//cabinet/portal',['page'=>$page,'store'=>$store,'accounts'=>PortalRuntime::accounts(),'pageData'=>PortalPlayerData::load($page)]);
     }
     public function actionIndex() { $this->page('home'); }
     public function actionWarehouse() { $this->page('warehouse'); }
@@ -17,6 +19,26 @@ class PortalController extends CabinetBaseController
         if (!RoleService::isSiteOwner()) throw new CHttpException(403,'Только владелец проекта.');
         $this->page('admin');
     }
+    public function actionError(){
+        $error=app()->errorHandler->error;$code=(int)($error['code']??500);http_response_code($code);
+        $message=$code>=500?'Не удалось загрузить страницу. Попробуйте позже.':($code===410?'Эта страница больше недоступна. Все новые возможности находятся на главной кабинета.':($error['message']??'Страница недоступна.'));
+        if(request()->isAjaxRequest){header('Content-Type: application/json');echo json_encode(['ok'=>false,'error'=>$message],JSON_UNESCAPED_UNICODE);app()->end();}
+        $this->render('//cabinet/portal-error',['code'=>$code,'message'=>$message]);
+    }
+    public function actionLogout(){if(!request()->getIsPostRequest())throw new CHttpException(405,'Требуется POST.');user()->logout();$this->redirect('/login/');}
+    public function actionAccounts(){ $this->redirect(['/cabinet/portal/index']); }
+    public function actionCreateAccount(){ PortalRuntime::sections()->requireEnabled('accounts');$this->page('createAccount'); }
+    public function actionWallet(){ throw new CHttpException(410,'Старый кошелёк удалён. Используйте баланс нового кабинета.'); }
+    public function actionCharacters(){ $this->redirect(['/cabinet/portal/index']); }
+    public function actionAccess(){ throw new CHttpException(410,'Старый раздел удалён.'); }
+    public function actionLogins(){ $this->page('logins'); }
+    public function actionCalendar(){ PortalRuntime::sections()->requireEnabled('calendar');$this->page('calendar'); }
+    public function actionShop(){ PortalRuntime::sections()->requireEnabled('shop');$this->page('shop'); }
+    public function actionSupport(){ PortalRuntime::sections()->requireEnabled('support');$this->page('support'); }
+    public function actionReferrals(){ PortalRuntime::sections()->requireEnabled('referrals');$this->page('referrals'); }
+    public function actionHistory(){ PortalRuntime::sections()->requireEnabled('history');$this->page('history'); }
+    public function actionBonuses(){ PortalRuntime::sections()->requireEnabled('bonuses');$this->page('bonuses'); }
+    public function actionMessages(){ PortalRuntime::sections()->requireEnabled('messages');$this->page('messages'); }
     public function actionRequest()
     {
         header('Content-Type: application/json; charset=utf-8');
@@ -31,10 +53,22 @@ class PortalController extends CabinetBaseController
             $get=function ($name,$default='') { return request()->getPost($name,$default); };
             $result=[];
             $verify=function () use ($get) { return PortalRuntime::verifyPassword((string)$get('current_password')); };
-            if (in_array($op,['buy','sell','cancel','withdraw','transfer','deliver','import','teleport','coins'],true)) $security->requirePin($uid,(string)$get('pin'));
+            if(in_array($op,['buy','sell','cancel','withdraw','transfer','deliver','import','coins','shopBuy'],true))PortalCoinPayments::requireNoReview($uid);
+            if (in_array($op,['buy','sell','cancel','withdraw','transfer','deliver','import','teleport','coins','calendarClaim','shopBuy'],true)) $security->requirePin($uid,(string)$get('pin'));
+            if(in_array($op,['createAccount','supportCreate','supportReply','supportClose','messageRead','promo','calendarStatus','calendarClaim','shopBuy'],true)){
+                $result=PortalPlayerData::action($op,$get,$key);
+                echo json_encode(['ok'=>true,'result'=>$result],JSON_UNESCAPED_UNICODE);app()->end();
+            }
             switch ($op) {
                 case 'balance':
                     $result=['coins'=>(string)WalletService::getBalance($uid)];
+                    break;
+                case 'coinPaymentStatus': $result=PortalCoinPayments::sync($uid,(int)$get('order_id'));break;
+                case 'coinPurchase':
+                    if ((string)$get('gs_id')!==(string)$gs)throw new RuntimeException('Выбранный сервер недоступен.');
+                    $quote=CoinPurchase::quote($get('coins'),(string)config('utopay.rate'));
+                    if(PortalMoney::cents($get('quote_usd'))!==$quote['cents']||(string)$get('quote_total')!==(string)$quote['total'])throw new RuntimeException('Расчёт изменился. Обновите сумму перед оплатой.');
+                    $result=PortalCoinPayments::create($uid,$gs,$quote,$key,(string)user()->get('email'),(string)$get('provider','trybit'));
                     break;
                 case 'coinQuote':
                 case 'demoCoinTopup':
@@ -52,12 +86,25 @@ class PortalController extends CabinetBaseController
                         $transaction->commit();
                     } catch (Throwable $e) { $transaction->rollback();throw $e; }
                     break;
-                case 'sectionToggle':
-                    $this->owner();
-                    $result=PortalRuntime::sections()->set($uid,(string)$get('section'),(string)$get('enabled'));
-                    break;
+                case 'coinReviewResolve':
+                    $this->owner();$id=(int)$get('order_id');$action=(string)$get('action');$reason=trim((string)$get('reason'));
+                    if(!in_array($action,['keep','reverse'],true)||strlen($reason)<4||strlen($reason)>500)throw new RuntimeException('Укажите решение и причину проверки.');
+                    $tr=db()->beginTransaction();try{
+                        $result=$store->run($uid,$key,'coins.review.resolve',[$id,$action,$reason],function()use($store,$uid,$id,$action,$reason){
+                            $row=$store->query('SELECT * FROM {{portal_coin_orders}} WHERE id=?',[$id])->fetch(PDO::FETCH_ASSOC);if(!$row||$row['state']!=='review')throw new RuntimeException('Заказ не ожидает проверки.');
+                            $store->wallet($row['user_id'],true);
+                            if($action==='reverse')WalletService::debit($row['user_id'],$row['total'],['order_id'=>'refund:'.$id,'comment'=>'Возврат платежа CoL']);
+                            $store->query('UPDATE {{portal_coin_orders}} SET state=?,updated_at=? WHERE id=?',[$action==='reverse'?'refunded':'paid',time(),$id]);
+                            $store->audit($uid,'coins.review.resolved',$id,['action'=>$action,'reason'=>$reason]);return ['message'=>'Решение по платежу сохранено.'];
+                        });$tr->commit();
+                    }catch(Throwable $e){$tr->rollback();throw $e;}break;
+                case 'coinOrderSync':
+                    $this->owner();$order=$store->query('SELECT user_id FROM {{portal_coin_orders}} WHERE id=?',[(int)$get('order_id')])->fetch(PDO::FETCH_ASSOC);
+                    if(!$order)throw new RuntimeException('Заказ не найден.');
+                    $result=PortalCoinPayments::sync((int)$order['user_id'],(int)$get('order_id'));break;
                 case 'code':
-                    $purpose=(string)$get('purpose');
+                    $purpose=(string)$get('purpose');if($purpose==='admin_password')$purpose.=':'.(int)$get('user_id');
+                    if(strpos($purpose,'admin_password:')===0){$this->owner();if(!Users::model()->findByPk((int)substr($purpose,15)))throw new RuntimeException('Игрок не найден.');}
                     if (strpos($purpose,'password:')===0) PortalRuntime::account((int)substr($purpose,9));
                     $mail=new PortalMail(); $mail->init();
                     $email=(string)user()->get('email');
@@ -66,6 +113,20 @@ class PortalController extends CabinetBaseController
                     $result=['message'=>'Код отправлен на вашу почту.']; break;
                 case 'verifyEmail': $security->verifyEmail($uid,(string)$get('code')); break;
                 case 'setPin': $security->setPin($uid,(string)$get('new_pin'),(string)$get('repeat_pin'),(string)$get('code'),$verify); break;
+                case 'adminPassword':
+                    $this->owner();
+                    if(!$security->isVerified($uid))throw new RuntimeException('Сначала подтвердите почту владельца.');
+                    $target=Users::model()->findByPk((int)$get('user_id'));if(!$target)throw new RuntimeException('Игрок не найден.');
+                    $password=(string)$get('new_password');
+                    if(!preg_match('/^[\x21-\x7E]{6,16}$/D',$password)||$password!==(string)$get('repeat_password'))throw new RuntimeException('Пароль: 6–16 символов, повтор должен совпадать.');
+                    $security->requirePassword($uid,$verify);$security->consume($uid,'admin_password:'.$target->getPrimaryKey(),(string)$get('code'));
+                    $store->audit($uid,'admin.password.requested',$target->getPrimaryKey());
+                    $l2=l2('gs',(int)$target->gs_id)->connect();
+                    $affected=$l2->getDb()->createCommand()->update('accounts',['password'=>$l2->passwordEncrypt($password)],'login=:l',[':l'=>$target->login]);
+                    if(!$affected)throw new RuntimeException('Пароль не изменён: проверьте аккаунт или выберите другой пароль.');
+                    $store->audit($uid,'admin.password.changed',$target->getPrimaryKey());
+                    $result=['message'=>'Пароль аккаунта изменён. Передайте новый пароль владельцу защищённым способом.'];
+                    break;
                 case 'password':
                     $account=PortalRuntime::account((int)$get('link_id'));
                     $password=(string)$get('new_password');
@@ -159,7 +220,7 @@ class PortalController extends CabinetBaseController
             echo json_encode(['ok'=>true,'result'=>$result],JSON_UNESCAPED_UNICODE);
         } catch (Throwable $e) {
             $status=$e instanceof CHttpException?$e->statusCode:400;
-            if ($e instanceof PDOException) {
+            if ($e instanceof PDOException || $e instanceof CDbException) {
                 Yii::log('Portal database operation failed: '.$e->getCode(),CLogger::LEVEL_ERROR,'Portal');
                 $message='Не удалось завершить операцию. Обновите данные и повторите с тем же номером операции.';
             } else $message=$e->getMessage();

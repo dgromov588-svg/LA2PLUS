@@ -22,11 +22,11 @@ ob_start();
 <link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=balance-3">
 <link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
 <div class="portal portal--atelier" data-portal-root>
-  <?php echo CabinetNavigation::html($page); ?>
+
   <header class="portal-hero">
     <div class="portal-hero-copy"><span class="portal-eyebrow">LA2PLUS · <?php echo $e($tr('ИГРОВОЙ ЦЕНТР','PLAYER HUB','ІГРОВИЙ ЦЕНТР')); ?></span>
     <?php $titles=['home'=>['Твой мир. Твои правила.','Your world. Your rules.','Твій світ. Твої правила.'],'warehouse'=>['Твой личный арсенал','Your personal arsenal','Твій особистий арсенал'],'exchange'=>['Место выгодных сделок','A place for great trades','Місце вигідних угод'],'security'=>['Всё под твоим контролем','Stay in control','Усе під твоїм контролем'],'admin'=>['Управляй своим миром','Manage your world','Керуй своїм світом']]; ?>
-    <h1><?php echo $e($tr(...($titles[$page]??$titles['home']))); ?></h1>
+    <h1><?php echo $e($tr(...($titles[$page]??(isset(CabinetSections::catalog()[$page])?CabinetSections::catalog()[$page]['label']:($page==='createAccount'?['Новый игровой аккаунт','New game account','Новий ігровий акаунт']:$titles['home']))))); ?></h1>
     <p><?php echo $e($tr('Персонажи, достижения и возможности — в одном месте.','Characters, progress and possibilities — all in one place.','Персонажі, досягнення та можливості — в одному місці.')); ?></p>
     <div class="portal-hero-meta"><span class="portal-server-pill"><i aria-hidden="true"></i> Interlude <b>×20</b></span><span><?php echo $e($tr('С возвращением','Welcome back','З поверненням')); ?>, <?php echo $literal(user()->get('login')); ?></span></div></div>
     <div class="portal-hero-sigil" aria-hidden="true"><?php echo BrandLogo::html('display',true); ?></div>
@@ -58,10 +58,10 @@ ob_start();
   <div class="portal-grid">
   <?php if ($sections->enabled('accounts')) { ?>
   <main class="portal-card portal-accounts">
-    <header class="portal-card-header"><div><small>LA2PLUS · INTERLUDE</small><h2><?php echo $e($tr('Игровые аккаунты','Game accounts','Ігрові акаунти')); ?></h2></div><a class="btn btn--gold btn--sm" href="/cabinet/accounts/create/">+ <?php echo $e($tr('Создать аккаунт','Create account','Створити акаунт')); ?> (<?php echo count($accounts); ?>/10)</a></header>
+    <header class="portal-card-header"><div><small>LA2PLUS · INTERLUDE</small><h2><?php echo $e($tr('Игровые аккаунты','Game accounts','Ігрові акаунти')); ?></h2></div><a class="btn btn--gold btn--sm" href="/cabinet/portal/createAccount/">+ <?php echo $e($tr('Создать аккаунт','Create account','Створити акаунт')); ?> (<?php echo count($accounts); ?>/10)</a></header>
     <?php $hiddenIds=array_map('intval',$store->query('SELECT link_id FROM {{portal_hidden_accounts}} WHERE user_id=?',[$uid])->fetchAll(PDO::FETCH_COLUMN)); $showHidden=request()->getQuery('hidden')==='1'; ?>
     <a class="portal-muted" href="<?php echo $e($url('index').($showHidden?'':'?hidden=1')); ?>"><?php echo $showHidden?'Скрыть скрытые аккаунты':'Показать скрытые аккаунты'; ?></a>
-    <?php if (!$accounts) { ?><p class="portal-empty">Нет привязанных игровых аккаунтов. Создайте или привяжите аккаунт.</p><a href="/cabinet/accounts/">Привязать аккаунт</a><?php } ?>
+    <?php if (!$accounts) { ?><p class="portal-empty">Игровых аккаунтов пока нет. Создайте аккаунт, чтобы ваши персонажи появились здесь.</p><a href="/cabinet/portal/createAccount/">Создать аккаунт</a><?php } ?>
     <?php foreach ($accounts as $account) { $isHidden=in_array((int)$account['id'],$hiddenIds,true); if ($isHidden && !$showHidden) continue; ?>
     <details class="portal-account" open>
       <summary><?php echo $literal($account['game_login']); ?><?php if ($isHidden) { ?> <small>скрыт</small><?php } ?></summary>
@@ -91,20 +91,20 @@ ob_start();
   <?php } else { ?><section class="portal-card"><h2>Личный кабинет</h2><p>Доступные разделы находятся в меню. Безопасность аккаунта всегда доступна.</p></section><?php } ?>
   <aside class="portal-sidebar">
     <?php if ($sections->enabled('referrals')) { ?>
-    <section class="portal-card portal-referrals"><span class="portal-symbol">♧</span><h2>Пригласить друга</h2><?php if (config('referral_program.allow')) { ?><strong><?php echo count(Referals::getByUserId($uid)); ?> реферал(ов)</strong><p>Приглашайте друзей по вашей ссылке и получайте награды по правилам реферальной программы LA2PLUS.</p><a class="btn" href="/cabinet/referals/">Мои рефералы</a><?php } else { ?><p>Реферальная программа пока недоступна.</p><?php } ?></section>
+    <section class="portal-card portal-referrals"><span class="portal-symbol">♧</span><h2>Пригласить друга</h2><?php if (config('referral_program.allow')) { ?><strong><?php echo count(Referals::getByUserId($uid)); ?> реферал(ов)</strong><p>Приглашайте друзей по вашей ссылке и получайте награды по правилам реферальной программы LA2PLUS.</p><a class="btn" href="/cabinet/portal/referrals/">Мои рефералы</a><?php } else { ?><p>Реферальная программа пока недоступна.</p><?php } ?></section>
     <?php } ?>
     <?php if ($sections->enabled('bonuses')) { ?>
-    <section class="portal-card"><h2>Бонус-код</h2><p>Активируйте промокод проекта.</p><a class="btn" href="/cabinet/bonuses/bonus-code/">Ввести код</a></section>
+    <section class="portal-card"><h2>Бонус-код</h2><p>Активируйте промокод проекта.</p><a class="btn" href="/cabinet/portal/bonuses/">Ввести код</a></section>
     <?php } ?>
     <?php if ($sections->enabled('calendar') || $sections->enabled('support') || $sections->enabled('history')) { ?><section class="portal-card"><h2>Полезные разделы</h2>
-    <?php if ($sections->enabled('calendar')) { ?><a href="/cabinet/calendar/">Календарь наград</a><?php } ?>
-    <?php if ($sections->enabled('support')) { ?><a href="/cabinet/tickets/">Обратиться в поддержку</a><?php } ?>
-    <?php if ($sections->enabled('history')) { ?><a href="/cabinet/transaction-history/">История пополнений</a><?php } ?>
+    <?php if ($sections->enabled('calendar')) { ?><a href="/cabinet/portal/calendar/">Календарь наград</a><?php } ?>
+    <?php if ($sections->enabled('support')) { ?><a href="/cabinet/portal/support/">Обратиться в поддержку</a><?php } ?>
+    <?php if ($sections->enabled('history')) { ?><a href="/cabinet/portal/history/">История пополнений</a><?php } ?>
     </section><?php } ?>
 
   </aside></div>
 <?php } elseif ($page==='security') { ?>
-  <?php echo $section('Настройки безопасности'); ?>
+  <?php echo $section('Настройки безопасности'); ?><div class="portal-actions"><a class="btn" href="/cabinet/portal/logins/">История входов</a></div>
   <div class="portal-grid portal-grid--equal"><section class="portal-card"><h2>Подтверждение почты</h2><p>Код действует 10 минут. Повторная отправка — через минуту, до 5 писем в час.</p>
     <?php echo $form('code',$hidden('purpose','verify_email').$field('current_password','Текущий пароль','password','autocomplete="current-password"'),'Получить код'); ?>
     <?php echo $form('verifyEmail',$field('code','Код из письма','text','inputmode="numeric" pattern="[0-9]{6}"'),'Подтвердить почту','data-reload'); ?>
@@ -119,7 +119,9 @@ ob_start();
     <?php echo $form('password',$hidden('link_id',$a['id']).$field('current_password','Текущий пароль профиля','password','autocomplete="current-password"').$field('code','Код из письма','text','pattern="[0-9]{6}" inputmode="numeric"').$field('new_password','Новый пароль (6–16 символов)','password','minlength="6" maxlength="16" autocomplete="new-password"').$field('repeat_password','Повтор пароля','password','minlength="6" maxlength="16" autocomplete="new-password"'),'Сохранить пароль'); ?>
     </div></details><?php } ?>
   </section>
-<?php } elseif ($page==='warehouse') { ?>
+<?php } elseif (in_array($page,['createAccount','calendar','support','bonuses','referrals','messages','history','logins','shop'],true)) {
+    $this->renderPartial('//cabinet/portal-pages',compact('page','pageData','e','form','field','hidden','pin','store','uid','gs','sections'));
+} elseif ($page==='warehouse') { ?>
   <?php echo $section('Склад покупок и наград'); ?>
   <p class="portal-muted">Выберите предмет, свой игровой аккаунт и персонажа. История доставки сохраняется.</p>
   <?php $items=$store->query('SELECT * FROM {{portal_items}} WHERE user_id=? AND gs_id=? ORDER BY id DESC LIMIT 100',[$uid,$gs])->fetchAll(PDO::FETCH_ASSOC); ?>
@@ -189,16 +191,14 @@ ob_start();
     } ?></section><?php } ?></div><?php if (!$rows) { ?><section class="portal-card portal-empty">Лотов по выбранным условиям нет.</section><?php } ?>
   <?php } ?>
 <?php } elseif ($page==='admin') { ?>
-  <?php echo $section('Управление кабинетом'); ?>
-  <section class="portal-card portal-sections-admin"><h2>Разделы кабинета игрока</h2><p>Выключенный раздел скрывается из меню и закрывается для новых запросов по прямым ссылкам. Данные, балансы и уже принятые операции сохраняются.</p><p class="portal-muted">Главная, безопасность, выход и управление владельца всегда доступны. Эти переключатели не подключают платёжные системы и игровой сервер.</p>
-  <div class="portal-section-list">
-  <?php foreach (CabinetSections::catalog() as $key=>$info) { $enabled=$sections->enabled($key); $label=$tr(...$info['label']); ?>
-    <article class="portal-section-row" data-section-key="<?php echo $e($key); ?>" data-section-enabled="<?php echo $enabled?'1':'0'; ?>">
-      <div><h3><?php echo $e($label); ?></h3><p><?php echo $e($info['description']); ?></p></div>
-      <span class="portal-section-state <?php echo $enabled?'is-enabled':'is-disabled'; ?>"><?php echo $enabled?'Включён':'Выключен'; ?></span>
-      <?php echo $form('sectionToggle',$hidden('section',$key).$hidden('enabled',$enabled?'0':'1'),$enabled?'Выключить':'Включить','data-reload'); ?>
-    </article>
-  <?php } ?></div></section>
+  <?php echo $section('Платежи и инструменты владельца'); ?>
+  <section class="portal-card"><h2>Настройки кабинета игроков</h2><p>Включение и выключение разделов перенесено в общую админ-панель.</p><a class="btn btn--gold" href="/admin/settings/">Открыть настройки в админке</a></section>
+  <div class="portal-item-grid"><?php foreach(PortalProduction::readiness() as $check){ ?><article class="portal-card"><h3><?php echo $e($check['name']); ?></h3><strong><?php echo $check['ready']?'Готово':'Требуется подключение'; ?></strong><p class="portal-muted"><?php echo $e($check['detail']); ?></p></article><?php } ?></div>
+  <section class="portal-card"><h2>Платежи Coin of Luck</h2><p>Подтверждение проверяется через API провайдера. Для заказов «Требует проверки» повторный счёт автоматически не создаётся.</p><div class="portal-table-wrap"><table class="portal-table"><thead><tr><th>Заказ</th><th>Игрок</th><th>USD</th><th>CoL</th><th>Способ</th><th>Состояние</th><th></th></tr></thead><tbody>
+  <?php $coinOrders=$store->query('SELECT * FROM {{portal_coin_orders}} ORDER BY id DESC LIMIT 50')->fetchAll(PDO::FETCH_ASSOC);foreach($coinOrders as $order){ ?><tr><td><?php echo (int)$order['id']; ?></td><td><?php echo (int)$order['user_id']; ?></td><td><?php echo $e(PortalMoney::format($order['amount'])); ?></td><td><?php echo (int)$order['total']; ?></td><td><?php echo $e($order['provider']); ?></td><td><?php echo $e(['creating'=>'Создаётся','sending'=>'Создаётся','pending'=>'Ожидает оплаты','paid'=>'Оплачен','unknown'=>'Требует проверки','review'=>'Возврат: проверка','refunded'=>'Возвращён'][$order['state']]??'Требует проверки'); ?></td><td><?php if($order['state']==='pending')echo $form('coinOrderSync',$hidden('order_id',$order['id']),'Проверить оплату','data-reload');if($order['state']==='review')foreach(['keep'=>'Оставить начисление','reverse'=>'Отменить начисление'] as $choice=>$caption)echo $form('coinReviewResolve',$hidden('order_id',$order['id']).$hidden('action',$choice).$field('reason','Причина решения','text','minlength="4" maxlength="500"'),$caption,'data-confirm="Сохранить решение по возвращённому платежу?" data-reload'); ?></td></tr><?php }if(!$coinOrders){ ?><tr><td colspan="7">Новых заказов пока нет.</td></tr><?php } ?></tbody></table></div></section>
+  <section class="portal-card"><h2>Сброс пароля аккаунта</h2><p>Только владелец проекта. Требуются ваш текущий пароль и одноразовый код на вашу подтверждённую почту. Все изменения журналируются.</p>
+  <?php echo $form('code',$hidden('purpose','admin_password').$field('user_id','ID игрока','number','min="1"').$field('current_password','Ваш текущий пароль','password','autocomplete="current-password"'),'Получить код'); ?>
+  <?php echo $form('adminPassword',$field('user_id','ID игрока','number','min="1"').$field('current_password','Ваш текущий пароль','password','autocomplete="current-password"').$field('code','Код из письма','text','pattern="[0-9]{6}" inputmode="numeric"').$field('new_password','Новый пароль игрока','password','minlength="6" maxlength="16" autocomplete="new-password"').$field('repeat_password','Повтор нового пароля','password','minlength="6" maxlength="16" autocomplete="new-password"'),'Сбросить пароль','data-confirm="Изменить пароль указанного аккаунта?"'); ?></section>
   <section class="portal-card"><h2>Персональная скидка</h2><p>Скидка действует только на услуги и магазин, не суммируется со скидкой товара. Время окончания — UTC.</p>
   <?php echo $form('discount',$field('user_id','ID профиля','number','min="1"').$field('percent','Процент','number','min="0" max="100"').$field('expires','Действует до (UTC)','datetime-local'),'Назначить скидку','data-reload'); ?></section>
   <section class="portal-card"><h2>Выводы USDT TRC20</h2><p>Выплата выполняется вручную. Сначала возьмите заявку в обработку; отметку «Выплачено» сохраняйте только после перевода, с TXID.</p>
@@ -226,5 +226,5 @@ ob_start();
   </dialog><?php } ?>
 
 </div>
-<script src="/design/js/portal.js?v=balance-3" defer></script>
+<script src="/design/js/portal.js?v=fresh-20261118-2" defer></script>
 <?php echo PortalI18n::html(ob_get_clean(),app()->language); ?>
