@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unsafe"
 
 	"github.com/lxn/walk"
 	. "github.com/lxn/walk/declarative"
@@ -63,12 +64,12 @@ func (v *progressValue) SetValue(n int) {
 }
 
 type skinButton struct {
-	w                              *walk.CustomWidget
-	text                           string
-	enabled, hover, primary, plain bool
-	bounds                         walk.Rectangle
-	click                          func()
-	skin                           *launcherSkin
+	w                                       *walk.CustomWidget
+	text                                    string
+	enabled, hover, primary, plain, pressed bool
+	bounds                                  walk.Rectangle
+	click                                   func()
+	skin                                    *launcherSkin
 }
 
 func (b *skinButton) SetText(s string) {
@@ -80,6 +81,9 @@ func (b *skinButton) SetText(s string) {
 }
 func (b *skinButton) SetEnabled(v bool) {
 	b.enabled = v
+	if !v {
+		b.pressed = false
+	}
 	if b.w != nil {
 		b.w.SetEnabled(v)
 		b.w.Invalidate()
@@ -221,7 +225,7 @@ func (s *launcherSkin) button(label string, r walk.Rectangle, primary, plain boo
 		Paint: func(c *walk.Canvas, _ walk.Rectangle) error {
 			q := b.w.ClientBounds()
 			fill(c, q, ink)
-			active := b.hover || b.w.Focused()
+			active := b.hover || b.w.Focused() || b.pressed
 			color := gold
 			if !b.enabled {
 				color = walk.RGB(93, 96, 103)
@@ -262,16 +266,30 @@ func (s *launcherSkin) button(label string, r walk.Rectangle, primary, plain boo
 		}, OnMouseDown: func(x, y int, button walk.MouseButton) {
 			if button == walk.LeftButton {
 				b.w.SetFocus()
+				b.pressed = true
+				win.SetCapture(b.w.Handle())
+				b.w.Invalidate()
 			}
 		},
 		OnMouseUp: func(x, y int, button walk.MouseButton) {
 			q := b.w.ClientBounds()
-			if button == walk.LeftButton && x >= 0 && y >= 0 && x < q.Width && y < q.Height {
+			pressed := b.pressed
+			b.pressed = false
+			win.ReleaseCapture()
+			b.w.Invalidate()
+			if pressed && button == walk.LeftButton && x >= 0 && y >= 0 && x < q.Width && y < q.Height {
 				b.activate()
 			}
 		},
 		OnKeyDown: func(key walk.Key) {
-			if key == walk.KeySpace || key == walk.KeyReturn {
+			if b.enabled && (key == walk.KeySpace || key == walk.KeyReturn) {
+				b.pressed = true
+				b.w.Invalidate()
+			}
+		}, OnKeyUp: func(key walk.Key) {
+			if b.pressed && (key == walk.KeySpace || key == walk.KeyReturn) {
+				b.pressed = false
+				b.w.Invalidate()
 				b.activate()
 			}
 		},
@@ -283,7 +301,12 @@ func (s *launcherSkin) button(label string, r walk.Rectangle, primary, plain boo
 		return nil, err
 	}
 
-	b.w.FocusedChanged().Attach(func() { b.w.Invalidate() })
+	b.w.FocusedChanged().Attach(func() {
+		if !b.w.Focused() {
+			b.pressed = false
+		}
+		b.w.Invalidate()
+	})
 	s.buttons = append(s.buttons, b)
 	return b, nil
 }
@@ -352,7 +375,7 @@ func (a *client) buildSkin() error {
 	if a.prefs.Language == "en" {
 		a.language.index = 1
 	}
-	err = (MainWindow{AssignTo: &a.mw, Title: "LA2PLUS — игровой клиент", Size: Size{1120, 760}, MinSize: Size{960, 650}, Background: SolidColorBrush{Color: ink}, Font: Font{Family: "Segoe UI", PointSize: 10}, OnSizeChanged: s.layout}).Create()
+	err = (MainWindow{AssignTo: &a.mw, Title: "LA2PLUS — игровой клиент", Layout: absoluteLayoutFactory{}, Visible: false, Size: Size{1120, 760}, MinSize: Size{960, 650}, Background: SolidColorBrush{Color: ink}, Font: Font{Family: "Segoe UI", PointSize: 10}, OnSizeChanged: s.layout}).Create()
 	if err != nil {
 		return err
 	}
@@ -399,6 +422,7 @@ func (a *client) buildSkin() error {
 	a.action.w.SetToolTipText("Проверить изменённые файлы и скачать обновления. Продолжает прерванную загрузку.")
 	a.repair.w.SetToolTipText("Проверить SHA-256 всех файлов и восстановить повреждённые. Настройки игрока сохраняются.")
 	a.controls(false)
+	s.fitMonitor()
 	s.layout()
 	return nil
 }
@@ -445,14 +469,18 @@ func (s *launcherSkin) proof(path string) error {
 	original := b.click
 	b.click = func() { count++ }
 	win.SendMessage(b.w.Handle(), win.WM_KEYDOWN, win.VK_SPACE, 0)
+	win.SendMessage(b.w.Handle(), win.WM_KEYUP, win.VK_SPACE, 0)
 	win.SendMessage(b.w.Handle(), win.WM_KEYDOWN, win.VK_RETURN, 0)
+	win.SendMessage(b.w.Handle(), win.WM_KEYUP, win.VK_RETURN, 0)
 	b.SetEnabled(false)
 	win.SendMessage(b.w.Handle(), win.WM_KEYDOWN, win.VK_SPACE, 0)
+	win.SendMessage(b.w.Handle(), win.WM_KEYUP, win.VK_SPACE, 0)
 	b.SetEnabled(true)
 	b.click = original
 	if count != 2 {
 		return fmt.Errorf("keyboard/disabled activation: %d", count)
 	}
+	// Fit the default window inside the actual monitor work area (including high DPI).
 	// Screenshot is produced by the same native renderer as the installed app.
 	img, err := s.a.mw.Screenshot()
 	if err != nil {
@@ -475,4 +503,49 @@ func (s *launcherSkin) proof(path string) error {
 		names = append(names, b.text)
 	}
 	return os.WriteFile(path, []byte("LA2PLUS native skinned GUI initialized\n"+strings.Join(names, "\n")), 0600)
+}
+
+// Walk requires a layout object even when the scene positions its children itself.
+// It must not asynchronously move the controls after a resize.
+type absoluteLayoutFactory struct{}
+
+func (absoluteLayoutFactory) Create() (walk.Layout, error) { return &absoluteLayout{}, nil }
+
+type absoluteLayout struct {
+	walk.LayoutBase
+	container walk.Container
+}
+
+func (l *absoluteLayout) Container() walk.Container     { return l.container }
+func (l *absoluteLayout) SetContainer(c walk.Container) { l.container = c }
+func (l *absoluteLayout) CreateLayoutItem(*walk.LayoutContext) walk.ContainerLayoutItem {
+	return &absoluteLayoutItem{}
+}
+
+type absoluteLayoutItem struct{ walk.ContainerLayoutItemBase }
+
+func (*absoluteLayoutItem) LayoutFlags() walk.LayoutFlags {
+	return walk.GrowableHorz | walk.GrowableVert | walk.GreedyHorz | walk.GreedyVert
+}
+func (*absoluteLayoutItem) MinSize() walk.Size                     { return walk.Size{} }
+func (*absoluteLayoutItem) MinSizeForSize(walk.Size) walk.Size     { return walk.Size{} }
+func (*absoluteLayoutItem) HeightForWidth(int) int                 { return 0 }
+func (*absoluteLayoutItem) PerformLayout() []walk.LayoutResultItem { return nil }
+func (s *launcherSkin) fitMonitor() {
+	info := win.MONITORINFO{}
+	info.CbSize = uint32(unsafe.Sizeof(info))
+	if !win.GetMonitorInfo(win.MonitorFromWindow(s.a.mw.Handle(), win.MONITOR_DEFAULTTONEAREST), &info) {
+		return
+	}
+	area := info.RcWork
+	r := s.a.mw.BoundsPixels()
+	w, h := r.Width, r.Height
+	availableW, availableH := int(area.Right-area.Left)-24, int(area.Bottom-area.Top)-24
+	factor := math.Min(1, math.Min(float64(availableW)/float64(w), float64(availableH)/float64(h)))
+	if factor < 1 {
+		w = int(float64(w) * factor)
+		h = int(float64(h) * factor)
+		s.a.mw.SetMinMaxSizePixels(walk.Size{w, h}, walk.Size{})
+	}
+	s.a.mw.SetBoundsPixels(walk.Rectangle{int(area.Left) + (int(area.Right-area.Left)-w)/2, int(area.Top) + (int(area.Bottom-area.Top)-h)/2, w, h})
 }
