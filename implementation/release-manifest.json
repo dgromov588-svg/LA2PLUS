@@ -99,7 +99,7 @@
     {
       "path": "cms-private/protected/modules/index/controllers/RatingsAction.php",
       "previous_sha256": "c0b8a816c6e05ca282ffd5d4d4e72822d08de6a91eec4e00e172776ebe85fbe0",
-      "sha256": "0d6e1834c5b0db4619a911caa547b940eff8fda25519ad6c47bd92bb72a17782"
+      "sha256": "3cd89e1dfdd04d20f829dc0c931736086bd9fa91cfbb1c9b6bf6f5b0d2853eeb"
     },
     {
       "path": "cms-private/themes/la2plus/views/cabinet/calendar.php",
@@ -129,12 +129,12 @@
     {
       "path": "cms-private/themes/la2plus/views/cabinet/wallet-index.php",
       "previous_sha256": "299241532d82ff11e6e61d98dd3d2c7d04940c809adc090ffbc021c6f0e6682a",
-      "sha256": "7ed2bddd868a41b0947ba1311a0df410eae903c72193c57c107b8023ec10c2ef"
+      "sha256": "5eb7bf334bb345f521bddaceddffa73b6bd35709394dd4d6274c2f9b9f402f8d"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/landing.php",
       "previous_sha256": "993bddefd8eac106b4ab61643614e0ff8a18f85555e600fcf8baeafcf1d33df5",
-      "sha256": "22c4a986369b2c2c2f522c052b8a011982072e1b0eda6f7f9eb265509701fd86"
+      "sha256": "1e87c7a3b6ff31ae4f2bf8505eeb95fc24d88000579ce04f280099dc9f879f0e"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/portal.php",

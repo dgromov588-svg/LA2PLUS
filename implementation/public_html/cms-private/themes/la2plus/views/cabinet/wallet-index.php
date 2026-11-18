@@ -114,4 +114,3 @@ $canTransfer = count($targets) > 0;
         </tbody>
     </table>
 </section>
-

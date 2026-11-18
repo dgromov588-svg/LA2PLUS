@@ -11,7 +11,7 @@ $home = app()->createUrl('/index/default/index');
 <html lang="<?php echo app()->language; ?>"<?php echo $isHome ? ' class="landing"' : ''; ?>>
 
 <head><meta charset="utf-8">
-  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="<?php echo Yii::t('main', 'layout.la2plusClassicLineage2') ?>">
