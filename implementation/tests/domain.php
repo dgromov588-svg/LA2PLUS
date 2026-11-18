@@ -94,13 +94,11 @@ $security->verifyEmail(1,$captured); check($security->isVerified(1),'Email verif
 check(!$changedEmail->isVerified(1),'Changed email requires fresh verification');
 fails(function () use ($security,&$captured) { $security->verifyEmail(1,$captured); },'OTP single use');
 $store->query('UPDATE {{portal_codes}} SET created_at=created_at-61 WHERE user_id=1');
-$security->issue(1,'pin',function () { return true; },$send);
-$security->setPin(1,'123456','123456',$captured,function () { return true; });
-for ($i=0;$i<5;$i++) fails(function () use ($security) { $security->requirePin(1,'000000'); },'Bad PIN');
-fails(function () use ($security) { $security->requirePin(1,'123456'); },'PIN lockout');
-$store->query('UPDATE {{portal_security}} SET locked_until=0,failed_attempts=0 WHERE user_id=1');
-$security->requirePin(1,'123456'); check(true,'Valid PIN');
-$securityRow=$store->query('SELECT pin_hash FROM {{portal_security}} WHERE user_id=1')->fetchColumn(); check($securityRow!=='123456' && password_verify('123456',$securityRow),'PIN hashed');
+fails(function () use ($security,$send) { $security->issue(1,'pin',function () { return true; },$send); },'Retired PIN setup cannot issue a code');
+$security->requireVerifiedEmail(1);check(true,'Verified email permits account operations without a PIN');
+$store->query('UPDATE {{portal_security}} SET failed_attempts=5,locked_until=? WHERE user_id=1',[time()+900]);$security->requireVerifiedEmail(1);check(true,'Retired PIN lockout cannot block verified users');
+fails(function () use ($changedEmail) { $changedEmail->requireVerifiedEmail(1); },'Changed email still requires verification');
+fails(function () use ($security) { $security->requireVerifiedEmail(99); },'Unverified profile cannot perform protected operations');
 $invoice=['uuid'=>'invoice:123','order_id'=>'exchange:12','amount_usd'=>'10.00','tx_list'=>[['amount_usd'=>'10.00','status'=>'confirmed']]];
 check(PortalPayments::settled($invoice,12,'invoice:123',1000),'Paid verified invoice');
 $invoice['tx_list']=[['amount'=>10000]]; check(!PortalPayments::settled($invoice,12,'invoice:123',1000),'No mixing crypto units and USD');

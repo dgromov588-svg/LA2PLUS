@@ -49,7 +49,6 @@
     if (!dialog) return;
     dialog.querySelector('[name="link_id"]').value = button.dataset.link;
     dialog.querySelector('[name="char_id"]').value = button.dataset.char;
-    dialog.querySelector('[name="pin"]').value = '';
     const key = dialog.querySelector('[name="request_key"]');
     key.value = Array.from(crypto.getRandomValues(new Uint8Array(16)), n => n.toString(16).padStart(2, '0')).join('');
     dialog.showModal();
@@ -74,7 +73,6 @@
   });
   if (dialog) {
     dialog.querySelector('[data-portal-close]').addEventListener('click', () => dialog.close());
-    dialog.addEventListener('close', () => { dialog.querySelector('[name="pin"]').value = ''; });
   }
   const withdrawal = root.querySelector('[data-withdraw-amount]');
   if (withdrawal) withdrawal.addEventListener('input', () => {
@@ -103,7 +101,6 @@
     root.querySelectorAll('[data-open-coins]').forEach(button=>button.addEventListener('click',()=>coinDialog.showModal()));
     if(new URLSearchParams(location.search).get('transfer')==='1' && coinDialog.dataset.targetLink!=='0'){account.value=coinDialog.dataset.targetLink;account.dispatchEvent(new Event('change'));character.value=coinDialog.dataset.targetChar;coinDialog.showModal();}
     coinDialog.querySelector('[data-coins-close]').addEventListener('click',()=>coinDialog.close());
-    coinDialog.addEventListener('close',()=>{coinDialog.querySelector('[name="pin"]').value='';});
     coinDialog.querySelector('[data-coin-amount]').addEventListener('input',event=>{
       coinDialog.querySelector('[data-coin-cost]').textContent=`К списанию: ${/^[1-9][0-9]*$/.test(event.target.value)?event.target.value:'0'} CoL`;
     });

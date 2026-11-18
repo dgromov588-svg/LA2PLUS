@@ -14,7 +14,7 @@ class PortalSecurity
         $row=$this->store->query('SELECT * FROM {{portal_security}} WHERE user_id=?',[$user])->fetch(PDO::FETCH_ASSOC);
         if (!$row) {
             $this->store->query('INSERT INTO {{portal_security}}(user_id,failed_attempts,locked_until) VALUES(?,0,0)',[$user]);
-            $row=['pin_hash'=>null,'failed_attempts'=>0,'locked_until'=>0,'email_verified_at'=>null];
+            $row=['email_verified_at'=>null];
         }
         return $row;
     }
@@ -24,7 +24,7 @@ class PortalSecurity
     }
     public function issue($user,$purpose,callable $verifyPassword,callable $send)
     {
-        if (!preg_match('/^(pin|verify_email|password:[0-9]+|admin_password:[0-9]+)$/D',$purpose)) throw new InvalidArgumentException('Неверная операция.');
+        if (!preg_match('/^(verify_email|password:[0-9]+|admin_password:[0-9]+)$/D',$purpose)) throw new InvalidArgumentException('Неверная операция.');
         $this->requirePassword($user,$verifyPassword);
         $code=(string)random_int(100000,999999);
         $id=$this->store->atomic(function () use ($user,$purpose,$code) {
@@ -61,29 +61,9 @@ class PortalSecurity
         $this->consume($user,'verify_email',$code);
         $this->store->query('UPDATE {{portal_security}} SET email_verified_at=?,email_hash=? WHERE user_id=?',[time(),$this->emailHash,$user]);
     }
-    public function setPin($user,$pin,$repeat,$code,callable $verifyPassword)
+    public function requireVerifiedEmail($user)
     {
-        if (!preg_match('/^[0-9]{6}$/D',(string)$pin) || $pin!==$repeat) throw new InvalidArgumentException('PIN: 6 цифр; повтор должен совпадать.');
-        if (!$this->isVerified($user)) throw new RuntimeException('Сначала подтвердите почту.');
-        $this->requirePassword($user,$verifyPassword);
-        $this->consume($user,'pin',$code);
-        $this->store->query('UPDATE {{portal_security}} SET pin_hash=?,failed_attempts=0,locked_until=0 WHERE user_id=?',[password_hash($pin,PASSWORD_DEFAULT),$user]);
-        $this->store->audit($user,'pin.changed',$user);
-    }
-    public function requirePin($user,$pin)
-    {
-        $ok=$this->store->atomic(function () use ($user,$pin) {
-            $row=$this->row($user);
-            if (!$this->isVerified($user) || !$row['pin_hash'] || (int)$row['locked_until']>time()) return false;
-            if (!preg_match('/^[0-9]{6}$/D',(string)$pin) || !password_verify((string)$pin,$row['pin_hash'])) {
-                $attempts=(int)$row['failed_attempts']+1;
-                $this->store->query('UPDATE {{portal_security}} SET failed_attempts=?,locked_until=? WHERE user_id=?',[$attempts,$attempts>=5?time()+900:0,$user]);
-                return false;
-            }
-            $this->store->query('UPDATE {{portal_security}} SET failed_attempts=0,locked_until=0 WHERE user_id=?',[$user]);
-            return true;
-        });
-        if (!$ok) throw new RuntimeException('Подтвердите почту и проверьте PIN. После 5 ошибок — блокировка на 15 минут.');
+        if (!$this->isVerified($user)) throw new RuntimeException('Подтвердите адрес электронной почты в настройках безопасности.');
     }
     public function requirePassword($user,callable $verify)
     {

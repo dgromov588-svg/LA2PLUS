@@ -54,7 +54,7 @@ class PortalController extends CabinetBaseController
             $result=[];
             $verify=function () use ($get) { return PortalRuntime::verifyPassword((string)$get('current_password')); };
             if(in_array($op,['buy','sell','cancel','withdraw','transfer','deliver','import','coins','shopBuy'],true))PortalCoinPayments::requireNoReview($uid);
-            if (in_array($op,['buy','sell','cancel','withdraw','transfer','deliver','import','teleport','coins','calendarClaim','shopBuy'],true)) $security->requirePin($uid,(string)$get('pin'));
+            if (in_array($op,['buy','sell','cancel','withdraw','transfer','deliver','import','teleport','coins','calendarClaim','shopBuy'],true)) $security->requireVerifiedEmail($uid);
             if(in_array($op,['createAccount','supportCreate','supportReply','supportClose','messageRead','promo','calendarStatus','calendarClaim','shopBuy'],true)){
                 $result=PortalPlayerData::action($op,$get,$key);
                 echo json_encode(['ok'=>true,'result'=>$result],JSON_UNESCAPED_UNICODE);app()->end();
@@ -112,7 +112,6 @@ class PortalController extends CabinetBaseController
                     $security->issue($uid,$purpose,$verify,function ($code) use ($mail,$email) { return $mail->sendCode($email,$code); });
                     $result=['message'=>'Код отправлен на вашу почту.']; break;
                 case 'verifyEmail': $security->verifyEmail($uid,(string)$get('code')); break;
-                case 'setPin': $security->setPin($uid,(string)$get('new_pin'),(string)$get('repeat_pin'),(string)$get('code'),$verify); break;
                 case 'adminPassword':
                     $this->owner();
                     if(!$security->isVerified($uid))throw new RuntimeException('Сначала подтвердите почту владельца.');

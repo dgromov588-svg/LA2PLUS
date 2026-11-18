@@ -26,7 +26,6 @@ const assert = require('assert/strict');
     await page.goto('http://127.0.0.1:8080/preview?page=home');
     await page.locator('[data-portal-teleport]:enabled').click();
     assert.equal(await page.locator('dialog[open]').count(), 1);
-    await page.locator('dialog [name="pin"]').fill('123456');
     let attempts = 0, keys = [];
     await page.route('**/preview?page=request', async route => {
       attempts++; const body = route.request().postData();

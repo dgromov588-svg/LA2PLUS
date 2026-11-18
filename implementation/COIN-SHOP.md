@@ -1,6 +1,6 @@
 # Balance actions and Coin of Luck store
 
-The player balance card provides Transfer to game, Top up, and Refresh. Refresh reads the authoritative cabinet balance without navigating. Transfer opens a native modal with only the current user's game accounts and characters, a whole CoL quantity, debit preview, and site PIN. Character ownership, offline status, feature availability and available funds are checked on the server. Request keys prevent duplicate debits and duplicate deliveries.
+The player balance card provides Transfer to game, Top up, and Refresh. Refresh reads the authoritative cabinet balance without navigating. Transfer opens a native modal with only the current user's game accounts and characters, a whole CoL quantity, and debit preview. Character ownership, offline status, feature availability and available funds are checked on the server. Request keys prevent duplicate debits and duplicate deliveries.
 
 `/cabinet/deposit/` remains a separate page in the project landing layout. It shows the cabinet's current server, base CoL input, slider, bonus tiers, server-calculated quote, country and display currency. Only servers actually configured for the cabinet are shown; no example x1/x30/x300 servers are fabricated. Returning from a character-specific purchase can open the preselected transfer modal; no automatic debit occurs.
 

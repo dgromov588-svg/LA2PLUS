@@ -61,17 +61,10 @@ class CabinetBaseController extends Controller
             }
             if(($controller==='deposit'&&in_array($name,['shopcreate','transfer'],true))||($controller==='shopcoin'&&$name==='shopcreate'))throw new CHttpException(410,'Используйте новую страницу пополнения и окно перевода CoL.');
             if($controller==='shopcoin'&&$name==='shop')$this->redirect(['/cabinet/deposit/index']);
-            // Legacy teleport is a GET link; use the PIN-confirmed POST dialog instead.
+            // Legacy teleport is a GET link; use the confirmed POST dialog instead.
             if ($controller==='characters' && $name==='teleport') $this->redirect(['/cabinet/portal/index']);
             if (in_array(str_replace('-','',$controller),['shoputopay','wayforpayshop'],true) && $name==='buy') $this->redirect(['/cabinet/deposit/index']);
-            $protected=($controller==='wallet' && request()->getIsPostRequest())
-                || ($controller==='shop' && $name==='buy')
-                || ($controller==='default' && in_array($name,['calendarbuy','calendarclaim'],true))
-                || ($controller==='deposit' && $name==='transfer');
-            if ($protected) {
-                if (!request()->getIsPostRequest()) throw new CHttpException(405,'Требуется POST.');
-                (new PortalSecurity(PortalRuntime::store()))->requirePin((int)user()->getId(),(string)request()->getPost('portal_pin',''));
-            }
+
         }
 
         return true;
