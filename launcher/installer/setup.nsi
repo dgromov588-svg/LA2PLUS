@@ -9,7 +9,7 @@ Unicode True
  !error "BUILD_DIR is required"
 !endif
 Name "LA2PLUS Launcher"
-OutFile "${BUILD_DIR}/LA2PLUS-Setup-1.0.0.exe"
+OutFile "${BUILD_DIR}\LA2PLUS-Setup-1.0.0.exe"
 InstallDir "$LOCALAPPDATA\Programs\LA2PLUS Launcher"
 InstallDirRegKey HKCU "Software\LA2PLUS\Launcher" "InstallDir"
 RequestExecutionLevel user
@@ -47,7 +47,7 @@ Section "Лаунчер LA2PLUS (обязательно)" Core
  SectionIn RO
  SetOutPath "$INSTDIR"
  File /oname=LA2PLUS-Launcher.exe "${APP_EXE}"
- File "${BUILD_DIR}/ThirdPartyNotices.txt"
+ File "${BUILD_DIR}\ThirdPartyNotices.txt"
  WriteUninstaller "$INSTDIR\Uninstall.exe"
  CreateDirectory "$SMPROGRAMS\LA2PLUS"
  CreateShortcut "$SMPROGRAMS\LA2PLUS\LA2PLUS.lnk" "$INSTDIR\LA2PLUS-Launcher.exe"

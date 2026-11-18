@@ -43,7 +43,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'NSIS installation failed' }
           go run ./cmd/notices dist/ThirdPartyNotices.txt
           $compiler = Join-Path ${env:ProgramFiles(x86)} 'NSIS/makensis.exe'
-          & $compiler "/DAPP_EXE=$pwd/dist/LA2PLUS-Launcher.exe" "/DBUILD_DIR=$pwd/dist" installer/setup.nsi
+          $appPath = (Resolve-Path dist/LA2PLUS-Launcher.exe).Path
+          $buildPath = (Resolve-Path dist).Path
+          & $compiler /INPUTCHARSET UTF8 "/DAPP_EXE=$appPath" "/DBUILD_DIR=$buildPath" installer/setup.nsi
           if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
           $root = Join-Path $env:RUNNER_TEMP 'LA2PLUS-Installer-Test'
           $setup = Start-Process dist/LA2PLUS-Setup-1.0.0.exe -ArgumentList "/S /D=$root" -Wait -PassThru
