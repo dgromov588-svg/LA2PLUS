@@ -452,7 +452,7 @@
       const thumb = s.platform === 'youtube'
         ? `style="background-image:url('https://img.youtube.com/vi/${ytId(s.url)}/hqdefault.jpg')"` : '';
       return `
-        <a class="stream-card stream-card--${s.platform}" href="${s.url}" target="_blank" rel="noopener">
+        <a class="stream-card stream-card--${s.platform}" href="${s.url}" rel="noopener">
           <span class="stream-card__thumb" ${thumb}></span>
           <span class="stream-card__play" aria-hidden="true"></span>
           <span class="stream-card__title">${s.title}</span>

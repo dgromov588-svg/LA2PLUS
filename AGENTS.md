@@ -15,3 +15,5 @@ Optional player sections are managed through `CabinetSections` and rendered by `
 The player dashboard has no personal-discount summary card or Android/iOS installation offers. Preserve these preferences in subsequent changes unless the owner requests otherwise.
 
 The player cabinet does not use transaction PINs. Do not add PIN inputs, setup screens or PIN checks to site operations. Keep authentication, CSRF, verified-email checks, and current-password/email-code confirmation for password changes.
+
+Site navigation links and buttons open destinations in the current browser tab. Do not introduce target="_blank" or window.open for site navigation.

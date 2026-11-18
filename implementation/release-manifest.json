@@ -208,7 +208,7 @@
     },
     {
       "path": "cms-private/protected/modules/register/controllers/DefaultController.php",
-      "previous_sha256": null,
+      "previous_sha256": "1a085cafd17db917606e4c972fdd8fa071fcf6f827742ac267f46817a637d45c",
       "sha256": "d768c6314c0539eb0a5170a82bd62e9706ccfb20b0f39e52a136662614a74d2d"
     },
     {
@@ -237,14 +237,24 @@
       "sha256": "719f58e410beee09f2df702b89d7d4c79da8f340a8da6bcf76bff9ae0ceefd4f"
     },
     {
+      "path": "cms-private/themes/la2plus/views/forum-threads.php",
+      "previous_sha256": "c6252717fb78c9e7bb92029a222c822cde8173e23576b814145b2e6ef11b2887",
+      "sha256": "320f29ef2ab631a020efd91504624b764c2718fd63fb6cfce62308fe7b9cddc0"
+    },
+    {
+      "path": "cms-private/themes/la2plus/views/gallery.php",
+      "previous_sha256": "1b774640ea4e237e7b30e26fa901b24550cce5d761adceeaf6c36d1b7d646ff1",
+      "sha256": "3f2169b096ad36e9c5daed1b79b05bee17fae9f2725e013b351b55a276b24e08"
+    },
+    {
       "path": "cms-private/themes/la2plus/views/layouts/auth.php",
-      "previous_sha256": null,
+      "previous_sha256": "9e6b3551581b39896f50e4ba25e5f06c43f0963f653ee882e83999e4198fa746",
       "sha256": "db93f0ccd6f7e66a78a3ca7dbd889654a4c676874c6d81db49a83b2480350757"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/landing.php",
       "previous_sha256": "993bddefd8eac106b4ab61643614e0ff8a18f85555e600fcf8baeafcf1d33df5",
-      "sha256": "6b6acaf8c0cbe90457c7bf5bb9f714c803fb1efcb783f4b1f07cefd86b3fa035"
+      "sha256": "820e5c8133bc0e94be5caec10677643a3752b5b6050b5d560d892976a80ff45f"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/portal.php",
@@ -253,7 +263,7 @@
     },
     {
       "path": "cms-private/themes/la2plus/views/login-portal.php",
-      "previous_sha256": null,
+      "previous_sha256": "60b035d3de904e11bc4afd43e196343b088387a5927a149dc8e2a90c82d007e0",
       "sha256": "ad091989959b2aa1e453aa043796fe0bc7007eceb7da0abea2bd4b7f3cb0e1be"
     },
     {
@@ -263,8 +273,8 @@
     },
     {
       "path": "cms-private/themes/la2plus/views/register-portal.php",
-      "previous_sha256": null,
-      "sha256": "58a1e98eec61a1889d7e5312b607261d0b78faf6217ab08da02caa43d9f98f51"
+      "previous_sha256": "58a1e98eec61a1889d7e5312b607261d0b78faf6217ab08da02caa43d9f98f51",
+      "sha256": "7887095cef143b44877281263bc345d07a9eb04be46cea1e4e5c2996e4244c27"
     },
     {
       "path": "design/assets/images/logo.png",
@@ -319,7 +329,7 @@
     {
       "path": "design/js/app.js",
       "previous_sha256": "df312950f803c73701bdb22f4a94630b842bae66453f45dd35cd68300998f579",
-      "sha256": "8c0e02b9d508f1bef87b57e6efad6c255a3373b39434b741b89cad9499d6e4b6"
+      "sha256": "90b7f63bf385e2a3375670a7073bfd473a7e7b6d9243b0ef683a2cb32e09ed12"
     },
     {
       "path": "design/js/coin-shop.js",

@@ -89,12 +89,12 @@ $home = app()->createUrl('/index/default/index');
       </nav>
 
       <div class="header__actions">
-        <a class="header__social header__social--tg" id="headerTelegram" href="<?php echo socialUrl('telegram') ?>" target="_blank" rel="noopener nofollow"
+        <a class="header__social header__social--tg" id="headerTelegram" href="<?php echo socialUrl('telegram') ?>" rel="noopener nofollow"
            aria-label="Telegram" title="<?php echo Yii::t('site', 'tg.groupTitle') ?>">
           <svg class="icon icon--fill"><use href="/design/assets/icons/telegram.svg#i" /></svg>
         </a>
         <?php if (socialUrl('discord') !== '') { ?>
-        <a class="header__social" id="headerDiscord" href="<?php echo socialUrl('discord') ?>" target="_blank" rel="noopener nofollow" aria-label="Discord"><svg class="icon icon--fill"><use href="/design/assets/icons/discord.svg#i" /></svg></a>
+        <a class="header__social" id="headerDiscord" href="<?php echo socialUrl('discord') ?>" rel="noopener nofollow" aria-label="Discord"><svg class="icon icon--fill"><use href="/design/assets/icons/discord.svg#i" /></svg></a>
         <?php } ?>
 
         <?php $langs = ['ru' => '🇷🇺 RU', 'en' => '🇬🇧 EN', 'ua' => '🇺🇦 UA']; ?>
@@ -237,18 +237,18 @@ $home = app()->createUrl('/index/default/index');
         <!-- <p class="footer__company"><?php echo Yii::t('main', 'footer.company') ?></p> -->
       </div>
       <div class="footer__social">
-        <a class="header__social footer__social-tg" id="footerTelegram" href="<?php echo socialUrl('telegram') ?>" target="_blank" rel="noopener nofollow"
+        <a class="header__social footer__social-tg" id="footerTelegram" href="<?php echo socialUrl('telegram') ?>" rel="noopener nofollow"
            aria-label="Telegram" title="<?php echo Yii::t('site', 'tg.groupTitle') ?>"
            data-tip="<?php echo Yii::t('site', 'tg.groupTip') ?>" data-tip-side="top">
           <svg class="icon icon--fill"><use href="/design/assets/icons/telegram.svg#i" /></svg>
         </a>
         <?php if (socialUrl('discord') !== '') { ?>
-        <a class="header__social" id="footerDiscord" href="<?php echo socialUrl('discord') ?>" target="_blank" rel="noopener nofollow" aria-label="Discord"><svg class="icon icon--fill"><use href="/design/assets/icons/discord.svg#i" /></svg></a>
+        <a class="header__social" id="footerDiscord" href="<?php echo socialUrl('discord') ?>" rel="noopener nofollow" aria-label="Discord"><svg class="icon icon--fill"><use href="/design/assets/icons/discord.svg#i" /></svg></a>
         <?php } ?>
       </div>
       <nav class="footer__links">
         <?php if (socialUrl('telegram') !== '') { ?>
-        <a href="<?php echo socialUrl('telegram') ?>" target="_blank" rel="noopener nofollow">Telegram</a>
+        <a href="<?php echo socialUrl('telegram') ?>" rel="noopener nofollow">Telegram</a>
         <?php } ?>
         <a href="<?php echo app()->createUrl('/index/default/terms'); ?>"><?php echo Yii::t('main', 'footer.terms') ?></a>
         <a href="<?php echo app()->createUrl('/index/default/privacy'); ?>"><?php echo Yii::t('main', 'footer.privacy') ?></a>
