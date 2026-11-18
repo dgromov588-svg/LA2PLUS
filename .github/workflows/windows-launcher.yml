@@ -48,7 +48,7 @@ jobs:
           & $compiler /INPUTCHARSET UTF8 "/DAPP_EXE=$appPath" "/DBUILD_DIR=$buildPath" installer/setup.nsi
           if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
           $root = Join-Path $env:RUNNER_TEMP 'LA2PLUS-Installer-Test'
-          $setup = Start-Process dist/LA2PLUS-Setup-1.0.0.exe -ArgumentList "/S /D=$root" -Wait -PassThru
+          $setup = Start-Process dist/LA2PLUS-Setup-1.0.1.exe -ArgumentList "/S /D=$root" -Wait -PassThru
           if ($setup.ExitCode -ne 0 -or !(Test-Path "$root/LA2PLUS-Launcher.exe")) { throw 'Silent installation failed' }
           $proof = Join-Path $env:RUNNER_TEMP 'la2plus-installed-proof.txt'
           $app = Start-Process "$root/LA2PLUS-Launcher.exe" -ArgumentList "--self-test $proof" -Wait -PassThru
@@ -61,4 +61,4 @@ jobs:
           name: LA2PLUS-Windows-Launcher
           path: |
             launcher/dist/LA2PLUS-Launcher.exe
-            launcher/dist/LA2PLUS-Setup-1.0.0.exe
+            launcher/dist/LA2PLUS-Setup-1.0.1.exe

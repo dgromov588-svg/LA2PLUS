@@ -232,3 +232,16 @@ func TestDirectoryAtFilePathIsPreserved(t *testing.T) {
 		t.Fatal("personal directory altered")
 	}
 }
+
+func TestEmptyRuntimeDirectories(t *testing.T) {
+	e, m, _ := setup(t)
+	if _, err := e.Scan(context.Background(), m, false); err != nil {
+		t.Fatal(err)
+	}
+	for _, dir := range []string{"crest", "iwo"} {
+		info, err := os.Stat(filepath.Join(e.Root, dir))
+		if err != nil || !info.IsDir() {
+			t.Fatalf("required game directory %s missing", dir)
+		}
+	}
+}

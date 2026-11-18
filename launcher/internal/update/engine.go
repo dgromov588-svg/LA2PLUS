@@ -216,6 +216,17 @@ func (e *Engine) Scan(ctx context.Context, m release.Manifest, full bool) (Plan,
 	if err := e.Recover(ctx); err != nil {
 		return p, err
 	}
+	// The project's archive includes two empty runtime directories.
+	for _, dir := range []string{"crest", "iwo"} {
+		name, err := e.target(dir)
+		if err != nil {
+			return p, err
+		}
+		if err = os.MkdirAll(name, 0755); err != nil {
+			return p, fmt.Errorf("папка игры %s: %w", dir, err)
+		}
+	}
+
 	_ = readJSON(filepath.Join(e.work(), "state.json"), &p.State)
 	if p.State.Files == nil {
 		p.State.Files = map[string]Stamp{}
