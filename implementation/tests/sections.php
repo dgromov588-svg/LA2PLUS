@@ -17,6 +17,9 @@ rejected(function()use($sections){$sections->set(1,'exchange','true');},'Strict 
 foreach (['buy','sell','cancel','withdraw','transfer','import','inventory','payment','paymentStatus','demoTopup'] as $op) rejected(function()use($sections,$op){$sections->requireOperation($op);},'Closed exchange blocks '.$op);
 $sections->set(1,'exchange','1');$sections->set(1,'warehouse','0');
 foreach (['deliver','coins','import'] as $op) rejected(function()use($sections,$op){$sections->requireOperation($op);},'Closed warehouse blocks '.$op);
+$sections->set(1,'deposit','0');
+foreach (['coinQuote','demoCoinTopup','coins'] as $op) rejected(function()use($sections,$op){$sections->requireOperation($op);},'Closed deposit blocks '.$op);
+$sections->requireOperation('balance');check(true,'Essential balance read survives section switches');
 foreach ([['accounts','create','accounts'],['characters','teleport','accounts'],['default','calendarClaim','calendar'],['shopCoin','shopCreate','deposit'],['utopayShop','buy','shop'],['portal','exchange','exchange'],['portal','warehouse','warehouse'],['referals','index','referrals'],['transaction-history','index','history'],['messages','detail','messages'],['default','index',null],['default','logout',null],['portal','admin',null],['portal','security',null],['portal','request',null]] as $r) check($sections->forRoute($r[0],$r[1])===$r[2],'Route mapping '.$r[0].'/'.$r[1]);
 check($store->setting('market_enabled')==='0' && $store->setting('topup_enabled')==='0' && $store->setting('bridge_verified')==='0','Section settings do not enable financial or inventory integrations');
 echo 'PASS: '.$count.' section management assertions'.PHP_EOL;

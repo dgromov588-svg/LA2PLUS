@@ -19,7 +19,7 @@ $section=function ($title) use ($e) { return '<h2 class="portal-heading">'.$e($t
 ob_start();
 ?>
 <link rel="stylesheet" href="/design/css/pages/portal.css?v=2">
-<link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=sections-1">
+<link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=balance-3">
 <link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
 <div class="portal portal--atelier" data-portal-root>
   <?php echo CabinetNavigation::html($page); ?>
@@ -37,7 +37,10 @@ ob_start();
   <?php } ?>
   <div class="portal-overview">
     <section class="portal-card" data-portal-card="profile"><small><?php echo $e($tr('Профиль','Profile','Профіль')); ?></small><strong><?php echo $literal(user()->get('email')); ?></strong><span><?php echo $literal(user()->get('login')); ?></span><span><?php echo $e($tr('Последний вход','Last login','Останній вхід')); ?>: <?php echo $e(PortalRuntime::lastLogin()); ?></span></section>
-    <section class="portal-card" data-portal-card="balance"><small><?php echo $e($tr('Баланс кабинета','Account balance','Баланс кабінету')); ?></small><strong><?php echo $e(formatCurrency(WalletService::getBalance($uid),false)); ?> CoL</strong><?php if ($sections->enabled('deposit')) { ?><a href="/cabinet/deposit/"><?php echo $e($tr('Пополнить','Top up','Поповнити')); ?> <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></a><?php } ?></section>
+    <section class="portal-card" data-portal-card="balance"><small>Баланс кабинета</small><strong data-balance-value><?php echo $e(formatCurrency(WalletService::getBalance($uid),false)); ?> CoL</strong><div class="portal-balance-actions">
+    <?php if ($sections->enabled('deposit') && $sections->enabled('warehouse') && PortalRuntime::gameReady()) { ?><button type="button" data-open-coins>⇄ Перевести в игру</button><?php } ?>
+    <?php if ($sections->enabled('deposit')) { ?><a href="/cabinet/deposit/">⊕ Пополнить</a><?php } ?>
+    <button type="button" data-refresh-balance data-csrf-name="<?php echo $e(request()->csrfTokenName); ?>" data-csrf-value="<?php echo $e(request()->getCsrfToken()); ?>">↻ Обновить</button></div></section>
     <?php if ($sections->enabled('exchange')) { ?>
     <section class="portal-card" data-portal-card="exchange-wallet"><small><?php echo $e($tr('Кошелёк биржи','Exchange wallet','Гаманець біржі')); ?></small><strong><?php echo $e(PortalMoney::format($wallet['available'])); ?> $</strong><span><?php echo $e(PortalMoney::format($wallet['reserved'])); ?> $ <?php echo $e($tr('в резерве','reserved','у резерві')); ?></span></section>
     <?php } ?>
@@ -210,6 +213,18 @@ ob_start();
   <?php if ($sections->enabled('accounts')) { ?>
   <dialog class="portal-dialog" data-portal-dialog><button type="button" data-portal-close aria-label="Закрыть">×</button><h2>Телепорт в город</h2><?php echo $form('teleport',$hidden('link_id','').$hidden('char_id','').$pin,'В город','data-confirm="Переместить офлайн-персонажа в город?" data-reload'); ?></dialog>
   <?php } ?>
+  <?php if ($sections->enabled('deposit') && $sections->enabled('warehouse') && PortalRuntime::gameReady()) {
+    $coinTargets=[];foreach ($accounts as $a) { try { $coinTargets[(int)$a['id']]=array_map(function($char){return array_intersect_key($char,array_flip(['char_id','char_name','level','online']));},PortalRuntime::characters($a['id'])); } catch (Throwable $error) { $coinTargets[(int)$a['id']]=[]; } }
+    $accountSelect='<label class="portal-field"><span>Игровой аккаунт</span><select name="link_id" data-coin-account required><option value="">Выберите аккаунт</option>';
+    foreach ($accounts as $a) $accountSelect.='<option value="'.(int)$a['id'].'">'.$e($a['game_login']).'</option>';
+    $accountSelect.='</select></label>';
+  ?>
+  <dialog class="portal-dialog" data-coins-dialog data-target-link="<?php echo (int)($target['link_id']??0); ?>" data-target-char="<?php echo (int)($target['char_id']??0); ?>" aria-label="Перевод Coin of Luck"><button type="button" data-coins-close aria-label="Закрыть">×</button><h2>Перевести Coin of Luck в игру</h2><p data-dialog-message role="status" aria-live="polite"></p><p>LA2PLUS · Interlude ×20</p>
+  <?php if (PortalRuntime::isDemo()) { ?><p class="portal-muted">Тестовый сервер: монеты и доставка демонстрационные.</p><?php } ?>
+  <?php echo $form('coins',$accountSelect.'<label class="portal-field"><span>Персонаж</span><select name="char_id" data-coin-character required><option value="">Сначала выберите аккаунт</option></select></label>'.$field('coins','Количество CoL','number','min="1" max="1000000" step="1" data-coin-amount').$pin.'<p data-coin-cost>К списанию: 0 CoL</p><p class="portal-muted">Для получения выйдите из игры. Один CoL на балансе = один Coin of Luck в игре.</p>','Перевести в игру','data-reload'); ?>
+  <script type="application/json" data-coin-targets><?php echo json_encode($coinTargets,JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT); ?></script>
+  </dialog><?php } ?>
+
 </div>
-<script src="/design/js/portal.js?v=1" defer></script>
+<script src="/design/js/portal.js?v=balance-3" defer></script>
 <?php echo PortalI18n::html(ob_get_clean(),app()->language); ?>

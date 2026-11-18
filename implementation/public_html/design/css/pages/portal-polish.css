@@ -106,3 +106,6 @@ body.portal-page{background-color:var(--portal-ink);padding-bottom:38px}
 .portal-demo-topup{margin-bottom:22px}
 @media(max-width:850px){.portal-overview{grid-template-columns:repeat(2,minmax(0,1fr))}.portal-overview>.portal-card:last-child:nth-child(3){grid-column:1/-1}}
 @media(max-width:600px){.portal-section-row{grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:17px 0}.portal-section-row>div{grid-column:1/-1}.portal-section-row .portal-form{width:125px;justify-self:end}.portal-section-row p{font-size:.73rem}}
+
+.portal-balance-actions{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-top:16px}.portal-balance-actions button,.portal-balance-actions a{color:#d6bd85;font:inherit;font-size:12px;background:none;border:0;padding:0;cursor:pointer;text-decoration:none}.portal-balance-actions button:disabled{opacity:.5}.portal-dialog>[data-coins-close]{float:right;background:none;border:0;color:#dfc38c;font-size:24px;cursor:pointer}.portal-dialog p{line-height:1.65}
+.portal .portal-dialog{position:fixed;inset:0;margin:auto;max-height:calc(100dvh - 32px);overflow:auto}

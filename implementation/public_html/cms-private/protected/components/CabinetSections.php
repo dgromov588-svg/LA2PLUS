@@ -64,7 +64,7 @@ class CabinetSections
     public function requireOperation($operation)
     {
         $map=[
-            'hide'=>['accounts'],'teleport'=>['accounts'],
+            'coinQuote'=>['deposit'],'demoCoinTopup'=>['deposit'],'hide'=>['accounts'],'teleport'=>['accounts'],
             'buy'=>['exchange'],'sell'=>['exchange'],'cancel'=>['exchange'],'withdraw'=>['exchange'],'transfer'=>['exchange'],
             'inventory'=>['exchange'],'import'=>['exchange','warehouse'],'payment'=>['exchange'],'paymentStatus'=>['exchange'],'demoTopup'=>['exchange'],
             'deliver'=>['warehouse'],'coins'=>['warehouse','deposit'],
