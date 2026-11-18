@@ -54,9 +54,14 @@ $settings = [
     'csrfName' => $csrfName, 'csrfToken' => $csrfToken, 'bonuses' => $bonuses,
 ];
 $portalTarget=user()->getState('portal.depositTarget');
+$portalTargetName=null;
+if (is_array($portalTarget) && (int)$portalTarget['gs_id']===(int)user()->getGsId() && time()-(int)$portalTarget['created_at']<86400) {
+    try { $portalTargetName=PortalRuntime::character($portalTarget['link_id'],$portalTarget['char_id'])['char_name']; } catch (Throwable $e) { $portalTargetName=null; }
+}
 ?>
-<?php if (is_array($portalTarget) && time()-(int)$portalTarget['created_at']<86400) { ?>
+<?php if ($portalTargetName!==null) { ?>
 <div style="position:relative;z-index:2;max-width:1080px;margin:95px auto -70px;padding:12px 20px;color:#e3c58b;background:#111620;border:1px solid #6a5733">
+Выбранный персонаж: <strong><?php echo CHtml::encode($portalTargetName); ?></strong>.
 После пополнения вы сможете подтвердить перевод монет выбранному персонажу.
 <a style="color:inherit;text-decoration:underline" href="/cabinet/portal/index?transfer=1">Вернуться к переводу в игру</a>
 </div>

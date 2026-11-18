@@ -17,8 +17,9 @@ $verified=$security->isVerified($uid);
 $section=function ($title) use ($e) { return '<h2 class="portal-heading">'.$e($title).'</h2>'; };
 ob_start();
 ?>
-<link rel="stylesheet" href="/design/css/pages/portal.css?v=1">
-<div class="portal" data-portal-root>
+<link rel="stylesheet" href="/design/css/pages/portal.css?v=2">
+<link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=2">
+<div class="portal portal--atelier" data-portal-root>
   <nav class="portal-nav" aria-label="<?php echo $e($tr('Кабинет','Account','Кабінет')); ?>">
     <a class="portal-brand" href="<?php echo $e($url('index')); ?>">LA2<span>PLUS</span></a>
     <?php foreach (['index'=>['Главная','Home','Головна'],'warehouse'=>['Склад','Warehouse','Склад'],'exchange'=>['Биржа','Exchange','Біржа'],'security'=>['Настройки','Settings','Налаштування']] as $action=>$labels) { ?>
@@ -35,13 +36,21 @@ ob_start();
       <a href="/cabinet/default/logout/">Выйти</a>
     </div></details>
   </nav>
+  <header class="portal-hero">
+    <div class="portal-hero-copy"><span class="portal-eyebrow">LA2PLUS · <?php echo $e($tr('ИГРОВОЙ ЦЕНТР','PLAYER HUB','ІГРОВИЙ ЦЕНТР')); ?></span>
+    <?php $titles=['home'=>['Твой мир. Твои правила.','Your world. Your rules.','Твій світ. Твої правила.'],'warehouse'=>['Твой личный арсенал','Your personal arsenal','Твій особистий арсенал'],'exchange'=>['Место выгодных сделок','A place for great trades','Місце вигідних угод'],'security'=>['Всё под твоим контролем','Stay in control','Усе під твоїм контролем'],'admin'=>['Управляй своим миром','Manage your world','Керуй своїм світом']]; ?>
+    <h1><?php echo $e($tr(...($titles[$page]??$titles['home']))); ?></h1>
+    <p><?php echo $e($tr('Персонажи, достижения и возможности — в одном месте.','Characters, progress and possibilities — all in one place.','Персонажі, досягнення та можливості — в одному місці.')); ?></p>
+    <div class="portal-hero-meta"><span class="portal-server-pill"><i aria-hidden="true"></i> Interlude <b>×20</b></span><span><?php echo $e($tr('С возвращением','Welcome back','З поверненням')); ?>, <?php echo $literal(user()->get('login')); ?></span></div></div>
+    <div class="portal-hero-sigil" aria-hidden="true"><span>LA2</span><small>PLUS</small></div>
+  </header>
   <div class="portal-status" data-portal-status role="status" aria-live="polite" hidden></div>
   <?php if (!$verified) { ?>
   <aside class="portal-notice"><strong><?php echo $e($tr('Подтвердите почту','Verify your email','Підтвердьте пошту')); ?></strong><p><?php echo $e($tr('Для защиты операций подтвердите адрес электронной почты и настройте PIN.','Verify your email and set a PIN to protect account operations.','Для захисту операцій підтвердьте пошту та налаштуйте PIN.')); ?></p><a class="btn btn--gold btn--sm" href="<?php echo $e($url('security')); ?>"> <?php echo $e($tr('Подтвердить почту','Verify email','Підтвердити пошту')); ?></a></aside>
   <?php } ?>
   <div class="portal-overview">
     <section class="portal-card"><small><?php echo $e($tr('Профиль','Profile','Профіль')); ?></small><strong><?php echo $literal(user()->get('email')); ?></strong><span><?php echo $literal(user()->get('login')); ?></span><span><?php echo $e($tr('Последний вход','Last login','Останній вхід')); ?>: <?php echo $e(PortalRuntime::lastLogin()); ?></span></section>
-    <section class="portal-card"><small><?php echo $e($tr('Баланс кабинета','Account balance','Баланс кабінету')); ?></small><strong><?php echo $e(formatCurrency(WalletService::getBalance($uid),false)); ?> CoL</strong><a href="/cabinet/deposit/"><?php echo $e($tr('Пополнить','Top up','Поповнити')); ?> ↗</a></section>
+    <section class="portal-card"><small><?php echo $e($tr('Баланс кабинета','Account balance','Баланс кабінету')); ?></small><strong><?php echo $e(formatCurrency(WalletService::getBalance($uid),false)); ?> CoL</strong><a href="/cabinet/deposit/"><?php echo $e($tr('Пополнить','Top up','Поповнити')); ?> <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></a></section>
     <section class="portal-card"><small><?php echo $e($tr('Персональная скидка','Personal discount','Персональна знижка')); ?></small><strong><?php echo (int)$store->discount($uid); ?>%</strong><span><?php echo $e($tr('На услуги и магазин','Services and shop','На послуги та магазин')); ?></span></section>
     <section class="portal-card"><small><?php echo $e($tr('Кошелёк биржи','Exchange wallet','Гаманець біржі')); ?></small><strong><?php echo $e(PortalMoney::format($wallet['available'])); ?> $</strong><span><?php echo $e(PortalMoney::format($wallet['reserved'])); ?> $ <?php echo $e($tr('в резерве','reserved','у резерві')); ?></span></section>
   </div>
@@ -51,12 +60,12 @@ ob_start();
     try { $targetChar=PortalRuntime::character($target['link_id'],$target['char_id']); } catch (Throwable $error) { $targetChar=null; }
     if ($targetChar) { ?>
     <section class="portal-card"><h2>Перевести CoL: <?php echo $literal($targetChar['char_name']); ?></h2><p>Баланс кабинета: <?php echo $e(formatCurrency(WalletService::getBalance($uid),false)); ?> CoL. Перевод выполняется только после вашего подтверждения.</p>
-    <?php if ($store->enabled('warehouse') && $store->setting('bridge_verified')==='1' && (int)$store->setting('col_item_id')>0) echo $form('coins',$hidden('link_id',$target['link_id']).$hidden('char_id',$target['char_id']).$field('coins','Количество CoL','number','min="1" max="1000000" step="1"').$pin,'Перевести в игру','data-confirm="Подтвердить списание CoL с баланса кабинета и перевод выбранному персонажу?" data-reload');
+    <?php if ($store->enabled('warehouse') && PortalRuntime::gameReady() && (int)$store->setting('col_item_id')>0) echo $form('coins',$hidden('link_id',$target['link_id']).$hidden('char_id',$target['char_id']).$field('coins','Количество CoL','number','min="1" max="1000000" step="1"').$pin,'Перевести в игру','data-confirm="Подтвердить списание CoL с баланса кабинета и перевод выбранному персонажу?" data-reload');
     else { ?><p class="portal-muted">Перевод в игру временно недоступен. Монеты остаются на вашем балансе кабинета.</p><?php } ?>
     </section>
   <?php } } ?>
   <div class="portal-grid"><main class="portal-card portal-accounts">
-    <header class="portal-card-header"><div><small>LA2PLUS · INTERLUDE</small><h1><?php echo $e($tr('Игровые аккаунты','Game accounts','Ігрові акаунти')); ?></h1></div><a class="btn btn--gold btn--sm" href="/cabinet/accounts/create/">+ <?php echo $e($tr('Создать аккаунт','Create account','Створити акаунт')); ?> (<?php echo count($accounts); ?>/10)</a></header>
+    <header class="portal-card-header"><div><small>LA2PLUS · INTERLUDE</small><h2><?php echo $e($tr('Игровые аккаунты','Game accounts','Ігрові акаунти')); ?></h2></div><a class="btn btn--gold btn--sm" href="/cabinet/accounts/create/">+ <?php echo $e($tr('Создать аккаунт','Create account','Створити акаунт')); ?> (<?php echo count($accounts); ?>/10)</a></header>
     <?php $hiddenIds=array_map('intval',$store->query('SELECT link_id FROM {{portal_hidden_accounts}} WHERE user_id=?',[$uid])->fetchAll(PDO::FETCH_COLUMN)); $showHidden=request()->getQuery('hidden')==='1'; ?>
     <a class="portal-muted" href="<?php echo $e($url('index').($showHidden?'':'?hidden=1')); ?>"><?php echo $showHidden?'Скрыть скрытые аккаунты':'Показать скрытые аккаунты'; ?></a>
     <?php if (!$accounts) { ?><p class="portal-empty">Нет привязанных игровых аккаунтов. Создайте или привяжите аккаунт.</p><a href="/cabinet/accounts/">Привязать аккаунт</a><?php } ?>
@@ -121,8 +130,10 @@ ob_start();
 <?php } elseif ($page==='exchange') { ?>
   <?php echo $section('Биржа LA2PLUS'); $tab=(string)request()->getQuery('tab','catalog'); if (!in_array($tab,['catalog','sell','lots','purchases','wallet','history'],true)) $tab='catalog'; ?>
   <nav class="portal-tabs"><?php foreach (['catalog'=>'В продаже','sell'=>'Продать','lots'=>'Мои лоты','purchases'=>'Мои покупки','wallet'=>'Кошелёк биржи','history'=>'История'] as $id=>$label) { ?><a <?php if ($tab===$id) echo 'aria-current="page"'; ?> href="<?php echo $e($url('exchange').'?tab='.$id); ?>"><?php echo $e($label); ?></a><?php } ?></nav>
+  <?php if (PortalRuntime::isDemo()) { ?><p class="portal-notice">Демонстрационная биржа: средства виртуальные, предметы существуют только в тестовом инвентаре. Заявки вывода не приводят к реальной выплате.</p><?php } ?>
   <?php if (!$store->enabled('market')) { ?><p class="portal-notice">Торговля пока недоступна. Ваши средства и предметы сохранены.</p><?php } ?>
   <?php if ($tab==='wallet') { ?>
+  <?php if (PortalRuntime::isDemo()) { ?><section class="portal-card portal-demo-topup"><h2>Демонстрационное пополнение</h2><p>Добавьте виртуальные средства для проверки биржи. Реальная оплата не выполняется, все действия остаются в тестовой базе.</p><?php echo $form('demoTopup',$field('amount','Виртуальная сумма, $ (5–1000)','number','min="5" max="1000" step="0.01"'),'Добавить тестовые средства','data-reload'); ?></section><?php } ?>
   <div class="portal-grid portal-grid--equal"><section class="portal-card"><h2>Пополнение кошелька биржи</h2>
     <div class="portal-payment-method"><b>Криптовалюта</b><span>USDT, BTC, ETH и другие · комиссия биржи 0%</span><?php if ($store->enabled('topup')) echo '<small>Выбрано</small>'; ?></div>
     <?php foreach (['СБП'=>'15%','Карты Украины'=>'25%','Международные карты · Stripe'=>'30%'] as $method=>$fee) { ?><div class="portal-payment-method is-disabled"><b><?php echo $e($method); ?></b><span>Комиссия <?php echo $e($fee); ?></span><small>Скоро</small></div><?php } ?>
@@ -144,7 +155,7 @@ ob_start();
   } ?><p><a href="<?php echo $e($url('warehouse')); ?>">Открыть склад</a></p>
   </section>
   <section class="portal-card"><h2>Перенести предмет из игры</h2><p>Выйдите из игры. Доступные предметы резервируются игровым сервером с сохранением заточки и аугментации.</p>
-  <?php if ($store->enabled('market') && $store->setting('bridge_verified')==='1') {
+  <?php if ($store->enabled('market') && PortalRuntime::gameReady()) {
     $targets='<label class="portal-field"><span>Персонаж</span><select name="target" data-portal-target required>';
     foreach ($accounts as $a) { try { foreach (PortalRuntime::characters($a['id']) as $char) $targets.='<option value="'.(int)$a['id'].':'.(int)$char['char_id'].'">'.$e($a['game_login'].' · '.$char['char_name']).'</option>'; } catch (Throwable $error) {} }
     echo $form('import',$targets.'</select></label><button type="button" class="btn" data-load-inventory>Загрузить предметы персонажа</button><label class="portal-field"><span>Предмет из инвентаря</span><select name="object_id" required data-inventory-items><option value="">Сначала загрузите инвентарь</option></select></label>'.$pin,'Перенести на склад','data-reload');

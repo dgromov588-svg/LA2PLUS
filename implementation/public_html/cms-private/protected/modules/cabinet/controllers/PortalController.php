@@ -77,11 +77,11 @@ class PortalController extends CabinetBaseController
                 case 'deliver':
                     $char=PortalRuntime::character((int)$get('link_id'),(int)$get('char_id'));
                     if ((int)$char['online']!==0) throw new RuntimeException('Для получения предмета выйдите из игры.');
-                    if ($store->setting('bridge_verified')!=='1') throw new RuntimeException('Выдача предметов ещё не подключена.');
+                    if (!PortalRuntime::gameReady()) throw new RuntimeException('Выдача предметов ещё не подключена.');
                     $result=$store->queueDelivery($uid,(int)$get('item_id'),$gs,(int)$char['char_id'],$key); break;
                 case 'coins':
                     $store->requireEnabled('warehouse');
-                    if ($store->setting('bridge_verified')!=='1') throw new RuntimeException('Перевод в игру ещё не подключён.');
+                    if (!PortalRuntime::gameReady()) throw new RuntimeException('Перевод в игру ещё не подключён.');
                     $itemId=(int)$store->setting('col_item_id','0');
                     if (!$itemId) throw new RuntimeException('Перевод CoL пока недоступен.');
                     $count=filter_var($get('coins'),FILTER_VALIDATE_INT);
@@ -114,7 +114,7 @@ class PortalController extends CabinetBaseController
                     $result=['items'=>[]];
                     foreach (array_slice($inventory['items']??[],0,300) as $item) {
                         if (empty($item['object_id']) || empty($item['name'])) continue;
-                        $result['items'][]=['object_id'=>(int)$item['object_id'],'name'=>(string)$item['name'],'enchant'=>(int)($item['enchant']??0),'quantity'=>(int)($item['quantity']??1),'grade'=>(string)($item['grade']??'NG'),'augmented'=>!empty($item['augmented'])];
+                        $result['items'][]=['object_id'=>(int)$item['object_id'],'item_id'=>(int)($item['item_id']??0),'name'=>(string)$item['name'],'enchant'=>(int)($item['enchant']??0),'quantity'=>(int)($item['quantity']??1),'grade'=>(string)($item['grade']??'NG'),'augmented'=>!empty($item['augmented'])];
                     }
                     break;
                 case 'payment': $result=PortalPayments::create($uid,PortalMoney::cents($get('amount')),$key); break;
