@@ -574,7 +574,11 @@ var (
 	setButtonSubclass    = buttonControls.NewProc("SetWindowSubclass")
 	defButtonSubclass    = buttonControls.NewProc("DefSubclassProc")
 	removeButtonSubclass = buttonControls.NewProc("RemoveWindowSubclass")
-	buttonSubclassProc   = windows.NewCallback(func(hwnd, msg, w, l, id, data uintptr) uintptr {
+	buttonSubclassProc   uintptr
+)
+
+func init() {
+	buttonSubclassProc = windows.NewCallback(func(hwnd, msg, w, l, id, data uintptr) uintptr {
 		if msg == win.WM_GETDLGCODE && (w == win.VK_RETURN || w == win.VK_SPACE) {
 			return win.DLGC_WANTMESSAGE | win.DLGC_BUTTON
 		}
@@ -583,7 +587,7 @@ var (
 		}
 		r, _, _ := defButtonSubclass.Call(hwnd, msg, w, l)
 		return r
- })
+	})
 }
 
 func (s *launcherSkin) renderPreview() (*image.RGBA, error) {
