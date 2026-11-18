@@ -27,12 +27,13 @@ jobs:
           New-Item -ItemType Directory -Force dist | Out-Null
           $env:CGO_ENABLED = "0"
           go build -buildvcs=false -trimpath -ldflags "-H windowsgui -s -w" -o dist/LA2PLUS-Launcher.exe ./cmd/launcher
+          go build -buildvcs=false -trimpath -o dist/LA2PLUS-Diagnostics.exe ./cmd/launcher
       - name: Native GUI smoke test
         working-directory: launcher
         run: |
           $proof = Join-Path $env:RUNNER_TEMP 'la2plus-gui-proof.txt'
-          $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $proof" -Wait -PassThru
-          if ($p.ExitCode -ne 0 -or !(Test-Path $proof)) { Get-Content "$proof.error" -ErrorAction SilentlyContinue; throw 'Windows GUI initialization failed' }
+          $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $proof" -RedirectStandardError "$proof.stderr" -Wait -PassThru
+          if ($p.ExitCode -ne 0 -or !(Test-Path $proof)) { Get-Content "$proof.error","$proof.stderr" -ErrorAction SilentlyContinue; & dist/LA2PLUS-Diagnostics.exe --self-test $proof; throw 'Windows GUI initialization failed' }
           $compact = Join-Path $env:RUNNER_TEMP 'la2plus-compact-proof.txt'
           $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $compact compact" -Wait -PassThru
           if ($p.ExitCode -ne 0 -or !(Test-Path $compact)) { throw 'Compact GUI failed' }
@@ -70,3 +71,4 @@ jobs:
             ${{ runner.temp }}/la2plus-gui-proof.txt.png
             ${{ runner.temp }}/la2plus-compact-proof.txt.png
             ${{ runner.temp }}/la2plus-*.error
+            ${{ runner.temp }}/la2plus-*.stderr
