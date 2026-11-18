@@ -182,7 +182,9 @@ func (s *launcherSkin) paint(c *walk.Canvas, _ walk.Rectangle) error {
 	b := s.canvas.ClientBounds()
 	fill(c, b, ink)
 	// The same landscape as the project's main page, without third-party branding.
-	c.DrawBitmapWithOpacity(s.background, s.rect(0, 70, 1120, 470), 225)
+	source := s.background.Size()
+	cropH := source.Width * 470 / 1120
+	c.DrawBitmapPartWithOpacity(s.background, s.rect(0, 70, 1120, 470), walk.Rectangle{Y: (source.Height - cropH) / 2, Width: source.Width, Height: cropH}, 225)
 	fill(c, s.rect(0, 0, 1120, 70), ink)
 	fill(c, s.rect(0, 510, 1120, 250), ink)
 	// Softly darken the scene at the lower edge without changing the source artwork.
@@ -627,5 +629,14 @@ func (s *launcherSkin) renderPreview() (*image.RGBA, error) {
 		}
 	}
 	c.Dispose() // finalize GDI alpha before reading pixels
-	return bmp.ToImage()
+	img, e := bmp.ToImage()
+	if e != nil {
+		return nil, e
+	}
+	// GDI has composited against an opaque scene; its reserved alpha bytes are not
+	// premultiplied image alpha. Preserve the screen RGB when exporting the preview.
+	for i := 3; i < len(img.Pix); i += 4 {
+		img.Pix[i] = 255
+	}
+	return img, nil
 }
