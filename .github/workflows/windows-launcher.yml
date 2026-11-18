@@ -33,6 +33,9 @@ jobs:
           $proof = Join-Path $env:RUNNER_TEMP 'la2plus-gui-proof.txt'
           $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $proof" -Wait -PassThru
           if ($p.ExitCode -ne 0 -or !(Test-Path $proof)) { throw 'Windows GUI initialization failed' }
+          $compact = Join-Path $env:RUNNER_TEMP 'la2plus-compact-proof.txt'
+          $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $compact compact" -Wait -PassThru
+          if ($p.ExitCode -ne 0 -or !(Test-Path $compact)) { throw 'Compact GUI failed' }
       - name: Verify real hosting ranges
         working-directory: launcher
         run: go run ./cmd/smoke -folder "$env:RUNNER_TEMP/LA2PLUS-Range-Test"
@@ -48,7 +51,7 @@ jobs:
           & $compiler /INPUTCHARSET UTF8 "/DAPP_EXE=$appPath" "/DBUILD_DIR=$buildPath" installer/setup.nsi
           if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
           $root = Join-Path $env:RUNNER_TEMP 'LA2PLUS-Installer-Test'
-          $setup = Start-Process dist/LA2PLUS-Setup-1.0.1.exe -ArgumentList "/S /D=$root" -Wait -PassThru
+          $setup = Start-Process dist/LA2PLUS-Setup-1.1.0.exe -ArgumentList "/S /D=$root" -Wait -PassThru
           if ($setup.ExitCode -ne 0 -or !(Test-Path "$root/LA2PLUS-Launcher.exe")) { throw 'Silent installation failed' }
           $proof = Join-Path $env:RUNNER_TEMP 'la2plus-installed-proof.txt'
           $app = Start-Process "$root/LA2PLUS-Launcher.exe" -ArgumentList "--self-test $proof" -Wait -PassThru
@@ -61,4 +64,7 @@ jobs:
           name: LA2PLUS-Windows-Launcher
           path: |
             launcher/dist/LA2PLUS-Launcher.exe
-            launcher/dist/LA2PLUS-Setup-1.0.1.exe
+            launcher/dist/LA2PLUS-Setup-1.1.0.exe
+            ${{ runner.temp }}/la2plus-gui-proof.txt
+            ${{ runner.temp }}/la2plus-gui-proof.txt.png
+            ${{ runner.temp }}/la2plus-compact-proof.txt.png

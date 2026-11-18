@@ -14,7 +14,7 @@ import (
 )
 
 const ManifestURL = "https://la2plus.com/launcher/stable.json"
-const AppVersion = "1.0.1"
+const AppVersion = "1.1.0"
 
 type Archive struct {
 	URL    string `json:"url"`

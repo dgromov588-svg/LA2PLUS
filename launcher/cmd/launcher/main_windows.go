@@ -3,18 +3,13 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/lxn/walk"
-	. "github.com/lxn/walk/declarative"
 	"golang.org/x/sys/windows"
-	"image/png"
-	"la2plus/launcher/assets"
 	"la2plus/launcher/internal/platform"
-	"la2plus/launcher/internal/release"
 	"la2plus/launcher/internal/update"
 	"os"
 	"os/exec"
@@ -24,18 +19,20 @@ import (
 	"time"
 )
 
-type preferences struct{ Folder, Language string }
+type preferences struct {
+	Folder, Language string
+	AutoUpdate       *bool `json:",omitempty"`
+}
 type client struct {
 	mw                                 *walk.MainWindow
-	folder                             *walk.LineEdit
-	language                           *walk.ComboBox
-	status, detail, version            *walk.Label
-	progress                           *walk.ProgressBar
-	action, repair, play, stop, browse *walk.PushButton
+	skin                               *launcherSkin
+	folder                             *textValue
+	language                           *languageValue
+	status, detail, version            *textValue
+	progress                           *progressValue
+	action, repair, play, stop, browse *skinButton
 	cancel                             context.CancelFunc
-	busy                               bool
-	closing                            bool
-	ready                              bool
+	busy, closing, ready               bool
 	engine                             *update.Engine
 	plan                               update.Plan
 	prefs                              preferences
@@ -151,10 +148,10 @@ func (a *client) check(install, full bool) {
 			if err != nil {
 				a.ready = false
 				a.play.SetEnabled(false)
-				a.action.SetText("Продолжить / повторить")
+				a.action.SetText("ПРОДОЛЖИТЬ ЗАГРУЗКУ")
 				if errors.Is(err, context.Canceled) {
 					a.status.SetText("Загрузка приостановлена")
-					a.detail.SetText("Проверенные файлы сохранены. Нажмите «Продолжить».")
+					a.detail.SetText("Проверенные файлы сохранены. Нажмите «Продолжить загрузку».")
 				} else {
 					a.status.SetText("Не удалось завершить операцию")
 					a.detail.SetText(err.Error())
@@ -166,15 +163,15 @@ func (a *client) check(install, full bool) {
 			if len(p.Missing) == 0 {
 				a.ready = true
 				a.play.SetEnabled(true)
-				a.action.SetText("Проверить обновления")
+				a.action.SetText("БЫСТРОЕ ОБНОВЛЕНИЕ")
 				a.status.SetText("Клиент готов к игре")
-				a.detail.SetText("Проверка завершена. Выберите язык клиента и нажмите «Играть».")
+				a.detail.SetText("Проверка завершена. Выберите язык клиента и нажмите «Начать игру».")
 				a.progress.SetValue(100)
 			} else {
-				a.action.SetText("Скачать / обновить клиент")
+				a.action.SetText("СКАЧАТЬ КЛИЕНТ")
 				a.status.SetText(fmt.Sprintf("Доступно файлов: %d", len(p.Missing)))
 				a.detail.SetText("К загрузке: " + size(p.DownloadBytes) + " · требуется место: " + size(p.DiskBytes))
-				if !install && !full && p.State.Version != "" && !platform.GameRunning(a.prefs.Folder) {
+				if !install && !full && (a.prefs.AutoUpdate == nil || *a.prefs.AutoUpdate) && p.State.Version != "" && !platform.GameRunning(a.prefs.Folder) {
 					a.check(true, false)
 				}
 			}
@@ -265,44 +262,11 @@ func main() {
 	if a.prefs.Folder == "" {
 		a.prefs.Folder = filepath.Join(home, "Games", "LA2PLUS")
 	}
-	image, err := png.Decode(bytes.NewReader(assets.Logo))
-	if err != nil {
-		return
-	}
-	logo, err := walk.NewBitmapFromImage(image)
-	if err != nil {
-		return
-	}
-	defer logo.Dispose()
-	dark := walk.RGB(11, 16, 24)
-	gold := walk.RGB(222, 194, 134)
-	light := walk.RGB(202, 209, 220)
-	index := 0
-	if a.prefs.Language == "en" {
-		index = 1
-	}
-	err = (MainWindow{AssignTo: &a.mw, Title: "LA2PLUS Launcher", MinSize: Size{760, 530}, Size: Size{920, 650}, Font: Font{Family: "Segoe UI", PointSize: 10}, Background: SolidColorBrush{Color: dark}, Layout: VBox{Margins: Margins{Left: 30, Top: 22, Right: 30, Bottom: 24}, Spacing: 14}, Children: []Widget{
-		Composite{Background: SolidColorBrush{Color: dark}, Layout: HBox{MarginsZero: true, Spacing: 24}, Children: []Widget{ImageView{Image: logo, Mode: ImageViewModeShrink, MinSize: Size{300, 100}, MaxSize: Size{350, 116}}, HSpacer{}, Label{Text: "INTERLUDE ×20\r\nКлиент Classic", TextColor: gold, Font: Font{Family: "Segoe UI", PointSize: 12}}}},
-		Label{Text: "Твой мир. Твои правила.", TextColor: gold, Font: Font{Family: "Georgia", PointSize: 24}},
-		Label{Text: "Скачивание сборки, проверка файлов и обновления проекта", TextColor: light},
-		Composite{Background: SolidColorBrush{Color: dark}, Layout: HBox{MarginsZero: true, Spacing: 12}, Children: []Widget{LineEdit{AssignTo: &a.folder, Text: a.prefs.Folder, ReadOnly: true}, PushButton{AssignTo: &a.browse, Text: "Выбрать папку", OnClicked: a.choose}}},
-		Composite{Background: SolidColorBrush{Color: dark}, Layout: HBox{MarginsZero: true, Spacing: 12}, Children: []Widget{Label{Text: "Язык игрового клиента", TextColor: light}, ComboBox{AssignTo: &a.language, Model: []string{"Русский", "English"}, CurrentIndex: index, MinSize: Size{145, 25}, OnCurrentIndexChanged: func() {
-			if a.folder != nil {
-				a.save()
-			}
-		}}, HSpacer{}, Label{AssignTo: &a.version, Text: "LA2PLUS Launcher " + release.AppVersion, TextColor: gold}}},
-		VSpacer{}, Label{AssignTo: &a.status, Text: "Готов к проверке", TextColor: gold, Font: Font{Family: "Segoe UI", PointSize: 13}}, Label{AssignTo: &a.detail, Text: "", TextColor: light, EllipsisMode: EllipsisEnd, MinSize: Size{0, 24}}, ProgressBar{AssignTo: &a.progress, MinValue: 0, MaxValue: 100},
-		Composite{Background: SolidColorBrush{Color: dark}, Layout: HBox{MarginsZero: true, Spacing: 12}, Children: []Widget{PushButton{AssignTo: &a.action, Text: "Проверить обновления", MinSize: Size{210, 38}, OnClicked: func() { a.check(true, false) }}, PushButton{AssignTo: &a.repair, Text: "Проверить все файлы", MinSize: Size{180, 38}, OnClicked: func() { a.check(false, true) }}, PushButton{AssignTo: &a.stop, Text: "Пауза", Enabled: false, OnClicked: func() {
-			if a.cancel != nil {
-				a.cancel()
-			}
-		}}, HSpacer{}, PushButton{AssignTo: &a.play, Text: "Играть", MinSize: Size{130, 42}, Enabled: false, OnClicked: a.start}}},
-		Label{Text: "Windows 10/11 x64 · Обновления установленной сборки загружаются автоматически", TextColor: walk.RGB(143, 154, 172)},
-	}}).Create()
-	if err != nil {
+	if err = a.buildSkin(); err != nil {
 		walk.MsgBox(nil, "LA2PLUS", err.Error(), walk.MsgBoxIconError)
 		return
 	}
+	defer a.skin.dispose()
 	if icon, e := walk.NewIconFromResourceId(2); e == nil {
 		defer icon.Dispose()
 		a.mw.SetIcon(icon)
@@ -319,10 +283,20 @@ func main() {
 		}
 	})
 	if len(os.Args) > 1 && os.Args[1] == "--self-test" {
-		if len(os.Args) > 2 {
-			_ = os.WriteFile(os.Args[2], []byte("LA2PLUS GUI initialized"), 0600)
+		if len(os.Args) > 3 && os.Args[3] == "compact" {
+			a.mw.SetSize(walk.Size{Width: 960, Height: 650})
 		}
-		a.mw.Dispose()
+		a.mw.Show()
+		go func() {
+			time.Sleep(600 * time.Millisecond)
+			a.mw.Synchronize(func() {
+				if len(os.Args) > 2 {
+					_ = a.skin.proof(os.Args[2])
+				}
+				a.mw.Dispose()
+			})
+		}()
+		a.mw.Run()
 		return
 	}
 	a.mw.Show()
