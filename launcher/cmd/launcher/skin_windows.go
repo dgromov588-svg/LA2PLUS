@@ -626,5 +626,6 @@ func (s *launcherSkin) renderPreview() (*image.RGBA, error) {
 			return nil, e
 		}
 	}
+	c.Dispose() // finalize GDI alpha before reading pixels
 	return bmp.ToImage()
 }
