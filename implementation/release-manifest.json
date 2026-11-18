@@ -254,7 +254,7 @@
     {
       "path": "cms-private/themes/la2plus/views/layouts/landing.php",
       "previous_sha256": "993bddefd8eac106b4ab61643614e0ff8a18f85555e600fcf8baeafcf1d33df5",
-      "sha256": "720afdf8f0ecb9abbe33518c801c7e032159c92c8aa4137fd9f93ba8fa4e6df5"
+      "sha256": "5a23adfaeb0bfabe3e0c392ede0c37506b55641d6eaba5ca917ba3a969062ff6"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/portal.php",
@@ -339,7 +339,7 @@
     {
       "path": "design/js/config.js",
       "previous_sha256": "598bfb6327be78aa4e5de26b6ce7eb20660dfecfef1d797f70acfed32bef1e0f",
-      "sha256": "2b4bb783cdad779466ad2b556a6e874a4d2ae84ab32d529095175a21af5ce8dd"
+      "sha256": "f05b5bd471cce5635fc9e7d53fbe0a83f61acebdf75cc0ea70b041c7ae545d90"
     },
     {
       "path": "design/js/portal.js",
