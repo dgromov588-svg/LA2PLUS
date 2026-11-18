@@ -32,7 +32,7 @@ jobs:
         run: |
           $proof = Join-Path $env:RUNNER_TEMP 'la2plus-gui-proof.txt'
           $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $proof" -Wait -PassThru
-          if ($p.ExitCode -ne 0 -or !(Test-Path $proof)) { throw 'Windows GUI initialization failed' }
+          if ($p.ExitCode -ne 0 -or !(Test-Path $proof)) { Get-Content "$proof.error" -ErrorAction SilentlyContinue; throw 'Windows GUI initialization failed' }
           $compact = Join-Path $env:RUNNER_TEMP 'la2plus-compact-proof.txt'
           $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $compact compact" -Wait -PassThru
           if ($p.ExitCode -ne 0 -or !(Test-Path $compact)) { throw 'Compact GUI failed' }
@@ -60,6 +60,7 @@ jobs:
           for ($i = 0; $i -lt 10 -and (Test-Path "$root/LA2PLUS-Launcher.exe"); $i++) { Start-Sleep -Seconds 1 }
           if (Test-Path "$root/LA2PLUS-Launcher.exe") { throw 'Uninstallation failed' }
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: LA2PLUS-Windows-Launcher
           path: |
@@ -68,3 +69,4 @@ jobs:
             ${{ runner.temp }}/la2plus-gui-proof.txt
             ${{ runner.temp }}/la2plus-gui-proof.txt.png
             ${{ runner.temp }}/la2plus-compact-proof.txt.png
+            ${{ runner.temp }}/la2plus-*.error

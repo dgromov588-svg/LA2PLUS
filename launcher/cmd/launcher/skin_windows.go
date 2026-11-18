@@ -216,7 +216,7 @@ func (s *launcherSkin) paint(c *walk.Canvas, _ walk.Rectangle) error {
 }
 func (s *launcherSkin) button(label string, r walk.Rectangle, primary, plain bool, fn func()) (*skinButton, error) {
 	b := &skinButton{text: label, enabled: true, primary: primary, plain: plain, bounds: r, click: fn, skin: s}
-	err := (CustomWidget{AssignTo: &b.w, Name: label, Style: win.WS_TABSTOP, PaintMode: PaintBuffered, InvalidatesOnResize: true,
+	err := (CustomWidget{AssignTo: &b.w, Name: label, Style: win.WS_TABSTOP | win.WS_CLIPSIBLINGS, PaintMode: PaintBuffered, InvalidatesOnResize: true,
 		Accessibility: Accessibility{Name: label, Role: AccRolePushbutton, DefaultAction: "Нажать"},
 		Paint: func(c *walk.Canvas, _ walk.Rectangle) error {
 			q := b.w.ClientBounds()
@@ -360,7 +360,7 @@ func (a *client) buildSkin() error {
 	style := win.GetWindowLong(a.mw.Handle(), win.GWL_STYLE)
 	win.SetWindowLong(a.mw.Handle(), win.GWL_STYLE, style&^win.WS_CAPTION)
 	win.SetWindowPos(a.mw.Handle(), 0, 0, 0, 0, 0, win.SWP_NOMOVE|win.SWP_NOSIZE|win.SWP_NOZORDER|win.SWP_FRAMECHANGED)
-	err = (CustomWidget{AssignTo: &s.canvas, Paint: s.paint, PaintMode: PaintBuffered, InvalidatesOnResize: true, OnMouseMove: func(x, y int, b walk.MouseButton) { s.setHover(nil) }, OnMouseDown: func(x, y int, b walk.MouseButton) {
+	err = (CustomWidget{AssignTo: &s.canvas, Style: win.WS_CLIPSIBLINGS, Paint: s.paint, PaintMode: PaintBuffered, InvalidatesOnResize: true, OnMouseMove: func(x, y int, b walk.MouseButton) { s.setHover(nil) }, OnMouseDown: func(x, y int, b walk.MouseButton) {
 		if b == walk.LeftButton && y < s.oy+int(70*s.scale) {
 			win.ReleaseCapture()
 			win.SendMessage(a.mw.Handle(), win.WM_NCLBUTTONDOWN, win.HTCAPTION, 0)

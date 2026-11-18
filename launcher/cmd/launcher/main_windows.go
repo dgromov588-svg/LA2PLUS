@@ -291,7 +291,9 @@ func main() {
 			time.Sleep(600 * time.Millisecond)
 			a.mw.Synchronize(func() {
 				if len(os.Args) > 2 {
-					_ = a.skin.proof(os.Args[2])
+					if e := a.skin.proof(os.Args[2]); e != nil {
+						_ = os.WriteFile(os.Args[2]+".error", []byte(e.Error()), 0600)
+					}
 				}
 				a.mw.Dispose()
 			})
