@@ -33,6 +33,9 @@ type textValue struct {
 func (v *textValue) Text() string { return v.value }
 func (v *textValue) SetText(s string) {
 	v.value = s
+	if v.tooltip != nil {
+		v.tooltip(s)
+	}
 	if v.changed != nil {
 		v.changed()
 	}
@@ -134,7 +137,7 @@ func (s *launcherSkin) dispose() {
 	}
 }
 func (s *launcherSkin) rect(x, y, w, h int) walk.Rectangle {
-	return walk.Rectangle{s.ox + int(float64(x)*s.scale), s.oy + int(float64(y)*s.scale), int(float64(w) * s.scale), int(float64(h) * s.scale)}
+	return walk.Rectangle{X: s.ox + int(float64(x)*s.scale), Y: s.oy + int(float64(y)*s.scale), Width: int(float64(w) * s.scale), Height: int(float64(h) * s.scale)}
 }
 func fill(c *walk.Canvas, r walk.Rectangle, color walk.Color) {
 	b, e := walk.NewSolidColorBrush(color)
@@ -147,7 +150,7 @@ func line(c *walk.Canvas, r walk.Rectangle, color walk.Color) {
 	p, e := walk.NewCosmeticPen(walk.PenSolid, color)
 	if e == nil {
 		defer p.Dispose()
-		c.DrawLine(p, walk.Point{r.X, r.Y}, walk.Point{r.X + r.Width, r.Y + r.Height})
+		c.DrawLine(p, walk.Point{X: r.X, Y: r.Y}, walk.Point{X: r.X + r.Width, Y: r.Y + r.Height})
 	}
 }
 func (s *launcherSkin) font(family string, points int, bold bool) *walk.Font {
@@ -218,52 +221,59 @@ func (s *launcherSkin) paint(c *walk.Canvas, _ walk.Rectangle) error {
 	s.text(c, "LA2PLUS  v"+release.AppVersion+"  ·  "+s.a.version.Text(), 40, 729, 800, 20, 8, muted, false, false)
 	return nil
 }
+func (b *skinButton) paint(c *walk.Canvas, _ walk.Rectangle) error {
+	s := b.skin
+
+	q := b.w.ClientBounds()
+	fill(c, q, ink)
+	active := b.hover || b.w.Focused() || b.pressed
+	color := gold
+	if !b.enabled {
+		color = walk.RGB(93, 96, 103)
+	}
+	if !b.plain {
+		bg := panel
+		if b.primary && b.enabled {
+			bg = walk.RGB(93, 71, 36)
+		}
+		if active && b.enabled {
+			bg = walk.RGB(66, 52, 34)
+		}
+		cut := int(15 * s.scale)
+		h := q.Height
+		w := q.Width
+		brush, _ := walk.NewSolidColorBrush(bg)
+		if brush != nil {
+			defer brush.Dispose()
+		}
+		for y := 2; brush != nil && y < h-2; y++ {
+			dx := cut * int(math.Abs(float64(2*y-h))) / int(math.Max(1, float64(h)))
+			c.FillRectangle(brush, walk.Rectangle{X: dx + 2, Y: y, Width: w - 2*dx - 4, Height: 1})
+		}
+		pen, _ := walk.NewCosmeticPen(walk.PenSolid, color)
+		if pen != nil {
+			defer pen.Dispose()
+			c.DrawPolyline(pen, []walk.Point{{X: cut, Y: 1}, {X: w - cut - 1, Y: 1}, {X: w - 2, Y: h / 2}, {X: w - cut - 1, Y: h - 2}, {X: cut, Y: h - 2}, {X: 1, Y: h / 2}, {X: cut, Y: 1}})
+		}
+	}
+	pt := 11
+	if b.primary {
+		pt = 18
+	}
+	if b.plain {
+		pt = 10
+	}
+	c.DrawText(b.text, s.font("Georgia", pt, true), color, q, walk.TextCenter|walk.TextVCenter|walk.TextSingleLine|walk.TextEndEllipsis)
+	if b.w.Focused() {
+		line(c, walk.Rectangle{X: 12, Y: q.Height - 5, Width: q.Width - 24, Height: 0}, gold)
+	}
+	return nil
+}
 func (s *launcherSkin) button(label string, r walk.Rectangle, primary, plain bool, fn func()) (*skinButton, error) {
 	b := &skinButton{text: label, enabled: true, primary: primary, plain: plain, bounds: r, click: fn, skin: s}
 	err := (CustomWidget{AssignTo: &b.w, Name: label, Style: win.WS_TABSTOP | win.WS_CLIPSIBLINGS, PaintMode: PaintBuffered, InvalidatesOnResize: true,
 		Accessibility: Accessibility{Name: label, Role: AccRolePushbutton, DefaultAction: "Нажать"},
-		Paint: func(c *walk.Canvas, _ walk.Rectangle) error {
-			q := b.w.ClientBounds()
-			fill(c, q, ink)
-			active := b.hover || b.w.Focused() || b.pressed
-			color := gold
-			if !b.enabled {
-				color = walk.RGB(93, 96, 103)
-			}
-			if !b.plain {
-				bg := panel
-				if b.primary && b.enabled {
-					bg = walk.RGB(93, 71, 36)
-				}
-				if active && b.enabled {
-					bg = walk.RGB(66, 52, 34)
-				}
-				cut := int(15 * s.scale)
-				h := q.Height
-				w := q.Width
-				for y := 2; y < h-2; y++ {
-					dx := cut * int(math.Abs(float64(2*y-h))) / int(math.Max(1, float64(h)))
-					fill(c, walk.Rectangle{dx + 2, y, w - 2*dx - 4, 1}, bg)
-				}
-				pen, _ := walk.NewCosmeticPen(walk.PenSolid, color)
-				if pen != nil {
-					defer pen.Dispose()
-					c.DrawPolyline(pen, []walk.Point{{cut, 1}, {w - cut - 1, 1}, {w - 2, h / 2}, {w - cut - 1, h - 2}, {cut, h - 2}, {1, h / 2}, {cut, 1}})
-				}
-			}
-			pt := 11
-			if b.primary {
-				pt = 18
-			}
-			if b.plain {
-				pt = 10
-			}
-			c.DrawText(b.text, s.font("Georgia", pt, true), color, q, walk.TextCenter|walk.TextVCenter|walk.TextSingleLine|walk.TextEndEllipsis)
-			if b.w.Focused() {
-				line(c, walk.Rectangle{12, q.Height - 5, q.Width - 24, 0}, gold)
-			}
-			return nil
-		}, OnMouseDown: func(x, y int, button walk.MouseButton) {
+		Paint:         b.paint, OnMouseDown: func(x, y int, button walk.MouseButton) {
 			if button == walk.LeftButton {
 				b.w.SetFocus()
 				b.pressed = true
@@ -301,6 +311,9 @@ func (s *launcherSkin) button(label string, r walk.Rectangle, primary, plain boo
 		return nil, err
 	}
 
+	if ok, _, e := setButtonSubclass.Call(uintptr(b.w.Handle()), buttonSubclassProc, 1, 0); ok == 0 {
+		return nil, fmt.Errorf("keyboard subclass: %v", e)
+	}
 	b.w.FocusedChanged().Attach(func() {
 		if !b.w.Focused() {
 			b.pressed = false
@@ -375,7 +388,7 @@ func (a *client) buildSkin() error {
 	if a.prefs.Language == "en" {
 		a.language.index = 1
 	}
-	err = (MainWindow{AssignTo: &a.mw, Title: "LA2PLUS — игровой клиент", Layout: absoluteLayoutFactory{}, Visible: false, Size: Size{1120, 760}, MinSize: Size{960, 650}, Background: SolidColorBrush{Color: ink}, Font: Font{Family: "Segoe UI", PointSize: 10}, OnSizeChanged: s.layout}).Create()
+	err = (MainWindow{AssignTo: &a.mw, Title: "LA2PLUS — игровой клиент", Layout: absoluteLayoutFactory{}, Visible: false, Size: Size{Width: 1120, Height: 760}, MinSize: Size{Width: 960, Height: 650}, Background: SolidColorBrush{Color: ink}, Font: Font{Family: "Segoe UI", PointSize: 10}, OnSizeChanged: s.layout}).Create()
 	if err != nil {
 		return err
 	}
@@ -397,7 +410,7 @@ func (a *client) buildSkin() error {
 			return nil
 		}
 		var b *skinButton
-		b, err = s.button(text, walk.Rectangle{x, y, w, h}, primary, plain, fn)
+		b, err = s.button(text, walk.Rectangle{X: x, Y: y, Width: w, Height: h}, primary, plain, fn)
 		return b
 	}
 	add("ГЛАВНАЯ", 30, 17, 110, 36, false, true, func() { openURL(a.mw, "https://la2plus.com/") })
@@ -435,7 +448,7 @@ func (a *client) settingsDialog() {
 	var lang *walk.ComboBox
 	var auto *walk.CheckBox
 	automatic := a.prefs.AutoUpdate == nil || *a.prefs.AutoUpdate
-	_, err := (Dialog{AssignTo: &d, Title: "Настройки LA2PLUS", MinSize: Size{510, 280}, Layout: VBox{Spacing: 12, Margins: Margins{Left: 20, Top: 20, Right: 20, Bottom: 20}}, Children: []Widget{
+	_, err := (Dialog{AssignTo: &d, Title: "Настройки LA2PLUS", MinSize: Size{Width: 510, Height: 280}, Layout: VBox{Spacing: 12, Margins: Margins{Left: 20, Top: 20, Right: 20, Bottom: 20}}, Children: []Widget{
 		Label{Text: "Язык игрового клиента"}, ComboBox{AssignTo: &lang, Model: []string{"Русский", "English"}, CurrentIndex: a.language.index},
 		CheckBox{AssignTo: &auto, Text: "Автоматически обновлять установленную игру при запуске", Checked: automatic},
 		Label{Text: "Папка игры: " + a.folder.Text()},
@@ -466,6 +479,12 @@ func (s *launcherSkin) proof(path string) error {
 	}
 	count := 0
 	b := s.a.browse
+	if win.SendMessage(b.w.Handle(), win.WM_GETDLGCODE, win.VK_RETURN, 0)&win.DLGC_WANTMESSAGE == 0 {
+		return fmt.Errorf("Enter not delivered to button")
+	}
+	if win.SendMessage(b.w.Handle(), win.WM_GETDLGCODE, win.VK_TAB, 0)&win.DLGC_WANTMESSAGE != 0 {
+		return fmt.Errorf("Tab navigation swallowed")
+	}
 	original := b.click
 	b.click = func() { count++ }
 	win.SendMessage(b.w.Handle(), win.WM_KEYDOWN, win.VK_SPACE, 0)
@@ -480,9 +499,9 @@ func (s *launcherSkin) proof(path string) error {
 	if count != 2 {
 		return fmt.Errorf("keyboard/disabled activation: %d", count)
 	}
-	// Fit the default window inside the actual monitor work area (including high DPI).
-	// Screenshot is produced by the same native renderer as the installed app.
-	img, err := s.a.mw.Screenshot()
+	// Hosted Windows runners have no interactive desktop: screen BitBlt is black.
+	// Render the same native GDI paint callbacks into a bitmap for visual inspection.
+	img, err := s.renderPreview()
 	if err != nil {
 		return err
 	}
@@ -545,7 +564,63 @@ func (s *launcherSkin) fitMonitor() {
 	if factor < 1 {
 		w = int(float64(w) * factor)
 		h = int(float64(h) * factor)
-		s.a.mw.SetMinMaxSizePixels(walk.Size{w, h}, walk.Size{})
+		s.a.mw.SetMinMaxSizePixels(walk.Size{Width: w, Height: h}, walk.Size{})
 	}
-	s.a.mw.SetBoundsPixels(walk.Rectangle{int(area.Left) + (int(area.Right-area.Left)-w)/2, int(area.Top) + (int(area.Bottom-area.Top)-h)/2, w, h})
+	s.a.mw.SetBoundsPixels(walk.Rectangle{X: int(area.Left) + (int(area.Right-area.Left)-w)/2, Y: int(area.Top) + (int(area.Bottom-area.Top)-h)/2, Width: w, Height: h})
+}
+
+var (
+	buttonControls       = windows.NewLazySystemDLL("comctl32.dll")
+	setButtonSubclass    = buttonControls.NewProc("SetWindowSubclass")
+	defButtonSubclass    = buttonControls.NewProc("DefSubclassProc")
+	removeButtonSubclass = buttonControls.NewProc("RemoveWindowSubclass")
+	buttonSubclassProc   = windows.NewCallback(func(hwnd, msg, w, l, id, data uintptr) uintptr {
+		if msg == win.WM_GETDLGCODE && (w == win.VK_RETURN || w == win.VK_SPACE) {
+			return win.DLGC_WANTMESSAGE | win.DLGC_BUTTON
+		}
+		if msg == win.WM_NCDESTROY {
+			removeButtonSubclass.Call(hwnd, buttonSubclassProc, id)
+		}
+		r, _, _ := defButtonSubclass.Call(hwnd, msg, w, l)
+		return r
+ })
+}
+
+func (s *launcherSkin) renderPreview() (*image.RGBA, error) {
+	bounds := s.canvas.ClientBounds()
+	bmp, err := walk.NewBitmap(walk.Size{Width: bounds.Width, Height: bounds.Height})
+	if err != nil {
+		return nil, err
+	}
+	defer bmp.Dispose()
+	c, err := walk.NewCanvasFromImage(bmp)
+	if err != nil {
+		return nil, err
+	}
+	defer c.Dispose()
+	if err = s.paint(c, bounds); err != nil {
+		return nil, err
+	}
+	for _, b := range s.buttons {
+		r := b.w.ClientBounds()
+		part, e := walk.NewBitmap(walk.Size{Width: r.Width, Height: r.Height})
+		if e != nil {
+			return nil, e
+		}
+		bc, e := walk.NewCanvasFromImage(part)
+		if e != nil {
+			part.Dispose()
+			return nil, e
+		}
+		e = b.paint(bc, r)
+		bc.Dispose()
+		if e == nil {
+			e = c.DrawImage(part, walk.Point{X: b.w.Bounds().X, Y: b.w.Bounds().Y})
+		}
+		part.Dispose()
+		if e != nil {
+			return nil, e
+		}
+	}
+	return bmp.ToImage()
 }
