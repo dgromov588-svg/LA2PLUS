@@ -18,9 +18,6 @@ $verified=$security->isVerified($uid);
 $section=function ($title) use ($e) { return '<h2 class="portal-heading">'.$e($title).'</h2>'; };
 ob_start();
 ?>
-<link rel="stylesheet" href="/design/css/pages/portal.css?v=2">
-<link rel="stylesheet" href="/design/css/pages/portal-polish.css?v=balance-3">
-<link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
 <div class="portal portal--atelier" data-portal-root>
 
   <header class="portal-hero">
