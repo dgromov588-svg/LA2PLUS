@@ -218,3 +218,17 @@ func TestRollbackManifest(t *testing.T) {
 		t.Fatal("old signed release accepted")
 	}
 }
+
+func TestDirectoryAtFilePathIsPreserved(t *testing.T) {
+	e, m, _ := setup(t)
+	folder := filepath.Join(e.Root, "system_ru", "L2.exe")
+	os.MkdirAll(folder, 0700)
+	marker := filepath.Join(folder, "personal.txt")
+	os.WriteFile(marker, []byte("keep"), 0600)
+	if _, err := e.Scan(context.Background(), m, false); err == nil {
+		t.Fatal("directory treated as replaceable file")
+	}
+	if b, _ := os.ReadFile(marker); string(b) != "keep" {
+		t.Fatal("personal directory altered")
+	}
+}

@@ -8,6 +8,7 @@ permissions:
 jobs:
   build-and-smoke:
     runs-on: windows-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -32,7 +33,30 @@ jobs:
           $proof = Join-Path $env:RUNNER_TEMP 'la2plus-gui-proof.txt'
           $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $proof" -Wait -PassThru
           if ($p.ExitCode -ne 0 -or !(Test-Path $proof)) { throw 'Windows GUI initialization failed' }
+      - name: Verify real hosting ranges
+        working-directory: launcher
+        run: go run ./cmd/smoke -folder "$env:RUNNER_TEMP/LA2PLUS-Range-Test"
+      - name: Build and test the Windows installer
+        working-directory: launcher
+        run: |
+          choco install nsis --version=3.11 -y --no-progress
+          if ($LASTEXITCODE -ne 0) { throw 'NSIS installation failed' }
+          go run ./cmd/notices dist/ThirdPartyNotices.txt
+          $compiler = Join-Path ${env:ProgramFiles(x86)} 'NSIS/makensis.exe'
+          & $compiler "/DAPP_EXE=$pwd/dist/LA2PLUS-Launcher.exe" "/DBUILD_DIR=$pwd/dist" installer/setup.nsi
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          $root = Join-Path $env:RUNNER_TEMP 'LA2PLUS-Installer-Test'
+          $setup = Start-Process dist/LA2PLUS-Setup-1.0.0.exe -ArgumentList "/S /D=$root" -Wait -PassThru
+          if ($setup.ExitCode -ne 0 -or !(Test-Path "$root/LA2PLUS-Launcher.exe")) { throw 'Silent installation failed' }
+          $proof = Join-Path $env:RUNNER_TEMP 'la2plus-installed-proof.txt'
+          $app = Start-Process "$root/LA2PLUS-Launcher.exe" -ArgumentList "--self-test $proof" -Wait -PassThru
+          if ($app.ExitCode -ne 0 -or !(Test-Path $proof)) { throw 'Installed launcher failed' }
+          Start-Process "$root/Uninstall.exe" -ArgumentList '/S' -Wait
+          for ($i = 0; $i -lt 10 -and (Test-Path "$root/LA2PLUS-Launcher.exe"); $i++) { Start-Sleep -Seconds 1 }
+          if (Test-Path "$root/LA2PLUS-Launcher.exe") { throw 'Uninstallation failed' }
       - uses: actions/upload-artifact@v4
         with:
           name: LA2PLUS-Windows-Launcher
-          path: launcher/dist/LA2PLUS-Launcher.exe
+          path: |
+            launcher/dist/LA2PLUS-Launcher.exe
+            launcher/dist/LA2PLUS-Setup-1.0.0.exe

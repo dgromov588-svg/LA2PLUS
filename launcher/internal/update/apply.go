@@ -20,7 +20,7 @@ type Journal struct {
 
 func (e *Engine) Apply(ctx context.Context, p Plan) error {
 	journal := Journal{}
-	for _, f := range p.Missing {
+	for index, f := range p.Missing {
 		if !validLocal(ctx, e.stage(f), f) {
 			return fmt.Errorf("файл %s не проверен", f.Path)
 		}
@@ -36,6 +36,7 @@ func (e *Engine) Apply(ctx context.Context, p Plan) error {
 			return err
 		}
 		journal.Changes = append(journal.Changes, Change{f, err == nil})
+		e.emit(Event{Phase: "Проверка загрузки", File: f.Path, Done: index + 1, Total: len(p.Missing)})
 	}
 	if err := writeJSON(filepath.Join(e.work(), "journal.json"), journal); err != nil {
 		return err
