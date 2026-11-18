@@ -3,7 +3,7 @@
   const root = document.querySelector('[data-portal-root]');
   if (!root) return;
   const status = root.querySelector('[data-portal-status]');
-  const notify = (text, error) => { status.hidden = false; status.textContent = text; status.classList.toggle('is-error', Boolean(error)); status.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+  const notify = (text, error) => { status.hidden = false; status.textContent = text; status.classList.toggle('is-error', Boolean(error)); const active=root.querySelector('dialog[open] [data-dialog-message]');if(active){active.textContent=text;active.classList.toggle('is-error',Boolean(error));}else status.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
   const dialog = root.querySelector('[data-portal-dialog]');
   const targetIds = form => {
     const select = form.querySelector('[data-portal-target]');
@@ -90,5 +90,34 @@
     const amount = Math.round(Number(transfer.value) * 100);
     const coins = rate > 0 ? Math.floor(amount * 10000 / Math.round(rate * 10000)) / 100 : 0;
     out.textContent = rate > 0 ? `Будет начислено: ${coins.toFixed(2)} CoL.` : 'Курс временно недоступен.';
+  });
+
+  const coinDialog=root.querySelector('[data-coins-dialog]');
+  if (coinDialog) {
+    const account=coinDialog.querySelector('[data-coin-account]'), character=coinDialog.querySelector('[data-coin-character]');
+    const targets=JSON.parse(coinDialog.querySelector('[data-coin-targets]').textContent);
+    account.addEventListener('change',()=>{
+      character.replaceChildren(new Option('Выберите персонажа',''));
+      for (const char of targets[account.value] || []) character.add(new Option(`${char.char_name} · ур. ${char.level}${Number(char.online)?' · онлайн':''}`,String(char.char_id)));
+    });
+    root.querySelectorAll('[data-open-coins]').forEach(button=>button.addEventListener('click',()=>coinDialog.showModal()));
+    if(new URLSearchParams(location.search).get('transfer')==='1' && coinDialog.dataset.targetLink!=='0'){account.value=coinDialog.dataset.targetLink;account.dispatchEvent(new Event('change'));character.value=coinDialog.dataset.targetChar;coinDialog.showModal();}
+    coinDialog.querySelector('[data-coins-close]').addEventListener('click',()=>coinDialog.close());
+    coinDialog.addEventListener('close',()=>{coinDialog.querySelector('[name="pin"]').value='';});
+    coinDialog.querySelector('[data-coin-amount]').addEventListener('input',event=>{
+      coinDialog.querySelector('[data-coin-cost]').textContent=`К списанию: ${/^[1-9][0-9]*$/.test(event.target.value)?event.target.value:'0'} CoL`;
+    });
+  }
+  const refresh=root.querySelector('[data-refresh-balance]');
+  if (refresh) refresh.addEventListener('click',async()=>{
+    refresh.disabled=true;
+    try {
+      const csrf={name:refresh.dataset.csrfName,value:refresh.dataset.csrfValue};
+      const body=new FormData();body.set('op','balance');body.set(csrf.name,csrf.value);
+      const response=await fetch('/cabinet/portal/request/',{method:'POST',credentials:'same-origin',headers:{Accept:'application/json','X-Requested-With':'XMLHttpRequest'},body});
+      const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||'Не удалось обновить баланс.');
+      root.querySelector('[data-balance-value]').textContent=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(Number(data.result.coins))+' CoL';
+      notify('Баланс обновлён.',false);
+    } catch(error) {notify(error.message,true);} finally {refresh.disabled=false;}
   });
 })();

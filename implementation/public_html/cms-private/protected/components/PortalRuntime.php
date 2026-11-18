@@ -2,12 +2,23 @@
 class PortalRuntime
 {
     private static $store;
+    private static $sections;
+    public static function sections()
+    {
+        if (!self::$sections) self::$sections=new CabinetSections(self::store());
+        return self::$sections;
+    }
     public static function store()
     {
         if (!self::$store) { db()->active=true; self::$store=new PortalStore(db()->getPdoInstance(),db()->tablePrefix); }
         return self::$store;
     }
     public static function enabled() { return self::store()->enabled('cabinet'); }
+    public static function isDemo()
+    {
+        return defined('LA2PLUS_STAGING') && LA2PLUS_STAGING && class_exists('StagingGameAdapter') && StagingGameAdapter::ready();
+    }
+    public static function gameReady() { return self::isDemo() || self::store()->setting('bridge_verified')==='1'; }
     public static function uid() { return (int)user()->getId(); }
     public static function gs() { return (int)user()->getGsId(); }
     public static function requestKey() { return bin2hex(random_bytes(16)); }
@@ -68,6 +79,7 @@ class PortalRuntime
     }
     public static function bridgeFor($operation,$key,array $payload,$gs,$uid)
     {
+        if (self::isDemo()) return StagingGameAdapter::handle($operation,$key,$payload,$gs,$uid);
         $store=self::store();
         $url=$store->setting('bridge_url');
         $secret=getenv('LA2PLUS_GAME_BRIDGE_SECRET');

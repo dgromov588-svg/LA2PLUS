@@ -1,7 +1,7 @@
 <?php
 /** Isolated QA fixture. This file is never shipped to the hosting account. */
 $components=dirname(__DIR__).'/public_html/cms-private/protected/components/';
-foreach (['PortalSchema','PortalMoney','PortalStore','PortalSecurity','PortalRuntime','PortalI18n'] as $c) require $components.$c.'.php';
+foreach (['PortalSchema','PortalMoney','PortalStore','PortalSecurity','PortalRuntime','PortalI18n','BrandLogo','CabinetSections','CabinetNavigation'] as $c) require $components.$c.'.php';
 class CHtml {
     public static function encode($s) { return htmlspecialchars((string)$s,ENT_QUOTES,'UTF-8'); }
 }

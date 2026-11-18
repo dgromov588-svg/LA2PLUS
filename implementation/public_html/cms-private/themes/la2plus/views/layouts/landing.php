@@ -26,20 +26,8 @@ $home = app()->createUrl('/index/default/index');
   <meta property="og:site_name" content="LA2PLUS">
 
   <link rel="icon" href="/design/assets/favicon.png" type="image/png">
-  <link rel="apple-touch-icon" href="/design/assets/images/logo.png">
+  <link rel="apple-touch-icon" href="<?php echo BrandLogo::assetUrl(); ?>">
 
-  <?php // Установка сайта приложением (PWA): манифест, иконки, кнопка «на главный экран».
-        // Подключается одним блоком, чтобы кабинет и панель не расходились. ?>
-  <link rel="manifest" href="/manifest.json">
-  <link rel="apple-touch-icon" sizes="180x180" href="/design/assets/icons/favicon-180.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="/design/assets/icons/favicon-192.png">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="LA2PLUS">
-  <meta name="application-name" content="LA2PLUS">
-  <?php $pwaCss = Yii::getPathOfAlias('webroot') . '/design/css/pages/pwa.css'; ?>
-  <link rel="stylesheet" href="/design/css/pages/pwa.css?v=<?php echo @filemtime($pwaCss); ?>">
   <link rel="preload" href="/design/assets/images/env-hero.png" as="image">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,15 +43,16 @@ $home = app()->createUrl('/index/default/index');
 <meta name="la2plus-ratings-url" content="<?php echo CHtml::encode(app()->createUrl('/index/default/ratings')); ?>">
 <?php // Проверка владения доменом для Trybit (добавление проекта в кабинете мерчанта) ?>
 <meta name="trybit-verification" content="<?php echo CHtml::encode(defined('LA2PLUS_TRYBIT_VERIFICATION') ? LA2PLUS_TRYBIT_VERIFICATION : 'smr9zdz2crwmrkz2t26w78sr03x99r1h'); ?>">
+<link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>">
 </head>
 
 <body class="<?php echo $isHome ? 'landing' : 'cms-page cms-offset'; ?>">
-  <?php $this->widget("app.widgets.UserNotifications.UserNotifications"); ?>
+  <?php if (PortalRuntime::sections()->enabled('messages')) $this->widget("app.widgets.UserNotifications.UserNotifications"); ?>
   <?php if ($isHome) { ?>
   <!-- PRELOADER -->
   <div id="preloader" class="preloader" aria-hidden="true">
     <div class="preloader__inner">
-      <img src="/design/assets/images/logo.png" alt="LA2PLUS" class="preloader__logo-img" width="320" height="120">
+      <?php echo BrandLogo::html('preloader',true); ?>
       <div class="preloader__bar"><span class="preloader__progress"></span></div>
       <p class="preloader__text">LOADING WORLD...</p>
     </div>
@@ -77,13 +66,15 @@ $home = app()->createUrl('/index/default/index');
   <header class="header" id="header">
     <div class="header__container container">
       <a href="<?php echo $home; ?>" class="header__logo">
-        <img src="/design/assets/images/logo.png" alt="LA2PLUS" class="header__logo-img" width="160" height="48">
+        <?php echo BrandLogo::html('header'); ?>
       </a>
 
       <nav class="header__nav" id="mainNav" aria-label="<?php echo Yii::t('main', 'layout.mainNavigation') ?>">
         <a href="<?php echo $home; ?>#hero" class="header__link"><svg class="icon header__icon"><use href="/design/assets/icons/home.svg#i" /></svg><span><?php echo Yii::t('main', 'nav.home') ?></span></a>
         <a href="<?php echo $home; ?>#streams" class="header__link"><svg class="icon header__icon"><use href="/design/assets/icons/play.svg#i" /></svg><span><?php echo Yii::t('main', 'nav.streams') ?></span></a>
+        <?php if (PortalRuntime::sections()->enabled('rating')) { ?>
         <a href="<?php echo $home; ?>#rating" class="header__link"><svg class="icon header__icon"><use href="/design/assets/icons/trophy.svg#i" /></svg><span><?php echo Yii::t('main', 'nav.rating') ?></span></a>
+        <?php } ?>
         <button type="button" class="header__link" data-modal="play"><svg class="icon header__icon"><use href="/design/assets/icons/download.svg#i" /></svg><span><?php echo Yii::t('main', 'nav.files') ?></span></button>
         <a href="<?php echo app()->createUrl('/index/default/wiki'); ?>" class="header__link"><svg class="icon header__icon"><use href="/design/assets/icons/book.svg#i" /></svg><span><?php echo Yii::t('main', 'nav.wiki') ?></span></a>
         <a href="https://forum.la2plus.com/" class="header__link"><svg class="icon header__icon"><use href="/design/assets/icons/users.svg#i" /></svg><span><?php echo Yii::t('main', 'nav.forum') ?></span></a>
@@ -151,7 +142,7 @@ $home = app()->createUrl('/index/default/index');
 
       <div class="hero__content container">
         <h1 class="hero__title" id="heroTitle">
-          <img src="/design/assets/images/logo.png" alt="LA2PLUS" class="hero__logo-img" width="560" height="200">
+          <?php echo BrandLogo::html('hero'); ?>
         </h1>
         <!-- Тексты первого экрана: за ними тёмный круг-подложка (.hero__text::before) -->
         <div class="hero__text">
@@ -348,14 +339,10 @@ $home = app()->createUrl('/index/default/index');
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <?php } ?>
-  <?php // Блок «Приложение на телефон» выводится в самом кабинете (шаблон главной
-        // кабинета), а не здесь: иначе на одной странице было бы два одинаковых
-        // блока с одинаковыми id. Каркас подключает только скрипт ниже. ?>
   <script>window.T = <?php echo json_encode(Lang::jsMessages(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>; // переводы для текстов, которые рисует JS</script>
   <script src="/design/js/config.js?v=20261117-date"></script>
   <script src="/design/js/app.js?v=<?php echo (int)@filemtime(Yii::getPathOfAlias('webroot').'/design/js/app.js'); ?>"></script>
-  <?php // регистрация service worker и логика установки ?>
-  <?php $this->renderPartial('//cabinet/panel-pwa-script') ?>
+
 </body>
 
 </html>

@@ -7,9 +7,24 @@
       "sha256": "a17c0929ac73e15333829e7dc7d5733512b229a2a242711cbb4dbde904dcbbc6"
     },
     {
+      "path": "cms-private/protected/components/BrandLogo.php",
+      "previous_sha256": null,
+      "sha256": "d0581aa38f6cc70eec21844390050361163e83d4b9691b9863b3484c76aa0bf8"
+    },
+    {
       "path": "cms-private/protected/components/CabinetBaseController.php",
       "previous_sha256": "2d442fc364b483e2b03af75a741bfa1fe8cb96e3e1b6620abca0213972af6632",
-      "sha256": "db8a5314626c96949b73be66c2a7241814007a9c27d17019f90f88fae2dd08ab"
+      "sha256": "d72015838ad953a1fe9f9f26ea501badd5c83bf57e2587a20d1afa615bbe2deb"
+    },
+    {
+      "path": "cms-private/protected/components/CabinetNavigation.php",
+      "previous_sha256": null,
+      "sha256": "b932dbe2402aec304a06b979e35f64fc2bcf9c1a3edbbcc0d33d5262456bcb44"
+    },
+    {
+      "path": "cms-private/protected/components/CabinetSections.php",
+      "previous_sha256": null,
+      "sha256": "3685dbae646ea2477c200613a8ef0cdaa0f7f8c227ce4965d1742213fe5ebfba"
     },
     {
       "path": "cms-private/protected/components/CalendarService.php",
@@ -22,6 +37,11 @@
       "sha256": "0489cf67ce9980756560997d1dbb21db31c3fdc80419c553f529360d42e0062c"
     },
     {
+      "path": "cms-private/protected/components/FrontendBaseController.php",
+      "previous_sha256": "e99f718693d4909418ad7f02d712e058261174963fabbe4c19f7a402684415a7",
+      "sha256": "9167f234f483ab50b8f75aadfd75d01b588624979bed78dc8ff9c9de9b69259d"
+    },
+    {
       "path": "cms-private/protected/components/LiveRankings.php",
       "previous_sha256": "b9c9149097832b6d1493b1cc8c7a9db35ada872f5fa85bdeb7ffe360cbfe0844",
       "sha256": "2483fa9e3bfaafff1820f3bd12a1d5d8ac5834e5cdf611b34ad89956e1e56612"
@@ -29,7 +49,7 @@
     {
       "path": "cms-private/protected/components/PortalDelivery.php",
       "previous_sha256": null,
-      "sha256": "58a09001249bccd3e8f259765d47a8c9b467ecec48a738164f4204a92c250941"
+      "sha256": "811d501bce27538963f0244c542ba0f3eccccaffc94ad19b962671e0cc96c67e"
     },
     {
       "path": "cms-private/protected/components/PortalI18n.php",
@@ -54,7 +74,7 @@
     {
       "path": "cms-private/protected/components/PortalRuntime.php",
       "previous_sha256": null,
-      "sha256": "90cbb17440caa729ef270a225522dabfa00739e9da4c94b237d2e66cd207eaee"
+      "sha256": "7b2e2a96622556b9dbfa48dc6c90856ac7ed8c176494b22d838f0c1ac62230fb"
     },
     {
       "path": "cms-private/protected/components/PortalSchema.php",
@@ -89,7 +109,7 @@
     {
       "path": "cms-private/protected/modules/cabinet/controllers/PortalController.php",
       "previous_sha256": null,
-      "sha256": "3b9bf840376a7ff183d01bc589f7f82cb9fb29cf9779d91c3c86b9655579e57b"
+      "sha256": "9013ce223ab719488462fdd1bfe32dd0d31673493ae4c30d8133c4991ec07c19"
     },
     {
       "path": "cms-private/protected/modules/cabinet/controllers/ShopController.php",
@@ -109,17 +129,17 @@
     {
       "path": "cms-private/themes/la2plus/views/cabinet/deposit/index.php",
       "previous_sha256": "89049a6ee793dfc77ad782d132c27a1606ddd6b8ca0501b9571f32b7f2ecefc4",
-      "sha256": "53a5ca7ce0e91896b930e8d4f9c26ef94a982d20cf2197e760587d7c0dbc478b"
+      "sha256": "7ffac107d958f44058395d549f7417e576b04f3259706ae4ea48f7c64e90871e"
     },
     {
       "path": "cms-private/themes/la2plus/views/cabinet/portal-nav.php",
       "previous_sha256": null,
-      "sha256": "cecad5cc65ee6080a527d8cb28e33d8cf444d51bdc0c06bc7eef13a15faacf84"
+      "sha256": "0e9bd9b1eb4adb751912a700f9c6e86a8af2666f0870906599d32095b233edc5"
     },
     {
       "path": "cms-private/themes/la2plus/views/cabinet/portal.php",
       "previous_sha256": null,
-      "sha256": "48361e9f294b369eaaa2a3fa264432b0f741936c30395528322edaf07c3f740a"
+      "sha256": "f82fd9b33880e72f359944342993c04f7149d37b57c3f2cc0af5c4bcced517d8"
     },
     {
       "path": "cms-private/themes/la2plus/views/cabinet/shop/index.php",
@@ -132,19 +152,49 @@
       "sha256": "5eb7bf334bb345f521bddaceddffa73b6bd35709394dd4d6274c2f9b9f402f8d"
     },
     {
+      "path": "cms-private/themes/la2plus/views/layouts/auth.php",
+      "previous_sha256": null,
+      "sha256": "9e6b3551581b39896f50e4ba25e5f06c43f0963f653ee882e83999e4198fa746"
+    },
+    {
       "path": "cms-private/themes/la2plus/views/layouts/landing.php",
       "previous_sha256": "993bddefd8eac106b4ab61643614e0ff8a18f85555e600fcf8baeafcf1d33df5",
-      "sha256": "1e87c7a3b6ff31ae4f2bf8505eeb95fc24d88000579ce04f280099dc9f879f0e"
+      "sha256": "6b6acaf8c0cbe90457c7bf5bb9f714c803fb1efcb783f4b1f07cefd86b3fa035"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/portal.php",
       "previous_sha256": null,
-      "sha256": "33de6b177e322cd3701d38f2ab6290744d7f2ff4d147711342455359fa83f5cf"
+      "sha256": "4457e1fac3bdc5c7942158f1fdef7a8f561a1d4ddf274130e7a7013dd6836fa3"
+    },
+    {
+      "path": "cms-private/themes/la2plus/views/login-portal.php",
+      "previous_sha256": null,
+      "sha256": "60b035d3de904e11bc4afd43e196343b088387a5927a149dc8e2a90c82d007e0"
     },
     {
       "path": "cms-private/themes/la2plus/views/rating.php",
       "previous_sha256": "a290478c1f94778e41aea8f20710edf71a7c609258ef06b62f114473e18187c1",
       "sha256": "b18082fa655fff4dfbeead56362ce337191dae54b4d1b31d676c81b118064f5c"
+    },
+    {
+      "path": "design/assets/images/logo.png",
+      "previous_sha256": "9e14835fecb7f798349553c4ecf25b66c08d1281cfa9971418e75106649c2c2c",
+      "sha256": "9e14835fecb7f798349553c4ecf25b66c08d1281cfa9971418e75106649c2c2c"
+    },
+    {
+      "path": "design/css/components/brand-logo.css",
+      "previous_sha256": null,
+      "sha256": "a44060a0fb43d063b0aecfbb55bbc3d0af38865d11a0205f26f568702526dce3"
+    },
+    {
+      "path": "design/css/pages/portal-auth.css",
+      "previous_sha256": null,
+      "sha256": "7d5ce62c23293aa07f50f2666430c0327bbb0901f603a2fe17821590e8df6a52"
+    },
+    {
+      "path": "design/css/pages/portal-polish.css",
+      "previous_sha256": null,
+      "sha256": "d5df622cb155ac438f43924d1c3071864de7c6cbbafbf82062ea5c1755e21636"
     },
     {
       "path": "design/css/pages/portal.css",

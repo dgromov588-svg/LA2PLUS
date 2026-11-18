@@ -27,11 +27,35 @@ class PortalController extends CabinetBaseController
             $store=PortalRuntime::store(); $security=new PortalSecurity($store);
             $uid=PortalRuntime::uid(); $gs=PortalRuntime::gs();
             $op=(string)request()->getPost('op'); $key=(string)request()->getPost('request_key');
+            PortalRuntime::sections()->requireOperation($op);
             $get=function ($name,$default='') { return request()->getPost($name,$default); };
             $result=[];
             $verify=function () use ($get) { return PortalRuntime::verifyPassword((string)$get('current_password')); };
             if (in_array($op,['buy','sell','cancel','withdraw','transfer','deliver','import','teleport','coins'],true)) $security->requirePin($uid,(string)$get('pin'));
             switch ($op) {
+                case 'balance':
+                    $result=['coins'=>(string)WalletService::getBalance($uid)];
+                    break;
+                case 'coinQuote':
+                case 'demoCoinTopup':
+                    if ((string)$get('gs_id')!==(string)$gs) throw new RuntimeException('Выбранный сервер недоступен. Обновите страницу.');
+                    $quote=CoinPurchase::quote($get('coins'),(string)config('utopay.rate'));
+                    if ($op==='coinQuote') { $result=$quote;break; }
+                    if (!PortalRuntime::isDemo()) throw new RuntimeException('Демонстрационное пополнение недоступно.');
+                    $transaction=db()->beginTransaction();
+                    try {
+                        $result=$store->run($uid,$key,'demo.coins.topup',[$gs,$quote],function () use ($store,$uid,$key,$quote) {
+                            WalletService::credit($uid,$quote['total'],['type'=>'demo','comment'=>'DEMO ONLY: '.$key]);
+                            $store->audit($uid,'demo.coins.topup',$key,$quote+['real_payment'=>false]);
+                            return $quote+['message'=>'Начислено '.$quote['total'].' демонстрационных CoL. Реальная оплата не выполнялась.'];
+                        });
+                        $transaction->commit();
+                    } catch (Throwable $e) { $transaction->rollback();throw $e; }
+                    break;
+                case 'sectionToggle':
+                    $this->owner();
+                    $result=PortalRuntime::sections()->set($uid,(string)$get('section'),(string)$get('enabled'));
+                    break;
                 case 'code':
                     $purpose=(string)$get('purpose');
                     if (strpos($purpose,'password:')===0) PortalRuntime::account((int)substr($purpose,9));
@@ -77,16 +101,17 @@ class PortalController extends CabinetBaseController
                 case 'deliver':
                     $char=PortalRuntime::character((int)$get('link_id'),(int)$get('char_id'));
                     if ((int)$char['online']!==0) throw new RuntimeException('Для получения предмета выйдите из игры.');
-                    if ($store->setting('bridge_verified')!=='1') throw new RuntimeException('Выдача предметов ещё не подключена.');
+                    if (!PortalRuntime::gameReady()) throw new RuntimeException('Выдача предметов ещё не подключена.');
                     $result=$store->queueDelivery($uid,(int)$get('item_id'),$gs,(int)$char['char_id'],$key); break;
                 case 'coins':
                     $store->requireEnabled('warehouse');
-                    if ($store->setting('bridge_verified')!=='1') throw new RuntimeException('Перевод в игру ещё не подключён.');
+                    if (!PortalRuntime::gameReady()) throw new RuntimeException('Перевод в игру ещё не подключён.');
                     $itemId=(int)$store->setting('col_item_id','0');
                     if (!$itemId) throw new RuntimeException('Перевод CoL пока недоступен.');
                     $count=filter_var($get('coins'),FILTER_VALIDATE_INT);
                     if (!$count || $count<1 || $count>1000000) throw new RuntimeException('Укажите целое количество CoL от 1 до 1000000.');
                     $char=PortalRuntime::character((int)$get('link_id'),(int)$get('char_id'));
+                    if ((int)$char['online']!==0) throw new RuntimeException('Для получения CoL выйдите из игры.');
                     $transaction=db()->beginTransaction();
                     try {
                         $result=$store->run($uid,$key,'coins.queue',[(int)$char['char_id'],$count,$gs],function () use ($store,$uid,$gs,$key,$count,$itemId,$char) {
@@ -114,7 +139,7 @@ class PortalController extends CabinetBaseController
                     $result=['items'=>[]];
                     foreach (array_slice($inventory['items']??[],0,300) as $item) {
                         if (empty($item['object_id']) || empty($item['name'])) continue;
-                        $result['items'][]=['object_id'=>(int)$item['object_id'],'name'=>(string)$item['name'],'enchant'=>(int)($item['enchant']??0),'quantity'=>(int)($item['quantity']??1),'grade'=>(string)($item['grade']??'NG'),'augmented'=>!empty($item['augmented'])];
+                        $result['items'][]=['object_id'=>(int)$item['object_id'],'item_id'=>(int)($item['item_id']??0),'name'=>(string)$item['name'],'enchant'=>(int)($item['enchant']??0),'quantity'=>(int)($item['quantity']??1),'grade'=>(string)($item['grade']??'NG'),'augmented'=>!empty($item['augmented'])];
                     }
                     break;
                 case 'payment': $result=PortalPayments::create($uid,PortalMoney::cents($get('amount')),$key); break;
