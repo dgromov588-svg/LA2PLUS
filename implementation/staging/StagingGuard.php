@@ -35,7 +35,7 @@ class StagingGuard
   if (PHP_SAPI==='cli' || request()->isAjaxRequest || request()->getIsPostRequest()) return;
   foreach (headers_list() as $header) if (stripos($header,'Content-Type:')===0 && stripos($header,'text/html')===false) return;
   if (http_response_code()>=300 && http_response_code()<400) return;
-  echo '<aside style="position:fixed;bottom:12px;left:50%;transform:translateX(-50%);max-width:94vw;z-index:99999;padding:10px 18px;background:#151a23f5;backdrop-filter:blur(12px);border:1px solid #c9a96240;border-radius:12px;color:#d5c192;text-align:center;font:11px/1.6 system-ui,sans-serif;box-shadow:0 8px 35px #0005">Тестовая версия · Все средства виртуальные · <a style="color:#f0d6a0;white-space:nowrap" href="/test-mail/">Тестовая почта ↗</a></aside>';
+  echo '<aside style="position:fixed;bottom:12px;left:50%;transform:translateX(-50%);max-width:94vw;z-index:99999;padding:10px 18px;background:#151a23f5;backdrop-filter:blur(12px);border:1px solid #c9a96240;border-radius:12px;color:#d5c192;text-align:center;font:11px/1.6 system-ui,sans-serif;box-shadow:0 8px 35px #0005">Тестовая версия · Все средства виртуальные · <a style="color:#f0d6a0;white-space:nowrap" href="/test-mail/">Тестовая почта</a></aside>';
  }
  public static function capture($to,$subject,$message) {
   $file=app()->runtimePath.'/staging-mails.jsonl';
