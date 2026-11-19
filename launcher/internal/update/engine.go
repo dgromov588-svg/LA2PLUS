@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"la2plus/launcher/internal/release"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -24,6 +25,7 @@ import (
 
 type Event struct {
 	Phase, File       string
+	Retrying          bool
 	Done, Total       int
 	Bytes, TotalBytes int64
 }
@@ -43,16 +45,17 @@ type Plan struct {
 	State                    State
 }
 type Engine struct {
-	Root      string
-	Client    *http.Client
-	Notify    func(Event)
-	mu        sync.Mutex
-	last      time.Time
-	lastPhase string
+	Root       string
+	Client     *http.Client
+	Notify     func(Event)
+	mu         sync.Mutex
+	last       time.Time
+	lastPhase  string
+	retryDelay func(int) time.Duration
 }
 
 func New(root string) *Engine {
-	return &Engine{Root: root, Client: &http.Client{Timeout: 30 * time.Minute, Transport: &http.Transport{Proxy: http.ProxyFromEnvironment, TLSHandshakeTimeout: 15 * time.Second, ResponseHeaderTimeout: 30 * time.Second, IdleConnTimeout: 90 * time.Second}, CheckRedirect: func(r *http.Request, via []*http.Request) error {
+	return &Engine{Root: root, Client: &http.Client{Timeout: 3 * time.Minute, Transport: &http.Transport{Proxy: http.ProxyFromEnvironment, DialContext: (&net.Dialer{Timeout: 20 * time.Second, KeepAlive: 30 * time.Second}).DialContext, DisableCompression: true, MaxConnsPerHost: 2, MaxIdleConnsPerHost: 2, MaxIdleConns: 8, TLSHandshakeTimeout: 15 * time.Second, ResponseHeaderTimeout: 45 * time.Second, IdleConnTimeout: 45 * time.Second}, CheckRedirect: func(r *http.Request, via []*http.Request) error {
 		if !release.ValidURL(r.URL.String()) || len(via) > 5 {
 			return errors.New("недопустимое перенаправление обновления")
 		}
@@ -178,19 +181,31 @@ func HashFile(ctx context.Context, name string) (string, error) {
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 func (e *Engine) Fetch(ctx context.Context) (release.Manifest, error) {
+	for attempt := 1; ; attempt++ {
+		m, err := e.fetchOnce(ctx)
+		if err == nil {
+			return m, nil
+		}
+		if er := e.reconnect(ctx, "Список обновлений", attempt, err); er != nil {
+			return m, er
+		}
+	}
+}
+func (e *Engine) fetchOnce(ctx context.Context) (release.Manifest, error) {
 	var zero release.Manifest
 	request, err := http.NewRequestWithContext(ctx, "GET", release.ManifestURL, nil)
 	if err != nil {
 		return zero, err
 	}
 	request.Header.Set("Cache-Control", "no-cache")
+	request.Header.Set("User-Agent", "LA2PLUS-Launcher/"+release.AppVersion)
 	response, err := e.Client.Do(request)
 	if err != nil {
 		return zero, fmt.Errorf("сервер обновлений недоступен: %w", err)
 	}
 	defer response.Body.Close()
 	if response.StatusCode != 200 {
-		return zero, fmt.Errorf("сервер обновлений: HTTP %d", response.StatusCode)
+		return zero, serverError(response)
 	}
 	data, err := io.ReadAll(io.LimitReader(response.Body, (32<<20)+1))
 	if err != nil {
@@ -319,7 +334,28 @@ func (w counterWriter) Write(p []byte) (int, error) {
 	}
 	return n, err
 }
+
+type integrityError struct{ path string }
+
+func (e *integrityError) Error() string {
+	return "повреждён загруженный файл: " + e.path
+}
 func (e *Engine) download(ctx context.Context, m release.Manifest, f release.File, add func(int64)) error {
+	for attempt := 0; ; attempt++ {
+		var accounted int64
+		err := e.downloadFile(ctx, m, f, func(n int64) { accounted += n; add(n) })
+		var integrity *integrityError
+		if !errors.As(err, &integrity) || attempt >= 2 {
+			return err
+		}
+		add(-accounted)
+		e.emit(Event{Phase: "Повторная проверка загрузки", File: f.Path, Retrying: true})
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+	}
+}
+func (e *Engine) downloadFile(ctx context.Context, m release.Manifest, f release.File, add func(int64)) error {
 	packed := e.packed(f)
 	if err := NoLinks(packed); err != nil {
 		return err
@@ -340,43 +376,28 @@ func (e *Engine) download(ctx context.Context, m release.Manifest, f release.Fil
 			have = 0
 		}
 	}
+
 	add(have)
-	if have < f.Packed {
-		request, err := http.NewRequestWithContext(ctx, "GET", m.Archive.URL, nil)
-		if err != nil {
-			return err
+	for failures := 0; have < f.Packed; {
+		want := f.Packed - have
+		if want > downloadChunk {
+			want = downloadChunk
 		}
-		request.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", f.Offset+have, f.Offset+f.Packed-1))
-		request.Header.Set("Accept-Encoding", "identity")
-		response, err := e.Client.Do(request)
-		if err != nil {
-			return err
+		n, err := e.downloadRange(ctx, m, f, packed, have, want, add)
+		have += n
+		if err == nil {
+			failures = 0
+			continue
 		}
-		defer response.Body.Close()
-		expected := fmt.Sprintf("bytes %d-%d/%d", f.Offset+have, f.Offset+f.Packed-1, m.Archive.Size)
-		if response.StatusCode != 206 || response.Header.Get("Content-Range") != expected {
-			return fmt.Errorf("сервер не подтвердил диапазон загрузки для %s", f.Path)
+		if n > 0 {
+			failures = 0
 		}
-		file, err := os.OpenFile(packed, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
-		if err != nil {
-			return err
-		}
-		n, copyErr := io.Copy(counterWriter{file, add}, io.LimitReader(response.Body, f.Packed-have+1))
-		syncErr := file.Sync()
-		closeErr := file.Close()
-		if copyErr != nil {
-			return copyErr
-		}
-		if syncErr != nil {
-			return syncErr
-		}
-		if closeErr != nil {
-			return closeErr
-		}
-		if n != f.Packed-have {
-			return errors.New("загрузка прервана: размер файла не совпал")
+		failures++
+		if er := e.reconnect(ctx, f.Path, failures, err); er != nil {
+			return er
 		}
 	}
+
 	if f.Packed == 0 {
 		if err := os.WriteFile(packed, nil, 0600); err != nil {
 			return err
@@ -412,7 +433,11 @@ func (e *Engine) download(ctx context.Context, m release.Manifest, f release.Fil
 	if err != nil {
 		_ = os.Remove(packed)
 		_ = os.Remove(stage + ".tmp")
-		return err
+		var disk *os.PathError
+		if errors.As(err, &disk) {
+			return err
+		}
+		return &integrityError{f.Path}
 	}
 	if closeErr != nil {
 		return closeErr
@@ -420,7 +445,7 @@ func (e *Engine) download(ctx context.Context, m release.Manifest, f release.Fil
 	if n != f.Size || hex.EncodeToString(h.Sum(nil)) != f.SHA256 {
 		_ = os.Remove(packed)
 		_ = os.Remove(stage + ".tmp")
-		return fmt.Errorf("контрольная сумма %s не совпала; повторите проверку", f.Path)
+		return &integrityError{f.Path}
 	}
 	if err = os.Rename(stage+".tmp", stage); err != nil {
 		return err
@@ -428,6 +453,54 @@ func (e *Engine) download(ctx context.Context, m release.Manifest, f release.Fil
 	source.Close()
 	_ = os.Remove(packed)
 	return nil
+}
+func (e *Engine) downloadRange(ctx context.Context, m release.Manifest, f release.File, packed string, have, want int64, add func(int64)) (int64, error) {
+	if err := ctx.Err(); err != nil {
+		return 0, err
+	}
+	request, err := http.NewRequestWithContext(ctx, "GET", m.Archive.URL, nil)
+	if err != nil {
+		return 0, err
+	}
+	request.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", f.Offset+have, f.Offset+have+want-1))
+	request.Header.Set("Accept-Encoding", "identity")
+	request.Header.Set("Cache-Control", "no-cache")
+	request.Header.Set("User-Agent", "LA2PLUS-Launcher/"+release.AppVersion)
+	response, err := e.Client.Do(request)
+	if err != nil {
+		return 0, err
+	}
+	defer response.Body.Close()
+	if response.StatusCode != 206 {
+		return 0, serverError(response)
+	}
+	expected := fmt.Sprintf("bytes %d-%d/%d", f.Offset+have, f.Offset+have+want-1, m.Archive.Size)
+	if response.Header.Get("Content-Range") != expected {
+		return 0, fmt.Errorf("сервер не подтвердил диапазон загрузки для %s", f.Path)
+	}
+	if err = NoLinks(packed); err != nil {
+		return 0, err
+	}
+	file, err := os.OpenFile(packed, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		return 0, err
+	}
+	n, copyErr := io.Copy(counterWriter{file, add}, io.LimitReader(response.Body, want))
+	syncErr := file.Sync()
+	closeErr := file.Close()
+	if syncErr != nil {
+		return n, syncErr
+	}
+	if closeErr != nil {
+		return n, closeErr
+	}
+	if copyErr != nil {
+		return n, copyErr
+	}
+	if n != want {
+		return n, io.ErrUnexpectedEOF
+	}
+	return n, nil
 }
 func (e *Engine) Download(ctx context.Context, p Plan) error {
 	ctx, cancel := context.WithCancel(ctx)
@@ -437,7 +510,7 @@ func (e *Engine) Download(ctx context.Context, p Plan) error {
 	jobs := make(chan release.File)
 	errs := make(chan error, 1)
 	var wg sync.WaitGroup
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 2; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

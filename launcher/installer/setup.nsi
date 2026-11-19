@@ -9,15 +9,15 @@ Unicode True
  !error "BUILD_DIR is required"
 !endif
 Name "LA2PLUS Launcher"
-OutFile "${BUILD_DIR}\LA2PLUS-Setup-1.1.1.exe"
+OutFile "${BUILD_DIR}\LA2PLUS-Setup-1.2.0.exe"
 InstallDir "$LOCALAPPDATA\Programs\LA2PLUS Launcher"
 InstallDirRegKey HKCU "Software\LA2PLUS\Launcher" "InstallDir"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
-VIProductVersion "1.1.1.0"
+VIProductVersion "1.2.0.0"
 VIAddVersionKey "ProductName" "LA2PLUS Launcher"
 VIAddVersionKey "FileDescription" "LA2PLUS Launcher Setup"
-VIAddVersionKey "FileVersion" "1.1.1"
+VIAddVersionKey "FileVersion" "1.2.0"
 VIAddVersionKey "LegalCopyright" "LA2PLUS"
 !define MUI_ICON "../assets/launcher.ico"
 !define MUI_UNICON "../assets/launcher.ico"
@@ -55,7 +55,7 @@ Section "Лаунчер LA2PLUS (обязательно)" Core
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LA2PLUSLauncher" "DisplayName" "LA2PLUS Launcher"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LA2PLUSLauncher" "UninstallString" '$\"$INSTDIR\Uninstall.exe$\"'
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LA2PLUSLauncher" "DisplayIcon" "$INSTDIR\LA2PLUS-Launcher.exe"
- WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LA2PLUSLauncher" "DisplayVersion" "1.1.1"
+ WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LA2PLUSLauncher" "DisplayVersion" "1.2.0"
  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LA2PLUSLauncher" "Publisher" "LA2PLUS"
  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LA2PLUSLauncher" "NoModify" 1
  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\LA2PLUSLauncher" "NoRepair" 1

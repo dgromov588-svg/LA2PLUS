@@ -79,6 +79,10 @@ func (a *client) notice(v update.Event) {
 	a.lastUI.Store(now)
 	a.mw.Synchronize(func() {
 		a.status.SetText(v.Phase)
+		if v.Retrying {
+			a.detail.SetText(v.File + " · загрузка продолжится автоматически")
+			return
+		}
 		a.detail.SetText(v.File)
 		percent := 0
 		if v.TotalBytes > 0 {

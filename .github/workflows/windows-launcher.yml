@@ -3,12 +3,17 @@ on:
   push:
     paths: ['launcher/**', '.github/workflows/windows-launcher.yml']
   workflow_dispatch:
+    inputs:
+      full_release:
+        description: Download and hash-check every production game file (about 13 GB traffic)
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
   build-and-smoke:
     runs-on: windows-latest
-    timeout-minutes: 20
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -40,6 +45,10 @@ jobs:
       - name: Verify real hosting ranges
         working-directory: launcher
         run: go run ./cmd/smoke -folder "$env:RUNNER_TEMP/LA2PLUS-Range-Test"
+      - name: Verify full production game installation with connection resets
+        if: ${{ inputs.full_release || contains(github.event.head_commit.message, '[full-release]') }}
+        working-directory: launcher
+        run: go run ./cmd/fullcheck -folder "$env:RUNNER_TEMP/LA2PLUS-Full-Release" -report "$env:RUNNER_TEMP/la2plus-full-release.json" -inject-faults
       - name: Build and test the Windows installer
         working-directory: launcher
         run: |
@@ -52,7 +61,7 @@ jobs:
           & $compiler /INPUTCHARSET UTF8 "/DAPP_EXE=$appPath" "/DBUILD_DIR=$buildPath" installer/setup.nsi
           if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
           $root = Join-Path $env:RUNNER_TEMP 'LA2PLUS-Installer-Test'
-          $setup = Start-Process dist/LA2PLUS-Setup-1.1.1.exe -ArgumentList "/S /D=$root" -Wait -PassThru
+          $setup = Start-Process dist/LA2PLUS-Setup-1.2.0.exe -ArgumentList "/S /D=$root" -Wait -PassThru
           if ($setup.ExitCode -ne 0 -or !(Test-Path "$root/LA2PLUS-Launcher.exe")) { throw 'Silent installation failed' }
           $proof = Join-Path $env:RUNNER_TEMP 'la2plus-installed-proof.txt'
           $app = Start-Process "$root/LA2PLUS-Launcher.exe" -ArgumentList "--self-test $proof" -Wait -PassThru
@@ -66,9 +75,10 @@ jobs:
           name: LA2PLUS-Windows-Launcher
           path: |
             launcher/dist/LA2PLUS-Launcher.exe
-            launcher/dist/LA2PLUS-Setup-1.1.1.exe
+            launcher/dist/LA2PLUS-Setup-1.2.0.exe
             ${{ runner.temp }}/la2plus-gui-proof.txt
             ${{ runner.temp }}/la2plus-gui-proof*.png
             ${{ runner.temp }}/la2plus-compact-proof.txt.png
             ${{ runner.temp }}/la2plus-*.error
             ${{ runner.temp }}/la2plus-*.stderr
+            ${{ runner.temp }}/la2plus-full-release.json
