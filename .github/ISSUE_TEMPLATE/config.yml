@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security policy
+    url: https://github.com/dgromov588-svg/LA2PLUS/blob/main/SECURITY.md
+    about: Уязвимости безопасности сообщать приватно, не в Issues

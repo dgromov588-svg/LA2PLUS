@@ -1,0 +1,78 @@
+name: Portal (PHP)
+
+on:
+  push:
+    paths:
+      - 'implementation/**'
+      - 'tools/**'
+      - 'launcher/assets/logo.png'
+      - '.github/workflows/portal.yml'
+  pull_request:
+    paths:
+      - 'implementation/**'
+      - 'tools/**'
+      - 'launcher/assets/logo.png'
+      - '.github/workflows/portal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  php-lint-and-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.3 with pdo_sqlite and pcntl
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, pcntl, mbstring, json
+          coverage: none
+
+      - name: PHP syntax check (implementation)
+        run: |
+          fail=0
+          while IFS= read -r -d '' f; do
+            php -l "$f" || fail=1
+          done < <(find implementation -name '*.php' -print0)
+          exit $fail
+
+      - name: Standalone PHP tests (sqlite, no server needed)
+        run: |
+          set -e
+          for t in domain sections attendance coin-purchase rankings wayforpay production staging-safety concurrency; do
+            echo "== $t =="
+            php "implementation/tests/$t.php"
+          done
+
+      - name: JS syntax check
+        run: |
+          set -e
+          for f in $(find implementation -name '*.js' -o -name '*.cjs'); do
+            node --check "$f"
+          done
+
+      - name: Verify logo asset parity (web vs launcher embed)
+        run: |
+          cmp -s implementation/public_html/design/assets/images/logo.png launcher/assets/logo.png
+
+      - name: Verify ASCII-only paths in active code directories
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          bad = []
+          for top in ['implementation', 'launcher', 'tools', '.github', 'docs']:
+              for p in Path(top).rglob('*'):
+                  s = p.as_posix()
+                  if not s.isascii() or ' ' in s:
+                      bad.append(s)
+          assert not bad, f'Non-ASCII or space paths in active dirs: {bad}'
+          PY
+
+      - name: Verify release manifest is up to date
+        run: |
+          python3 tools/build_portal_release.py
+          git diff --exit-code -- implementation/release-manifest.json

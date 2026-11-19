@@ -1,10 +1,10 @@
 # Продолжение работы над LA2PLUS
 
-Обновлено: 19 ноября 2026 (Киев). Рабочая ветка: `feat/cabinet-market-rating`.
-PR: https://github.com/dgromov588-svg/LA2PLUS/pull/3 .
+Обновлено: 19 ноября 2026 (Киев). Ветка по умолчанию: `main` (PR #4 смержен 19.11.2026).
+Приоритеты задач: [PRIORITIES.md](../PRIORITIES.md) · Чек-лист: [CHECKLIST.md](../CHECKLIST.md) .
 
 ```sh
-git clone --branch feat/cabinet-market-rating https://github.com/dgromov588-svg/LA2PLUS.git
+git clone https://github.com/dgromov588-svg/LA2PLUS.git
 cd LA2PLUS
 ```
 

@@ -1,0 +1,6 @@
+# LA2PLUS code owners
+* @dgromov588-svg
+/launcher/ @dgromov588-svg
+/implementation/ @dgromov588-svg
+/.github/workflows/ @dgromov588-svg
+/tools/ @dgromov588-svg
