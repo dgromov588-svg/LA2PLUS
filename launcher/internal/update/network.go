@@ -50,6 +50,10 @@ func transient(err error) bool {
 	if errors.As(err, &unknown) || errors.As(err, &invalid) || errors.As(err, &hostname) {
 		return false
 	}
+	var timed net.Error
+	if errors.As(err, &timed) && (timed.Timeout() || timed.Temporary()) {
+		return true
+	}
 	var op *net.OpError
 	return errors.As(err, &op) || errors.Is(err, io.ErrUnexpectedEOF) || errors.Is(err, io.EOF) || errors.Is(err, context.DeadlineExceeded)
 }

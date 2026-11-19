@@ -193,3 +193,17 @@ func TestLargeFileChunkAndInterruptedChunkResume(t *testing.T) {
 		t.Fatal("large file not verified")
 	}
 }
+
+type handshakeTimeout struct{}
+
+func (handshakeTimeout) Error() string   { return "TLS handshake timeout" }
+func (handshakeTimeout) Timeout() bool   { return true }
+func (handshakeTimeout) Temporary() bool { return true }
+func TestWrappedHandshakeTimeoutIsRetried(t *testing.T) {
+	if !transient(fmt.Errorf("request failed: %w", handshakeTimeout{})) {
+		t.Fatal("handshake timeout not retryable")
+	}
+	if transient(errors.New("invalid redirect")) {
+		t.Fatal("permanent error retried")
+	}
+}
