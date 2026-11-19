@@ -164,7 +164,7 @@ $home = app()->createUrl('/index/default/index');
           </div>
 
           <div class="hero__cta reveal">
-            <a class="btn btn--gold btn--lg" href="/downloads/LA2PLUS-Setup-1.1.1.exe" data-download="launcher.windows" download="LA2PLUS-Setup-1.1.1.exe"><?php echo Yii::t('main', 'btn.join') ?></a>
+            <a class="btn btn--gold btn--lg" href="/downloads/LA2PLUS-Setup-1.2.0.exe" data-download="launcher.windows" download="LA2PLUS-Setup-1.2.0.exe"><?php echo Yii::t('main', 'btn.join') ?></a>
           </div>
         </div>
       </div>
@@ -266,7 +266,7 @@ $home = app()->createUrl('/index/default/index');
         <p class="modal__subtitle"><?php echo Yii::t('main', 'play.subtitle') ?></p>
         <?php
         $platformDownloads = [
-            ['key'=>'launcher.windows','label'=>PortalRuntime::translate('Лаунчер LA2PLUS для Windows','LA2PLUS Launcher for Windows','Лаунчер LA2PLUS для Windows'),'hint'=>PortalRuntime::translate('Установщик · Windows 10/11 x64 · около 6 МБ','Installer · Windows 10/11 x64 · about 6 MB','Інсталятор · Windows 10/11 x64 · близько 6 МБ'),'href'=>'/downloads/LA2PLUS-Setup-1.1.1.exe'],
+            ['key'=>'launcher.windows','label'=>PortalRuntime::translate('Лаунчер LA2PLUS для Windows','LA2PLUS Launcher for Windows','Лаунчер LA2PLUS для Windows'),'hint'=>PortalRuntime::translate('Установщик · Windows 10/11 x64 · около 6 МБ','Installer · Windows 10/11 x64 · about 6 MB','Інсталятор · Windows 10/11 x64 · близько 6 МБ'),'href'=>'/downloads/LA2PLUS-Setup-1.2.0.exe'],
             ['key'=>'client.classic','label'=>PortalRuntime::translate('Полная сборка — ZIP','Full game client — ZIP','Повна збірка — ZIP'),'hint'=>PortalRuntime::translate('Архив для ручной установки · около 13 ГБ','Archive for manual installation · about 13 GB','Архів для ручного встановлення · близько 13 ГБ'),'href'=>'/downloads/clients/la2plus-client.zip'],
             ['key'=>'launcher.windows.drive','label'=>PortalRuntime::translate('Зеркало сборки — Google Drive','Game client mirror — Google Drive','Дзеркало збірки — Google Drive'),'hint'=>PortalRuntime::translate('Альтернативная загрузка полного архива','Alternative download of the full archive','Альтернативне завантаження повного архіву'),'href'=>'/downloads/clients/la2plus-client.zip'],
         ];
@@ -339,7 +339,7 @@ $home = app()->createUrl('/index/default/index');
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <?php } ?>
   <script>window.T = <?php echo json_encode(Lang::jsMessages(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>; // переводы для текстов, которые рисует JS</script>
-  <script src="/design/js/config.js?v=launcher-1.1.1"></script>
+  <script src="/design/js/config.js?v=launcher-1.2.0"></script>
   <script src="/design/js/app.js?v=<?php echo (int)@filemtime(Yii::getPathOfAlias('webroot').'/design/js/app.js'); ?>"></script>
 
 </body>
