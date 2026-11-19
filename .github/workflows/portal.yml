@@ -25,12 +25,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.3 with pdo_sqlite and pcntl
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: pdo_sqlite, pcntl, mbstring, json
-          coverage: none
+      - name: Ensure PHP 8.3+ with pdo_sqlite and pcntl
+        run: |
+          if ! command -v php >/dev/null || ! php -r 'exit(extension_loaded("pdo_sqlite") && extension_loaded("pcntl") && extension_loaded("mbstring") ? 0 : 1);'; then
+            sudo apt-get update
+            sudo apt-get install -y php-cli php-sqlite3 php-mbstring
+          fi
+          php -v
 
       - name: PHP syntax check (implementation)
         run: |
