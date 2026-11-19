@@ -1,0 +1,13 @@
+{
+  "all_files_sha256_verified": true,
+  "automatic_reconnects": 10,
+  "compressed_bytes": 12636449582,
+  "files": 4113,
+  "game_not_executed": true,
+  "injected_faults": 10,
+  "seconds": 1247,
+  "verified": true,
+  "version": "2026.11.18.1",
+  "workflow_run": 44505407328,
+  "source_commit": "c91da213a76347a617e80a090f2cd1fc764d88c7"
+}

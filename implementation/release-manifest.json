@@ -19,7 +19,7 @@
     {
       "path": "cms-private/protected/components/CabinetNavigation.php",
       "previous_sha256": null,
-      "sha256": "615fe43260d790b5800daf8dfdbd6d0226d3e02a8b6926c2ccd10ea88591aca2"
+      "sha256": "b390f16eacb10c6445074a7137def22a98cce503d05ec64419f88896ba1ec42b"
     },
     {
       "path": "cms-private/protected/components/CabinetSections.php",
@@ -259,7 +259,7 @@
     {
       "path": "cms-private/themes/la2plus/views/layouts/portal.php",
       "previous_sha256": null,
-      "sha256": "d903e97bb99c5b62636a1e7df10898f69d282093743c32129d184e4b8e0ec39f"
+      "sha256": "7415d611c159e85156586d2494454558c4ecff39304341c594575594d15c22d8"
     },
     {
       "path": "cms-private/themes/la2plus/views/login-portal.php",
@@ -315,6 +315,11 @@
       "path": "design/css/pages/portal-sections.css",
       "previous_sha256": null,
       "sha256": "65200afac0cd27377590bbad5619a5e3e64b573e7532890e1f187efa6463551a"
+    },
+    {
+      "path": "design/css/pages/portal-sidebar.css",
+      "previous_sha256": null,
+      "sha256": "540ca27ab8efb4db904e5390ff5bcc594dbf0cb7fcdd1f5b146fb7e7089b3373"
     },
     {
       "path": "design/css/pages/portal.css",
