@@ -11,11 +11,11 @@
 - [x] Рабочее дерево чистое, ветка `arena/f2d897d8-la2plus` синхронизирована с `main` (`df1564e`, merge PR #4)
 - [x] История PR: #1 импорт с Google Диска, #2 кабинет/биржа/рейтинг, #3 кабинет+лаунчер+wiki, #4 cabinet-market-rating — все MERGED
 - [x] Remote `origin` настроен, `main` — ветка по умолчанию
-- [ ] **P1** Удалить локальную/удалённые служебные ветки после мержа (`feat/cabinet-market-rating`, `arena/379e23e4-la2plus` ещё висят на origin)
-- [ ] **P1** Включить branch protection на `main`: обязательный PR, обязательные checks, запрет force-push
+- [x] **P1** Удалены устаревшие merged-ветки на `origin` (`feat/cabinet-market-rating`, `arena/379e23e4-la2plus` — у обеих `ahead_by: 0`); на `origin` остались только `main` и рабочая `arena/f2d897d8-la2plus`
+- [ ] **P1** Включить branch protection на `main` и `delete_branch_on_merge: true` (API интеграции вернул `403 Resource not accessible by integration` — нужно включить владельцу в Settings GitHub)
 - [x] **P2** Dependabot включён: `.github/dependabot.yml` (gomod `/launcher`, github-actions)
 - [x] **P2** Добавлены `.github/CODEOWNERS`, шаблоны Issue/PR (`.github/ISSUE_TEMPLATE/`, `PULL_REQUEST_TEMPLATE.md`)
-- [ ] **P2** Создать первый GitHub Release (сейчас `latestRelease: null`, релизы идут только через сайт/артефакты Actions)
+- [x] **P2** Создан первый GitHub Release [`v1.2.0`](https://github.com/dgromov588-svg/LA2PLUS/releases/tag/v1.2.0) на `main` (`df1564e`) с описанием, SHA-256 и ссылками на установщик и сборку `44533258228` (владелец может прикрепить `.exe` прямо к релизу при желании)
 
 ## 2. Структура репозитория
 
@@ -48,7 +48,8 @@
 - [x] Соблюдены запреты `AGENTS.md`: нет PIN, нет карточки скидки, нет Android/iOS-промптов, нет `target="_blank"` для навигации сайта, левая боковая панель + мобильное меню
 - [x] `release-manifest.json` + `tools/build_portal_release.py` — воспроизводимая сборка overlay (`la2plus-portal.zip` + SHA-256), без контакта с хостингом
 - [x] Стейджинг изолирован: `implementation/staging/` (отдельные БД, `StagingGuard`/`StagingConfig`, демо-флаги выключены в production)
-- [ ] **P0** В песочнице нет PHP — локальный `php -l` и `implementation/tests/*.php` не запускались; прогнать на машине с PHP 8.3/8.4: `tools/php-test.sh` + все тесты из `implementation/tests/`
+- [x] **P0** `php -l` по всем PHP в `implementation/` и все 9 автономных sqlite-тестов пройдены на PHP 8.3 в CI (`Portal (PHP)` run `44605512093`, отчёт `docs/verification/portal-ci-2026-11-19.json`)
+- [ ] **P0** Прогнать браузерные Playwright-тесты (`ui.cjs`, `rating-ui.cjs` локально с PHP-стендом и `staging-e2e.cjs` на `new.la2plus.com`) и при необходимости локальный прогон на PHP 8.4 (`tools/php-test.sh`)
 - [x] **P1** `tools/php-test.sh` улучшен: fallback на системный `php` + понятная ошибка с инструкцией по установке
 - [x] **P1** Добавлен CI `.github/workflows/portal.yml`: `php -l`, sqlite-тесты, `node --check`, проверка `release-manifest.json`
 - [x] **P1** Добавлен `.editorconfig` (UTF-8, LF, trim); статический анализ (`phpstan`) пока не добавлялся (overlay на Yii1 требует стабов фреймворка)
@@ -70,7 +71,8 @@
 - [x] Go: `manifest_test.go`, `engine_test.go`, `network_test.go`, `locked_windows_test.go` — гоняются в CI с `-race`
 - [x] PHP/Node: `implementation/tests/` — `domain.php`, `sections.php`, `attendance.php`, `coin-purchase.php`, `concurrency.php`, `rankings.php`, `wayforpay.php`, `production.php`, `staging-safety.php`, `ui.cjs`, `rating-ui.cjs`, `staging-e2e.cjs`
 - [x] Отчёты проверок сохранены в `docs/verification/` (см. п.3)
-- [ ] **P0** Прогнать PHP/Node-тесты локально (в этой песочнице нет PHP/Go) и зафиксировать результат в `docs/verification/`
+- [x] **P0** Автономные PHP-тесты (9 sqlite) + `php -l` + `node --check` пройдены в CI на PHP 8.3 (`Portal (PHP)` `44605512093`, `docs/verification/portal-ci-2026-11-19.json`)
+- [ ] **P0** Прогнать браузерные Playwright-тесты (`ui.cjs`, `rating-ui.cjs`, `staging-e2e.cjs`) в окружении с Playwright/Chromium и доступом к стенду/стейджингу
 - [x] **P1** PHP/Node-тесты подключены к CI (`.github/workflows/portal.yml`: `php -l`, 9 sqlite-тестов, `node --check`; браузерные Playwright `ui.cjs`/`rating-ui.cjs`/`staging-e2e.cjs` запускаются вручную/на стейджинге)
 - [x] **P2** Покрытие платёжных компонентов: `PortalPayments` (`domain.php`), `PortalTrybit` и `PortalCoinPayments` (`production.php`), `PortalWayforpay` (`wayforpay.php`); реальное списание остаётся вне автотестов
 
@@ -89,8 +91,8 @@
 - [x] Ключ подписи Ed25519 только на хостинге вне webroot (`/home/laplusco/launcher-private/signing-seed.txt`), в Git его нет
 - [x] `.gitignore` покрывает `work/`, `implementation/baseline/`, `implementation/test-output/`, `*.local.json`, `launcher/dist/`, `*.syso`
 - [x] CSRF, проверка почты, подтверждение пароля/кода, rate-limit — в коде кабинета; стейджинг принудительно отключает платежи/SMTP
-- [x] **P1** Добавлен CI-сканер секретов `.github/workflows/security.yml` (`gitleaks` с `fetch-depth: 0`) + выполнен локальный скан 206 файлов (утечек нет)
-- [x] **P1** `SECURITY.md` добавлен; Secret Scanning / Push Protection — включить в настройках GitHub (сейчас `security_and_analysis: null`)
+- [x] **P1** CI-сканер секретов `.github/workflows/security.yml` (`gitleaks` v8.30.1 с `fetch-depth: 0`) добавлен и прошёл на GitHub Actions (run `44605512129`, 0 утечек) + локальный скан 206 файлов
+- [ ] **P1** Включить нативные GitHub Secret Scanning / Push Protection в Settings → Code security (`security_and_analysis: null`; PATCH API вернул `403 Resource not accessible by integration`)
 - [x] **P2** Проверены `.htaccess`: `08/.../51 — Правила доступа (htaccess).txt` закрывает `cms-private/`, скрытые файлы и `.php` кроме `index.php`/`/deposit-*.php`; `implementation/staging/public.htaccess` дополнительно блокирует `error_log|ini|log|bak|sql|sqlite|db|env|jsonl` и ставит security-заголовки (на production важно оставить доступным `launcher/stable.json`)
 
 ## 9. Платежи и интеграции
@@ -121,14 +123,13 @@
 
 | Приоритет | Задача |
 |---|---|
-| **P0** | Прогнать PHP/Node-тесты и `php -l` на машине с PHP 8.3/8.4; зафиксировать отчёт |
+| **P0** | Браузерные Playwright-тесты (`ui.cjs`, `rating-ui.cjs`, `staging-e2e.cjs`); PHP 8.3 `php -l` и 9 sqlite-тестов уже пройдены в CI (`44605512093`) |
 | **P0** | Подтвердить включённые платёжные шлюзы и ключи на production |
-| **P1** | Branch protection на `main`, удалить merged-ветки, добавить `LICENSE` + `SECURITY.md` |
-| **P1** | CI для PHP/портала (`portal.yml`: линт + тесты + манифест) — DONE; `security.yml` (`gitleaks`) — DONE |
-| **P1** | Устранить/разграничить дубли (`views.js` уже разошёлся — `implementation/` каноничен; `logo.png` нужен `launcher/assets/` для `go:embed`) |
+| **P1** | Включить branch protection на `main`, `delete_branch_on_merge` и GitHub Secret Scanning в Settings (API интеграции вернул 403; старые ветки удалены, `gitleaks` CI `44605512129` зелёный) |
+| **P1** | CI для PHP/портала (`portal.yml`: PHP 8.3 линт + тесты + манифест + `logo.png` + ASCII) — DONE (`44605512093`) |
+| **P1** | Единый источник правды (`implementation/` канон, `01/` и `08/` помечены архивами, паритет `logo.png` в CI) — DONE |
 | **P1** | Authenticode-подпись установщика; ручной E2E входа в игру |
-| **P1** | Включить GitHub Secret Scanning / Push Protection в настройках репозитория |
-| **P2** | CODEOWNERS, шаблоны Issue/PR, Dependabot, `.editorconfig`, `CHANGELOG.md` — DONE; осталось создать GitHub Release |
+| **P2** | `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODEOWNERS`, шаблоны Issue/PR, Dependabot, `.editorconfig`, `CHANGELOG.md`, GitHub Release `v1.2.0` — DONE |
 
 ---
 

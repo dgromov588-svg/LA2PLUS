@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-19T20:08:00Z",
+  "branch": "arena/f2d897d8-la2plus",
+  "commit": "e1c6f4a",
+  "portal_ci_run": 44605512093,
+  "portal_ci_url": "https://github.com/dgromov588-svg/LA2PLUS/actions/runs/44605512093",
+  "gitleaks_ci_run": 44605512129,
+  "gitleaks_ci_url": "https://github.com/dgromov588-svg/LA2PLUS/actions/runs/44605512129",
+  "php_runtime": "ubuntu-latest PHP 8.3 (cli, pdo_sqlite, pcntl, mbstring)",
+  "php_lint": "passed (all PHP files in implementation/)",
+  "standalone_php_tests": [
+    "domain.php",
+    "sections.php",
+    "attendance.php",
+    "coin-purchase.php",
+    "rankings.php",
+    "wayforpay.php",
+    "production.php",
+    "staging-safety.php",
+    "concurrency.php"
+  ],
+  "js_syntax_check": "passed (node --check on all .js/.cjs in implementation/)",
+  "logo_asset_parity": true,
+  "ascii_active_paths": true,
+  "release_manifest_up_to_date": true,
+  "gitleaks_history_scan": "passed (v8.30.1, 0 leaks)",
+  "browser_e2e_not_run_in_ci": [
+    "ui.cjs",
+    "rating-ui.cjs",
+    "staging-e2e.cjs"
+  ]
+}
