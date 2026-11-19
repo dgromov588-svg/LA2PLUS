@@ -231,7 +231,7 @@ class ShopController extends CabinetBaseController
                 user()->setFlash(FlashConst::MESSAGE_SUCCESS,'Покупка добавлена на склад. Выберите персонажа для получения.');
             } catch (Throwable $e) {
                 $transaction->rollback();
-                user()->setFlash(FlashConst::MESSAGE_ERROR,'Покупка не выполнена. Проверьте PIN и доступный баланс.');
+                user()->setFlash(FlashConst::MESSAGE_ERROR,'Покупка не выполнена. Проверьте доступный баланс.');
                 $this->redirectBack();
             }
             $this->redirect(['/cabinet/portal/warehouse']);

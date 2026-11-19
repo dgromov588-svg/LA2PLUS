@@ -239,6 +239,8 @@ return [
                 // Deposit
                 'cabinet/deposit' => 'cabinet/deposit/index',
                 'cabinet/deposit/processed' => 'cabinet/deposit/processed',
+                'cabinet/deposit/payment-status' => 'cabinet/deposit/paymentStatus',
+                'cabinet/deposit/currency-rates' => 'cabinet/deposit/currencyRates',
                 'cabinet/deposit/transfer' => 'cabinet/deposit/transfer',
 
                 // UTOPAY: создание платежа, вебхук, возврат покупателя, статус

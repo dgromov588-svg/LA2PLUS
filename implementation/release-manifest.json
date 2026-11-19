@@ -4,7 +4,7 @@
     {
       "path": "cms-private/protected/commands/portal-cli.php",
       "previous_sha256": null,
-      "sha256": "a17c0929ac73e15333829e7dc7d5733512b229a2a242711cbb4dbde904dcbbc6"
+      "sha256": "8cb45f4a407a4e4a4c1c262ead3fcbd42813605d7a295e1999e631490dd46a90"
     },
     {
       "path": "cms-private/protected/components/BrandLogo.php",
@@ -14,22 +14,27 @@
     {
       "path": "cms-private/protected/components/CabinetBaseController.php",
       "previous_sha256": "2d442fc364b483e2b03af75a741bfa1fe8cb96e3e1b6620abca0213972af6632",
-      "sha256": "d72015838ad953a1fe9f9f26ea501badd5c83bf57e2587a20d1afa615bbe2deb"
+      "sha256": "aba1f5c7f370d20a81c221cf2230bfa7975edd04aa294cea6d9be25ca8ba5152"
     },
     {
       "path": "cms-private/protected/components/CabinetNavigation.php",
       "previous_sha256": null,
-      "sha256": "b932dbe2402aec304a06b979e35f64fc2bcf9c1a3edbbcc0d33d5262456bcb44"
+      "sha256": "b390f16eacb10c6445074a7137def22a98cce503d05ec64419f88896ba1ec42b"
     },
     {
       "path": "cms-private/protected/components/CabinetSections.php",
       "previous_sha256": null,
-      "sha256": "3685dbae646ea2477c200613a8ef0cdaa0f7f8c227ce4965d1742213fe5ebfba"
+      "sha256": "fe9212221cfd6ab1046811a8ce998dad0478cb99c5623def7a886d1254b979a9"
     },
     {
       "path": "cms-private/protected/components/CalendarService.php",
       "previous_sha256": "d9c6835fa158ef5b9cf002379c3df91f34843aa44c3589f92d101a92207089e0",
       "sha256": "a4f3efd0cc5abeb821d34713a00cdd7027cebb8b6e999a925847480749fed735"
+    },
+    {
+      "path": "cms-private/protected/components/CoinPurchase.php",
+      "previous_sha256": null,
+      "sha256": "73a2df531390df0102dce9c844611acf55b5c498e8a40192db117b5050d68ba7"
     },
     {
       "path": "cms-private/protected/components/ExtendedRankings.php",
@@ -39,12 +44,27 @@
     {
       "path": "cms-private/protected/components/FrontendBaseController.php",
       "previous_sha256": "e99f718693d4909418ad7f02d712e058261174963fabbe4c19f7a402684415a7",
-      "sha256": "9167f234f483ab50b8f75aadfd75d01b588624979bed78dc8ff9c9de9b69259d"
+      "sha256": "9ebf1d23f51030156e8a36e87b0e513fefa4d351303d1b9d30755ac64417b8be"
     },
     {
       "path": "cms-private/protected/components/LiveRankings.php",
       "previous_sha256": "b9c9149097832b6d1493b1cc8c7a9db35ada872f5fa85bdeb7ffe360cbfe0844",
       "sha256": "2483fa9e3bfaafff1820f3bd12a1d5d8ac5834e5cdf611b34ad89956e1e56612"
+    },
+    {
+      "path": "cms-private/protected/components/PortalAttendance.php",
+      "previous_sha256": null,
+      "sha256": "884285df455a9b855527a7e9f1e993b82041918e2dc0e477869825bf8926e049"
+    },
+    {
+      "path": "cms-private/protected/components/PortalAttendanceRuntime.php",
+      "previous_sha256": null,
+      "sha256": "fb03fffa642309f4db5c8151bd24e0b95ec2852d92d7586b55c4257df9351000"
+    },
+    {
+      "path": "cms-private/protected/components/PortalCoinPayments.php",
+      "previous_sha256": null,
+      "sha256": "b4ee4d7e02d305992aa9eafd34fd3666df11bb7f69fc6a2b51640c60a3b42fbe"
     },
     {
       "path": "cms-private/protected/components/PortalDelivery.php",
@@ -54,7 +74,7 @@
     {
       "path": "cms-private/protected/components/PortalI18n.php",
       "previous_sha256": null,
-      "sha256": "f41b7f54295510bff19954e1cd02f01317d83acb130a611d6fdfecb729dbf938"
+      "sha256": "e3b9d15f764a1d4f50958d11b047e7c2612f923fd7bb57487fcfc0c6dab500da"
     },
     {
       "path": "cms-private/protected/components/PortalMail.php",
@@ -72,24 +92,84 @@
       "sha256": "18b108f33cc1bef8ede3afbfa77f28edc91ac9644d97c53999d0b771c57e112a"
     },
     {
+      "path": "cms-private/protected/components/PortalPlayerData.php",
+      "previous_sha256": null,
+      "sha256": "dd720b0a043a7d870b7b8f72c6af5fbfbb27b2dfd6f13242ca527ba719c34b8b"
+    },
+    {
+      "path": "cms-private/protected/components/PortalProduction.php",
+      "previous_sha256": null,
+      "sha256": "b3e5b25ca142ad8351a38009661a6282ec5f0030fdeb029924e92241ccbe050a"
+    },
+    {
+      "path": "cms-private/protected/components/PortalRoutes.php",
+      "previous_sha256": null,
+      "sha256": "d88f11a29fa4a1f01d4051af9e76656c8c284fb0ea47da811607df91eed5ecd1"
+    },
+    {
       "path": "cms-private/protected/components/PortalRuntime.php",
       "previous_sha256": null,
-      "sha256": "7b2e2a96622556b9dbfa48dc6c90856ac7ed8c176494b22d838f0c1ac62230fb"
+      "sha256": "2d94323701ac70d823c705b1041f4256caf6404b627a3599377a1b6c162058c6"
     },
     {
       "path": "cms-private/protected/components/PortalSchema.php",
       "previous_sha256": null,
-      "sha256": "f0b4892594638a5e5ffb80f688246972b5b128aa0789e72db5b0b9d7b97999b4"
+      "sha256": "1204b4086c4ab0c91435221f4ecb44a5dae365c2018b68d0b0ae855a406a51f4"
     },
     {
       "path": "cms-private/protected/components/PortalSecurity.php",
       "previous_sha256": null,
-      "sha256": "9a4e46813b153d3f0d263a4bf1e0a1374a969e02ab866298b0a1f465438b6640"
+      "sha256": "c131b8156e71e9eee22bb36a9afe3082d950596388e1f0b2297742bb74c32b17"
     },
     {
       "path": "cms-private/protected/components/PortalStore.php",
       "previous_sha256": null,
-      "sha256": "0a1d6d29a35e1152c77b61388cb312fdcd9806e7898978308dc2eb3cad33d407"
+      "sha256": "df79e060d43b5560697db06ebcb47734e87a62bd28992e6d62802ba44cd84edc"
+    },
+    {
+      "path": "cms-private/protected/components/PortalTrybit.php",
+      "previous_sha256": null,
+      "sha256": "ab40ea441ed6e6493a70b7041077546e3ed2af46376bbe9ca0d4a15781815c26"
+    },
+    {
+      "path": "cms-private/protected/components/PortalWayforpay.php",
+      "previous_sha256": null,
+      "sha256": "dbdbd4a0d065d65dfe80095241166c958a9f8fbf018d7e9ee2610db8df90a152"
+    },
+    {
+      "path": "cms-private/protected/messages/ru/wiki.php",
+      "previous_sha256": "979f9fd57a91d76a11caf683f85e7fea7e76b673afa0968351855c53d02975fb",
+      "sha256": "be222182b52db1aa79f953a634ac98f7f67a93b010f4d78bcd0b7339cf4db005"
+    },
+    {
+      "path": "cms-private/protected/modules/adm/AdmApiController.php",
+      "previous_sha256": "27013572128a5c36c5d9d325a140cec604619cdd8b893cf496e43151724dd2a0",
+      "sha256": "fe6abaf1a39d1a35c666a3c1f9522e592bb410504f0c7373ae99d1408bdce616"
+    },
+    {
+      "path": "cms-private/protected/modules/adm/AdmBaseController.php",
+      "previous_sha256": "ff3c8f0797ba5d96df177f7e4b2a870b91093d9b68a459451a940798382fda5f",
+      "sha256": "816a6a83239ae87578b3791f0b8089c78d57c1e2674948eeaed752d074160f3b"
+    },
+    {
+      "path": "cms-private/protected/modules/adm/assets/js/api.js",
+      "previous_sha256": null,
+      "sha256": "1cf9705312fe8cb4f9cda80cb2546120de82488a221c4a2c98a2f6d78fe9a048"
+    },
+    {
+      "path": "cms-private/protected/modules/adm/assets/js/shell.js",
+      "previous_sha256": null,
+      "sha256": "6cb9d2e9c4a86b540cffc79c19853a04584df00253f5a876c8c7e65be2a9cd5b"
+    },
+    {
+      "path": "cms-private/protected/modules/adm/assets/js/views.js",
+      "previous_sha256": "ab6833661805f2780d6e12fa5edb2fb09e710af60e3d034aca30ca847bb94d38",
+      "sha256": "860cca9e5b05defeccebb2b2b4dc711ea7b6ddd9eb8adc8791f8d8074b5513ad"
+    },
+    {
+      "path": "cms-private/protected/modules/adm/views/adm/panel.php",
+      "previous_sha256": null,
+      "sha256": "15a7871b8d6378ab37cafdcb90a0532500622e53bed0cca54aec9012f8a61b0d"
     },
     {
       "path": "cms-private/protected/modules/cabinet/controllers/ChangePasswordController.php",
@@ -109,12 +189,17 @@
     {
       "path": "cms-private/protected/modules/cabinet/controllers/PortalController.php",
       "previous_sha256": null,
-      "sha256": "9013ce223ab719488462fdd1bfe32dd0d31673493ae4c30d8133c4991ec07c19"
+      "sha256": "195bd45353adbcec1887772cb8357cae659b7b1145019b6f2c94b3603489d685"
     },
     {
       "path": "cms-private/protected/modules/cabinet/controllers/ShopController.php",
       "previous_sha256": "69c176e4124049af0bc405e1348d49a4cb8c9e05097ff16afaad28cfbd290b21",
-      "sha256": "0592cc862a8fa5687ea093d1d080174e351c1d4b3a7110da915458a286ed611f"
+      "sha256": "69b34f9ffd5a9298fa21ec4ecca857935bffbe92a8898250441ccde92350fec9"
+    },
+    {
+      "path": "cms-private/protected/modules/deposit/controllers/GatewayController.php",
+      "previous_sha256": "8576b082037ebb9a3762cfaf58ee8df603c73740af86f64466428fadd4da58e9",
+      "sha256": "9c7260ff471514e2d617f0de5fe91ac9c35b465863a9e6867d72dd16d564cec7"
     },
     {
       "path": "cms-private/protected/modules/index/controllers/RatingsAction.php",
@@ -122,59 +207,84 @@
       "sha256": "3cd89e1dfdd04d20f829dc0c931736086bd9fa91cfbb1c9b6bf6f5b0d2853eeb"
     },
     {
-      "path": "cms-private/themes/la2plus/views/cabinet/calendar.php",
-      "previous_sha256": "bab15cfb6ee27be90c14bbd1166f6181ee00d5252c73550d238fb2fa9e814712",
-      "sha256": "9b0f2286f9b84c29d697ac8c5a0244f5a109500a869b48b28edbb5a118b4acc0"
+      "path": "cms-private/protected/modules/login/controllers/DefaultController.php",
+      "previous_sha256": null,
+      "sha256": "b705eb18ee983edeee584202e99e0e6cd937e8b81f592c28492f777e5f359c25"
+    },
+    {
+      "path": "cms-private/protected/modules/register/controllers/DefaultController.php",
+      "previous_sha256": "1a085cafd17db917606e4c972fdd8fa071fcf6f827742ac267f46817a637d45c",
+      "sha256": "d768c6314c0539eb0a5170a82bd62e9706ccfb20b0f39e52a136662614a74d2d"
+    },
+    {
+      "path": "cms-private/protected/modules/wayforpayWebhook/controllers/WayforpayhookController.php",
+      "previous_sha256": null,
+      "sha256": "d2587f25f83cce2d622e58ee4a4ef1c5e92bda27af8b72211e26204cc91fd2b3"
     },
     {
       "path": "cms-private/themes/la2plus/views/cabinet/deposit/index.php",
       "previous_sha256": "89049a6ee793dfc77ad782d132c27a1606ddd6b8ca0501b9571f32b7f2ecefc4",
-      "sha256": "7ffac107d958f44058395d549f7417e576b04f3259706ae4ea48f7c64e90871e"
+      "sha256": "4c0dd06084c6433ca3345914c2ba35f5ad0723272340144d2904fffa8f241c7c"
     },
     {
-      "path": "cms-private/themes/la2plus/views/cabinet/portal-nav.php",
+      "path": "cms-private/themes/la2plus/views/cabinet/portal-error.php",
       "previous_sha256": null,
-      "sha256": "0e9bd9b1eb4adb751912a700f9c6e86a8af2666f0870906599d32095b233edc5"
+      "sha256": "ec32b4e8d2cd1291c0a1004fe7193666c1e97bba63dfb5db4b1275e950eb28c7"
+    },
+    {
+      "path": "cms-private/themes/la2plus/views/cabinet/portal-pages.php",
+      "previous_sha256": null,
+      "sha256": "d53e94bfc2ff10c7502a69febb204826b24dc24f8a8e5d922fdaa560c824834f"
     },
     {
       "path": "cms-private/themes/la2plus/views/cabinet/portal.php",
       "previous_sha256": null,
-      "sha256": "f82fd9b33880e72f359944342993c04f7149d37b57c3f2cc0af5c4bcced517d8"
+      "sha256": "719f58e410beee09f2df702b89d7d4c79da8f340a8da6bcf76bff9ae0ceefd4f"
     },
     {
-      "path": "cms-private/themes/la2plus/views/cabinet/shop/index.php",
-      "previous_sha256": "06986bc236f873ff00442059acf9a15920dc98650ddd208b69247ceddb89eabb",
-      "sha256": "1d9c7f7dcfcbbf12e1ed9d3e02159986ffc99f99db80049face6d1ba863ecb6d"
+      "path": "cms-private/themes/la2plus/views/forum-threads.php",
+      "previous_sha256": "c6252717fb78c9e7bb92029a222c822cde8173e23576b814145b2e6ef11b2887",
+      "sha256": "320f29ef2ab631a020efd91504624b764c2718fd63fb6cfce62308fe7b9cddc0"
     },
     {
-      "path": "cms-private/themes/la2plus/views/cabinet/wallet-index.php",
-      "previous_sha256": "299241532d82ff11e6e61d98dd3d2c7d04940c809adc090ffbc021c6f0e6682a",
-      "sha256": "5eb7bf334bb345f521bddaceddffa73b6bd35709394dd4d6274c2f9b9f402f8d"
+      "path": "cms-private/themes/la2plus/views/gallery.php",
+      "previous_sha256": "1b774640ea4e237e7b30e26fa901b24550cce5d761adceeaf6c36d1b7d646ff1",
+      "sha256": "3f2169b096ad36e9c5daed1b79b05bee17fae9f2725e013b351b55a276b24e08"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/auth.php",
-      "previous_sha256": null,
-      "sha256": "9e6b3551581b39896f50e4ba25e5f06c43f0963f653ee882e83999e4198fa746"
+      "previous_sha256": "9e6b3551581b39896f50e4ba25e5f06c43f0963f653ee882e83999e4198fa746",
+      "sha256": "db93f0ccd6f7e66a78a3ca7dbd889654a4c676874c6d81db49a83b2480350757"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/landing.php",
       "previous_sha256": "993bddefd8eac106b4ab61643614e0ff8a18f85555e600fcf8baeafcf1d33df5",
-      "sha256": "6b6acaf8c0cbe90457c7bf5bb9f714c803fb1efcb783f4b1f07cefd86b3fa035"
+      "sha256": "94d225ee4a1a542e0c2e5cc7f1965147427218fe06db6319efcaaefb6da8ac96"
     },
     {
       "path": "cms-private/themes/la2plus/views/layouts/portal.php",
       "previous_sha256": null,
-      "sha256": "4457e1fac3bdc5c7942158f1fdef7a8f561a1d4ddf274130e7a7013dd6836fa3"
+      "sha256": "7415d611c159e85156586d2494454558c4ecff39304341c594575594d15c22d8"
     },
     {
       "path": "cms-private/themes/la2plus/views/login-portal.php",
-      "previous_sha256": null,
-      "sha256": "60b035d3de904e11bc4afd43e196343b088387a5927a149dc8e2a90c82d007e0"
+      "previous_sha256": "60b035d3de904e11bc4afd43e196343b088387a5927a149dc8e2a90c82d007e0",
+      "sha256": "ad091989959b2aa1e453aa043796fe0bc7007eceb7da0abea2bd4b7f3cb0e1be"
     },
     {
       "path": "cms-private/themes/la2plus/views/rating.php",
       "previous_sha256": "a290478c1f94778e41aea8f20710edf71a7c609258ef06b62f114473e18187c1",
       "sha256": "b18082fa655fff4dfbeead56362ce337191dae54b4d1b31d676c81b118064f5c"
+    },
+    {
+      "path": "cms-private/themes/la2plus/views/register-portal.php",
+      "previous_sha256": "58a1e98eec61a1889d7e5312b607261d0b78faf6217ab08da02caa43d9f98f51",
+      "sha256": "7887095cef143b44877281263bc345d07a9eb04be46cea1e4e5c2996e4244c27"
+    },
+    {
+      "path": "cms-private/themes/la2plus/views/wiki.php",
+      "previous_sha256": "06717d32de5db966697847772a151ae3e7dac3e74c0353b6e248b281a52549b2",
+      "sha256": "686cc9b949ecbcd244c26789165279c326b6640d82abfa5792e0f8df85849f16"
     },
     {
       "path": "design/assets/images/logo.png",
@@ -187,14 +297,39 @@
       "sha256": "a44060a0fb43d063b0aecfbb55bbc3d0af38865d11a0205f26f568702526dce3"
     },
     {
+      "path": "design/css/pages/coin-shop.css",
+      "previous_sha256": null,
+      "sha256": "a0cb1eae7747eb85a3e88082d93f733d1be52f1e200250c7f143cd07804f81fe"
+    },
+    {
       "path": "design/css/pages/portal-auth.css",
       "previous_sha256": null,
       "sha256": "7d5ce62c23293aa07f50f2666430c0327bbb0901f603a2fe17821590e8df6a52"
     },
     {
+      "path": "design/css/pages/portal-fresh.css",
+      "previous_sha256": null,
+      "sha256": "5e0d220cc172ea180896bd87a815b6d96ceb6dcfacfa240d4e67fcb6c37012ac"
+    },
+    {
       "path": "design/css/pages/portal-polish.css",
       "previous_sha256": null,
-      "sha256": "d5df622cb155ac438f43924d1c3071864de7c6cbbafbf82062ea5c1755e21636"
+      "sha256": "6ce7bbc8bbf2fb55316453f1e53819d98c659233b31f615db7dd832db93e5e07"
+    },
+    {
+      "path": "design/css/pages/portal-register.css",
+      "previous_sha256": null,
+      "sha256": "c6d0b478613ff4c15f79530114b0e5b21d8901a500c29d03f041e6872be9232a"
+    },
+    {
+      "path": "design/css/pages/portal-sections.css",
+      "previous_sha256": null,
+      "sha256": "65200afac0cd27377590bbad5619a5e3e64b573e7532890e1f187efa6463551a"
+    },
+    {
+      "path": "design/css/pages/portal-sidebar.css",
+      "previous_sha256": null,
+      "sha256": "540ca27ab8efb4db904e5390ff5bcc594dbf0cb7fcdd1f5b146fb7e7089b3373"
     },
     {
       "path": "design/css/pages/portal.css",
@@ -209,12 +344,22 @@
     {
       "path": "design/js/app.js",
       "previous_sha256": "df312950f803c73701bdb22f4a94630b842bae66453f45dd35cd68300998f579",
-      "sha256": "8c0e02b9d508f1bef87b57e6efad6c255a3373b39434b741b89cad9499d6e4b6"
+      "sha256": "90b7f63bf385e2a3375670a7073bfd473a7e7b6d9243b0ef683a2cb32e09ed12"
+    },
+    {
+      "path": "design/js/coin-shop.js",
+      "previous_sha256": null,
+      "sha256": "07e39a38b7b7c03161058fffbb9d7c5979d1698a1fabb2d7c63b17ad3a1e3f37"
+    },
+    {
+      "path": "design/js/config.js",
+      "previous_sha256": "598bfb6327be78aa4e5de26b6ce7eb20660dfecfef1d797f70acfed32bef1e0f",
+      "sha256": "c3ac14b380fcf0fb5af5cefecea1e7691f282813d4c37a171d2a7eaf93244f49"
     },
     {
       "path": "design/js/portal.js",
       "previous_sha256": null,
-      "sha256": "c25f153a881bcbc2af6d94d430b73b2b0040993a9924d76e95b35f43c380e149"
+      "sha256": "eb5405768dc439ee4aaea1fd308062ed839e1d199112c237bfbfe9d17bace5f5"
     }
   ]
 }

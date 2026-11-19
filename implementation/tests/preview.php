@@ -1,7 +1,7 @@
 <?php
 /** Isolated QA fixture. This file is never shipped to the hosting account. */
 $components=dirname(__DIR__).'/public_html/cms-private/protected/components/';
-foreach (['PortalSchema','PortalMoney','PortalStore','PortalSecurity','PortalRuntime','PortalI18n','BrandLogo','CabinetSections','CabinetNavigation'] as $c) require $components.$c.'.php';
+foreach (['PortalSchema','PortalMoney','PortalStore','PortalSecurity','PortalRuntime','PortalI18n','BrandLogo','CabinetSections','CabinetNavigation','PortalRoutes','PortalProduction','PortalCoinPayments','PortalTrybit'] as $c) require $components.$c.'.php';
 class CHtml {
     public static function encode($s) { return htmlspecialchars((string)$s,ENT_QUOTES,'UTF-8'); }
 }
@@ -56,6 +56,6 @@ class PreviewController {
         include dirname(__DIR__).'/public_html/cms-private/themes/la2plus/views/cabinet/portal.php';
     }
 }
-?><!doctype html><html lang="<?php echo CHtml::encode(app()->language); ?>"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://la2plus.com/design/css/base.css"><link rel="stylesheet" href="https://la2plus.com/design/css/components/buttons.css"><style>body{margin:0;background:linear-gradient(#080d16bb,#080b12ee),url(https://la2plus.com/design/assets/images/env-hero-2.jpg) center top/cover fixed}*{box-sizing:border-box}</style></head><body>
+?><!doctype html><html lang="<?php echo CHtml::encode(app()->language); ?>"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="https://la2plus.com/design/css/base.css"><link rel="stylesheet" href="https://la2plus.com/design/css/components/buttons.css"><link rel="stylesheet" href="/design/css/pages/portal.css"><link rel="stylesheet" href="/design/css/pages/portal-polish.css"><link rel="stylesheet" href="/design/css/pages/portal-fresh.css"><link rel="stylesheet" href="<?php echo BrandLogo::STYLES; ?>"><style>body{margin:0;background:linear-gradient(#080d16bb,#080b12ee),url(https://la2plus.com/design/assets/images/env-hero-2.jpg) center top/cover fixed}*{box-sizing:border-box}</style></head><body>
 <?php $page=$_GET['page']??'home'; if ($page==='index') $page='home'; (new PreviewController())->render($page,$store); ?>
 </body></html>

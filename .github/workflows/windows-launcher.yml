@@ -1,0 +1,84 @@
+name: Windows launcher
+on:
+  push:
+    paths: ['launcher/**', '.github/workflows/windows-launcher.yml']
+  workflow_dispatch:
+    inputs:
+      full_release:
+        description: Download and hash-check every production game file (about 13 GB traffic)
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  build-and-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.4'
+          cache-dependency-path: launcher/go.sum
+      - name: Test updater and signed manifests
+        working-directory: launcher
+        run: go test -race ./internal/...
+      - name: Embed Windows resources
+        working-directory: launcher
+        run: go run github.com/akavel/rsrc -arch amd64 -manifest assets/application.manifest -ico assets/launcher.ico -o cmd/launcher/resource_windows_amd64.syso
+      - name: Build native launcher
+        working-directory: launcher
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          $env:CGO_ENABLED = "0"
+          go build -buildvcs=false -trimpath -ldflags "-H windowsgui -s -w" -o dist/LA2PLUS-Launcher.exe ./cmd/launcher
+          go build -buildvcs=false -trimpath -o dist/LA2PLUS-Diagnostics.exe ./cmd/launcher
+      - name: Native GUI smoke test
+        working-directory: launcher
+        run: |
+          $proof = Join-Path $env:RUNNER_TEMP 'la2plus-gui-proof.txt'
+          $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $proof" -RedirectStandardError "$proof.stderr" -Wait -PassThru
+          if ($p.ExitCode -ne 0 -or !(Test-Path $proof)) { Get-Content "$proof.error","$proof.stderr" -ErrorAction SilentlyContinue; & dist/LA2PLUS-Diagnostics.exe --self-test $proof; throw 'Windows GUI initialization failed' }
+          $compact = Join-Path $env:RUNNER_TEMP 'la2plus-compact-proof.txt'
+          $p = Start-Process dist/LA2PLUS-Launcher.exe -ArgumentList "--self-test $compact compact" -Wait -PassThru
+          if ($p.ExitCode -ne 0 -or !(Test-Path $compact)) { throw 'Compact GUI failed' }
+      - name: Verify real hosting ranges
+        working-directory: launcher
+        run: go run ./cmd/smoke -folder "$env:RUNNER_TEMP/LA2PLUS-Range-Test"
+      - name: Verify full production game installation with connection resets
+        if: ${{ inputs.full_release || contains(github.event.head_commit.message, '[full-release]') }}
+        working-directory: launcher
+        run: go run ./cmd/fullcheck -folder "$env:RUNNER_TEMP/LA2PLUS-Full-Release" -report "$env:RUNNER_TEMP/la2plus-full-release.json" -inject-faults
+      - name: Build and test the Windows installer
+        working-directory: launcher
+        run: |
+          choco install nsis --version=3.11 -y --no-progress
+          if ($LASTEXITCODE -ne 0) { throw 'NSIS installation failed' }
+          go run ./cmd/notices dist/ThirdPartyNotices.txt
+          $compiler = Join-Path ${env:ProgramFiles(x86)} 'NSIS/makensis.exe'
+          $appPath = (Resolve-Path dist/LA2PLUS-Launcher.exe).Path
+          $buildPath = (Resolve-Path dist).Path
+          & $compiler /INPUTCHARSET UTF8 "/DAPP_EXE=$appPath" "/DBUILD_DIR=$buildPath" installer/setup.nsi
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+          $root = Join-Path $env:RUNNER_TEMP 'LA2PLUS-Installer-Test'
+          $setup = Start-Process dist/LA2PLUS-Setup-1.2.0.exe -ArgumentList "/S /D=$root" -Wait -PassThru
+          if ($setup.ExitCode -ne 0 -or !(Test-Path "$root/LA2PLUS-Launcher.exe")) { throw 'Silent installation failed' }
+          $proof = Join-Path $env:RUNNER_TEMP 'la2plus-installed-proof.txt'
+          $app = Start-Process "$root/LA2PLUS-Launcher.exe" -ArgumentList "--self-test $proof" -Wait -PassThru
+          if ($app.ExitCode -ne 0 -or !(Test-Path $proof)) { throw 'Installed launcher failed' }
+          Start-Process "$root/Uninstall.exe" -ArgumentList '/S' -Wait
+          for ($i = 0; $i -lt 10 -and (Test-Path "$root/LA2PLUS-Launcher.exe"); $i++) { Start-Sleep -Seconds 1 }
+          if (Test-Path "$root/LA2PLUS-Launcher.exe") { throw 'Uninstallation failed' }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: LA2PLUS-Windows-Launcher
+          path: |
+            launcher/dist/LA2PLUS-Launcher.exe
+            launcher/dist/LA2PLUS-Setup-1.2.0.exe
+            ${{ runner.temp }}/la2plus-gui-proof.txt
+            ${{ runner.temp }}/la2plus-gui-proof*.png
+            ${{ runner.temp }}/la2plus-compact-proof.txt.png
+            ${{ runner.temp }}/la2plus-*.error
+            ${{ runner.temp }}/la2plus-*.stderr
+            ${{ runner.temp }}/la2plus-full-release.json

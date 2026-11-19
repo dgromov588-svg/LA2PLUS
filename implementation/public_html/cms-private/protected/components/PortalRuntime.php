@@ -10,6 +10,7 @@ class PortalRuntime
     }
     public static function store()
     {
+        if(class_exists('PortalProduction'))PortalProduction::bootstrap();
         if (!self::$store) { db()->active=true; self::$store=new PortalStore(db()->getPdoInstance(),db()->tablePrefix); }
         return self::$store;
     }
@@ -22,10 +23,6 @@ class PortalRuntime
     public static function uid() { return (int)user()->getId(); }
     public static function gs() { return (int)user()->getGsId(); }
     public static function requestKey() { return bin2hex(random_bytes(16)); }
-    public static function pinField()
-    {
-        return self::enabled()?'<label>PIN операций сайта <input type="password" name="portal_pin" pattern="[0-9]{6}" maxlength="6" inputmode="numeric" autocomplete="off" required></label>':'';
-    }
     public static function translate($ru,$en,$uk)
     {
         return app()->language==='en'?$en:(in_array(app()->language,['uk','ua'],true)?$uk:$ru);

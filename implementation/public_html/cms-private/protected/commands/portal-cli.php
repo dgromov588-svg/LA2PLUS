@@ -21,7 +21,7 @@ try {
     } elseif ($command==='status') {
         $store=PortalRuntime::store();
         $values=[]; foreach (['cabinet','market','warehouse','topup','withdrawals'] as $f) $values[$f]=$store->enabled($f);
-        echo json_encode(['ok'=>true,'features'=>$values,'bridge'=>$store->setting('bridge_verified')==='1']);
+        echo json_encode(['ok'=>true,'features'=>$values,'bridge'=>$store->setting('bridge_verified')==='1','demo'=>PortalRuntime::isDemo(),'coin_payments'=>['trybit'=>PortalCoinPayments::ready(),'nowpayments'=>PortalCoinPayments::ready('nowpayments'),'wayforpay'=>PortalCoinPayments::ready('wayforpay')],'pending_coin_orders'=>(int)$store->query("SELECT COUNT(*) FROM {{portal_coin_orders}} WHERE state='pending'")->fetchColumn(),'unknown_coin_orders'=>(int)$store->query("SELECT COUNT(*) FROM {{portal_coin_orders}} WHERE state IN ('sending','unknown')")->fetchColumn()]);
     } elseif ($command==='set') {
         $name=$argv[2]??''; $value=$argv[3]??'';
         $allowed=['cabinet_enabled','market_enabled','warehouse_enabled','topup_enabled','withdrawals_enabled','col_item_id','bridge_url'];
@@ -36,9 +36,15 @@ try {
         });
         echo json_encode(['ok'=>true,'name'=>$name,'value'=>$value]);
     } elseif ($command==='worker') {
-        $store=PortalRuntime::store(); $done=0; $failed=0;
-        foreach ($store->query("SELECT id,user_id FROM {{portal_payments}} WHERE state='pending' ORDER BY id LIMIT 50")->fetchAll(PDO::FETCH_ASSOC) as $payment) {
-            try { PortalPayments::sync($payment['user_id'],$payment['id']); } catch (Throwable $e) { $failed++; }
+        $store=PortalRuntime::store(); $done=0; $failed=0;$started=microtime(true);
+        $workerLock=db()->tablePrefix.'portal_worker';
+        if($store->driver()==='mysql'&&(int)$store->query('SELECT GET_LOCK(?,0)',[$workerLock])->fetchColumn()!==1){echo json_encode(['ok'=>true,'skipped'=>'worker already running']);exit;}
+        try{PortalAttendanceRuntime::tick();}catch(Throwable $e){$failed++;}
+        $jobs=$store->query("SELECT 'coins' AS kind,id,user_id,updated_at FROM {{portal_coin_orders}} WHERE state='pending' UNION ALL SELECT 'exchange' AS kind,id,user_id,updated_at FROM {{portal_payments}} WHERE state='pending' ORDER BY updated_at,id LIMIT 50")->fetchAll(PDO::FETCH_ASSOC);
+        foreach($jobs as $payment){
+            if(microtime(true)-$started>=50)break;
+            try{if($payment['kind']==='coins')PortalCoinPayments::sync($payment['user_id'],$payment['id']);else PortalPayments::sync($payment['user_id'],$payment['id']);}catch(Throwable $e){$failed++;}
+            finally{$table=$payment['kind']==='coins'?'portal_coin_orders':'portal_payments';$store->query("UPDATE {{".$table."}} SET updated_at=? WHERE id=? AND state='pending'",[time(),$payment['id']]);}
         }
         if ($store->enabled('warehouse') && $store->setting('bridge_verified')==='1') {
             foreach ($store->query("SELECT id FROM {{portal_deliveries}} WHERE state='pending' ORDER BY id LIMIT 50")->fetchAll(PDO::FETCH_COLUMN) as $id) {
@@ -51,6 +57,7 @@ try {
                 } catch (Throwable $e) { $failed++; }
             }
         }
+        if($store->driver()==='mysql')$store->query('SELECT RELEASE_LOCK(?)',[$workerLock]);
         echo json_encode(['ok'=>true,'delivered'=>$done,'retry'=>$failed]);
     } else throw new RuntimeException('Commands: migrate, status, set, worker');
 } catch (Throwable $e) {

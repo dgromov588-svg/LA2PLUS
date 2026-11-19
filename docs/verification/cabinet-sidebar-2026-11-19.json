@@ -1,0 +1,11 @@
+{
+  "checks": 97,
+  "errors": [],
+  "date": "2026-11-19T12:02:36.135Z",
+  "staging_url": "https://new.la2plus.com/cabinet/",
+  "production_url": "https://la2plus.com/cabinet/",
+  "deployed": true,
+  "section_policy_assertions": 54,
+  "production_public_checks": 27,
+  "preserves_live_user_data": true
+}

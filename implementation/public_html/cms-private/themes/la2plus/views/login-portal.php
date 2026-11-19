@@ -11,4 +11,5 @@
 <button type="submit" class="auth-submit">Войти в игровой центр <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 18 18 6M6 6h12v12"/></svg></button>
 <?php echo CHtml::endForm(); ?>
 <p class="auth-security"><span aria-hidden="true">◇</span> Безопасный вход по HTTPS</p>
+<p class="auth-security">Нет аккаунта? <a href="/register/">Создать аккаунт</a></p>
 <?php if (app()->params['staging']??false) { ?><aside class="auth-test-note"><strong>Тестовая площадка</strong><p>Используйте тестовый аккаунт из данных доступа. Реальные деньги и игровые предметы здесь не используются.</p></aside><?php } ?>

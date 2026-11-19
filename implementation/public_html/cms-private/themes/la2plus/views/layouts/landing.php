@@ -89,12 +89,12 @@ $home = app()->createUrl('/index/default/index');
       </nav>
 
       <div class="header__actions">
-        <a class="header__social header__social--tg" id="headerTelegram" href="<?php echo socialUrl('telegram') ?>" target="_blank" rel="noopener nofollow"
+        <a class="header__social header__social--tg" id="headerTelegram" href="<?php echo socialUrl('telegram') ?>" rel="noopener nofollow"
            aria-label="Telegram" title="<?php echo Yii::t('site', 'tg.groupTitle') ?>">
           <svg class="icon icon--fill"><use href="/design/assets/icons/telegram.svg#i" /></svg>
         </a>
         <?php if (socialUrl('discord') !== '') { ?>
-        <a class="header__social" id="headerDiscord" href="<?php echo socialUrl('discord') ?>" target="_blank" rel="noopener nofollow" aria-label="Discord"><svg class="icon icon--fill"><use href="/design/assets/icons/discord.svg#i" /></svg></a>
+        <a class="header__social" id="headerDiscord" href="<?php echo socialUrl('discord') ?>" rel="noopener nofollow" aria-label="Discord"><svg class="icon icon--fill"><use href="/design/assets/icons/discord.svg#i" /></svg></a>
         <?php } ?>
 
         <?php $langs = ['ru' => '🇷🇺 RU', 'en' => '🇬🇧 EN', 'ua' => '🇺🇦 UA']; ?>
@@ -164,7 +164,7 @@ $home = app()->createUrl('/index/default/index');
           </div>
 
           <div class="hero__cta reveal">
-            <button type="button" class="btn btn--gold btn--lg" data-modal="play"><?php echo Yii::t('main', 'btn.join') ?></button>
+            <a class="btn btn--gold btn--lg" href="/downloads/LA2PLUS-Setup-1.2.0.exe" data-download="launcher.windows" download="LA2PLUS-Setup-1.2.0.exe"><?php echo Yii::t('main', 'btn.join') ?></a>
           </div>
         </div>
       </div>
@@ -237,18 +237,18 @@ $home = app()->createUrl('/index/default/index');
         <!-- <p class="footer__company"><?php echo Yii::t('main', 'footer.company') ?></p> -->
       </div>
       <div class="footer__social">
-        <a class="header__social footer__social-tg" id="footerTelegram" href="<?php echo socialUrl('telegram') ?>" target="_blank" rel="noopener nofollow"
+        <a class="header__social footer__social-tg" id="footerTelegram" href="<?php echo socialUrl('telegram') ?>" rel="noopener nofollow"
            aria-label="Telegram" title="<?php echo Yii::t('site', 'tg.groupTitle') ?>"
            data-tip="<?php echo Yii::t('site', 'tg.groupTip') ?>" data-tip-side="top">
           <svg class="icon icon--fill"><use href="/design/assets/icons/telegram.svg#i" /></svg>
         </a>
         <?php if (socialUrl('discord') !== '') { ?>
-        <a class="header__social" id="footerDiscord" href="<?php echo socialUrl('discord') ?>" target="_blank" rel="noopener nofollow" aria-label="Discord"><svg class="icon icon--fill"><use href="/design/assets/icons/discord.svg#i" /></svg></a>
+        <a class="header__social" id="footerDiscord" href="<?php echo socialUrl('discord') ?>" rel="noopener nofollow" aria-label="Discord"><svg class="icon icon--fill"><use href="/design/assets/icons/discord.svg#i" /></svg></a>
         <?php } ?>
       </div>
       <nav class="footer__links">
         <?php if (socialUrl('telegram') !== '') { ?>
-        <a href="<?php echo socialUrl('telegram') ?>" target="_blank" rel="noopener nofollow">Telegram</a>
+        <a href="<?php echo socialUrl('telegram') ?>" rel="noopener nofollow">Telegram</a>
         <?php } ?>
         <a href="<?php echo app()->createUrl('/index/default/terms'); ?>"><?php echo Yii::t('main', 'footer.terms') ?></a>
         <a href="<?php echo app()->createUrl('/index/default/privacy'); ?>"><?php echo Yii::t('main', 'footer.privacy') ?></a>
@@ -266,9 +266,9 @@ $home = app()->createUrl('/index/default/index');
         <p class="modal__subtitle"><?php echo Yii::t('main', 'play.subtitle') ?></p>
         <?php
         $platformDownloads = [
-            ['key' => 'launcher.windows',  'label' => Yii::t('main', 'play.win') . ' (Direct)',      'hint' => Yii::t('main', 'play.winHint'), 'href' => '/downloads/clients/la2plus-client.zip'],
-            ['key' => 'launcher.windows.drive',  'label' => Yii::t('main', 'play.win') . ' (Google Drive)',      'hint' => Yii::t('main', 'play.winHint'), 'href' => '/downloads/clients/la2plus-client.zip'],
-            ['key' => 'launcher.windows.patch',  'label' => 'Updater (Patch)', 'hint' => 'Game Patch', 'href' => '/downloads/L2PLUS-Updater.exe'],
+            ['key'=>'launcher.windows','label'=>PortalRuntime::translate('Лаунчер LA2PLUS для Windows','LA2PLUS Launcher for Windows','Лаунчер LA2PLUS для Windows'),'hint'=>PortalRuntime::translate('Установщик · Windows 10/11 x64 · около 6 МБ','Installer · Windows 10/11 x64 · about 6 MB','Інсталятор · Windows 10/11 x64 · близько 6 МБ'),'href'=>'/downloads/LA2PLUS-Setup-1.2.0.exe'],
+            ['key'=>'client.classic','label'=>PortalRuntime::translate('Полная сборка — ZIP','Full game client — ZIP','Повна збірка — ZIP'),'hint'=>PortalRuntime::translate('Архив для ручной установки · около 13 ГБ','Archive for manual installation · about 13 GB','Архів для ручного встановлення · близько 13 ГБ'),'href'=>'/downloads/clients/la2plus-client.zip'],
+            ['key'=>'launcher.windows.drive','label'=>PortalRuntime::translate('Зеркало сборки — Google Drive','Game client mirror — Google Drive','Дзеркало збірки — Google Drive'),'hint'=>PortalRuntime::translate('Альтернативная загрузка полного архива','Alternative download of the full archive','Альтернативне завантаження повного архіву'),'href'=>'/downloads/clients/la2plus-client.zip'],
         ];
         foreach ($platformDownloads as $dl) { ?>
           <div class="dl-row">
@@ -284,11 +284,10 @@ $home = app()->createUrl('/index/default/index');
             <span class="btn btn--outline btn--sm"><?php echo Yii::t('main', 'play.show') ?></span>
           </summary>
           <ol class="dl-row__steps">
-            <li><?php echo Yii::t('main', 'play.step1') ?></li>
-            <li><?php echo Yii::t('main', 'play.step2') ?></li>
-            <li><?php echo Yii::t('main', 'play.step3') ?></li>
-            <li><?php echo Yii::t('main', 'play.step4') ?></li>
-            <li><?php echo Yii::t('main', 'play.step5') ?></li>
+            <li><?php echo PortalRuntime::translate('Скачайте установщик и установите лаунчер LA2PLUS.','Download the installer and install LA2PLUS Launcher.','Завантажте інсталятор і встановіть лаунчер LA2PLUS.'); ?></li>
+            <li><?php echo PortalRuntime::translate('Выберите папку игры и язык клиента: русский или английский.','Choose a game folder and the Russian or English client.','Оберіть папку гри та мову клієнта: російську або англійську.'); ?></li>
+            <li><?php echo PortalRuntime::translate('Нажмите «Скачать / обновить клиент» и дождитесь проверки файлов. Для первой загрузки нужно около 13 ГБ трафика и 30 ГБ свободного места.','Click Download / update client and wait for file verification. The first download uses about 13 GB of data and requires around 30 GB of free space.','Натисніть «Завантажити / оновити клієнт» і дочекайтеся перевірки файлів. Для першого завантаження потрібно близько 13 ГБ трафіку та 30 ГБ вільного місця.'); ?></li>
+            <li><?php echo PortalRuntime::translate('Нажмите «Начать игру». В дальнейшем лаунчер автоматически загрузит обновления проекта.','Click «Начать игру» (Start game). The launcher will automatically download future project updates.','Натисніть «Начать игру». Надалі лаунчер автоматично завантажуватиме оновлення проєкту.'); ?></li>
           </ol>
         </details>
       </div>
@@ -340,7 +339,7 @@ $home = app()->createUrl('/index/default/index');
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
   <?php } ?>
   <script>window.T = <?php echo json_encode(Lang::jsMessages(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>; // переводы для текстов, которые рисует JS</script>
-  <script src="/design/js/config.js?v=20261117-date"></script>
+  <script src="/design/js/config.js?v=launcher-1.2.0"></script>
   <script src="/design/js/app.js?v=<?php echo (int)@filemtime(Yii::getPathOfAlias('webroot').'/design/js/app.js'); ?>"></script>
 
 </body>

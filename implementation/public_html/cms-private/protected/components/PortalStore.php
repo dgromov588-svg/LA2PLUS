@@ -12,6 +12,7 @@ class PortalStore
         $this->lock = $db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql' ? ' FOR UPDATE' : '';
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
+    public function driver(){return $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);}
     public function query($sql, array $params = [])
     {
         $sql = preg_replace_callback('/\{\{([a-z_]+)\}\}/', function ($m) { return $this->prefix . $m[1]; }, $sql);

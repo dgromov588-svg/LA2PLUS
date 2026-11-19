@@ -9,7 +9,7 @@ class StagingGuard
   $path=request()->getPathInfo();
   $normalized=strtolower(str_replace(['-','_'],'',$path));
   if (preg_match('#^cabinet/(?:shopcoin|shoputopay|wayforpayshop)(?:/|$)|^cabinet/deposit/(?:transfer|shopcreate)(?:/|$)#',$normalized)) throw new CHttpException(403,'Боевые платежи на тестовой площадке отключены.');
-  if (preg_match('#^(deposit(?:[-/]|$)|cabinet/(?:shop-utopay|wayforpay-shop|shop-coin|deposit/transfer)|register(?:/|$)|install(?:/|$))#i',$path)) throw new CHttpException(403,'В тестовой версии внешние операции отключены.');
+  if (preg_match('#^(deposit(?:[-/]|$)|cabinet/(?:shop-utopay|wayforpay-shop|shop-coin|deposit/transfer)|register(?:/|$)|install(?:/|$))#i',$path) && !StagingConfig::registrationPreview()) throw new CHttpException(403,'В тестовой версии внешние операции отключены.');
   if (rtrim($path,'/')==='cabinet/portal/request' && request()->getIsPostRequest() && request()->getPost('op')==='demoTopup') {
    if (user()->isGuest) throw new CHttpException(401,'Сначала войдите в тестовый кабинет.');
    request()->validateCsrfToken($event);
