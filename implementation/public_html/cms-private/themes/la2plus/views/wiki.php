@@ -82,6 +82,16 @@ require __DIR__ . '/layouts/_menu.php';
       <div class="wiki__row"><?php echo Yii::t('wiki', 'features.6') ?></div>
       <div class="wiki__row"><?php echo Yii::t('wiki', 'features.7') ?></div>
       <div class="wiki__row"><?php echo Yii::t('wiki', 'features.8') ?></div>
+      <?php if (Yii::app()->language === 'ru') { ?>
+      <h3 class="wiki__sub">Low war</h3>
+      <div class="wiki__row">Ограничение 18 человек с ЦЦ</div>
+      <div class="wiki__row">1 Raid Boss</div>
+      <div class="wiki__row">3 Точки Телепорта</div>
+      <h3 class="wiki__sub">Mid War</h3>
+      <div class="wiki__row">Ограничение 36 человек с ЦЦ</div>
+      <div class="wiki__row">1 Raid Boss</div>
+      <div class="wiki__row">1 точка телепорта</div>
+      <?php } ?>
     </section>
 
     <section class="wiki__sec" id="instances">
@@ -214,6 +224,7 @@ require __DIR__ . '/layouts/_menu.php';
           <tr><td><?php echo Yii::t('wiki', 'jewelry.47') ?></td><td><?php echo Yii::t('wiki', 'jewelry.48') ?></td></tr>
         </tbody>
       </table>
+      <?php if (Yii::app()->language !== 'ru') { ?>
       <h3 class="wiki__sub"><?php echo Yii::t('wiki', 'jewelry.49') ?></h3>
       <table class="wiki__table">
         <thead><tr><th><?php echo Yii::t('wiki', 'jewelry.35') ?></th><th><?php echo Yii::t('wiki', 'jewelry.36') ?></th></tr></thead>
@@ -226,6 +237,7 @@ require __DIR__ . '/layouts/_menu.php';
           <tr><td><?php echo Yii::t('wiki', 'jewelry.62') ?></td><td><?php echo Yii::t('wiki', 'jewelry.63') ?></td></tr>
         </tbody>
       </table>
+      <?php } ?>
       <h3 class="wiki__sub"><?php echo Yii::t('wiki', 'jewelry.64') ?></h3>
       <table class="wiki__table">
         <thead><tr><th><?php echo Yii::t('wiki', 'jewelry.65') ?></th><th><?php echo Yii::t('wiki', 'jewelry.66') ?></th><th><?php echo Yii::t('wiki', 'jewelry.67') ?></th></tr></thead>
@@ -345,7 +357,9 @@ require __DIR__ . '/layouts/_menu.php';
         <tbody>
           <tr><td><?php echo Yii::t('wiki', 'bosses.61') ?></td><td><?php echo Yii::t('wiki', 'bosses.62') ?></td><td></td></tr>
           <tr><td><?php echo Yii::t('wiki', 'bosses.63') ?></td><td><?php echo Yii::t('wiki', 'bosses.62') ?></td><td></td></tr>
+          <?php if (Yii::app()->language !== 'ru') { ?>
           <tr><td><?php echo Yii::t('wiki', 'bosses.65') ?></td><td><?php echo Yii::t('wiki', 'bosses.66') ?></td><td></td></tr>
+          <?php } ?>
         </tbody>
       </table>
     </section>
@@ -363,9 +377,6 @@ require __DIR__ . '/layouts/_menu.php';
       <div class="wiki__row">Бои внеклассовые, один на один. Очередь стартует от 7 участников. Классовые и командные бои не набираются. Соперник подбирается случайно. Матч длится 5 минут, на арену переносят через 45 секунд. За боем можно смотреть: до 18 зрителей на стадион.</div>
       <div class="wiki__row">Бои идут на двух картах арен. Одновременно сервер держит до 80 стадионов.</div>
       <div class="wiki__row">В начале сезона у дворянина 18 очков. Проигравший отдаёт 20% от меньшего числа очков у двоих, но не меньше 1. Победитель забирает эти очки. При 18 на 18 это +3 и −3.</div>
-      <div class="wiki__row">Победа: эти очки и 50 Noblesse Gate Pass.</div>
-      <div class="wiki__row">Поражение: минус эти очки. Билетов нет.</div>
-      <div class="wiki__row">Ничья: очки не меняются. Билетов нет.</div>
       <div class="wiki__row">На арене заточка оружия, брони и бижутерии считается как +6. Перед боем воин получает Haste 2 и Wind Walk 2, маг, хил и саммонер — Acumen 3 и Wind Walk 2. Откат умений сбрасывается при входе на стадион и при возвращении в город.</div>
       <div class="wiki__row">Геройство считается по классу: 11 боёв и минимум 1 победа. Клан героя получает 1000 репутации. Первое место в классе — обычный герой. Второе — Shadow Hero: те же умения на 50% силы и чёрное свечение. Свечение второго места снимается в понедельник в 00:01.</div>
       <div class="wiki__row">Сезонные билеты выдают по месту в классе. Чтобы место засчитали, нужно минимум 5 боёв. Места дают 100, 75, 55, 40 и 30 очков ранга, каждое такое очко меняется на 20 Noblesse Gate Pass. Герою к рангу добавляют ещё 300 очков перед этим пересчётом.</div>
@@ -389,9 +400,11 @@ require __DIR__ . '/layouts/_menu.php';
           <tr><td><?php echo Yii::t('wiki', 'olympiad.26') ?></td><td><?php echo Yii::t('wiki', 'olympiad.27') ?></td></tr>
           <tr><td><?php echo Yii::t('wiki', 'olympiad.28') ?></td><td><?php echo Yii::t('wiki', 'olympiad.29') ?></td></tr>
           <tr><td><?php echo Yii::t('wiki', 'olympiad.30') ?></td><td><?php echo Yii::t('wiki', 'olympiad.31') ?></td></tr>
+          <?php if (Yii::app()->language !== 'ru') { ?>
           <tr><td><?php echo Yii::t('wiki', 'olympiad.32') ?></td><td><?php echo Yii::t('wiki', 'olympiad.33') ?></td></tr>
           <tr><td><?php echo Yii::t('wiki', 'olympiad.34') ?></td><td><?php echo Yii::t('wiki', 'olympiad.35') ?></td></tr>
           <tr><td><?php echo Yii::t('wiki', 'olympiad.36') ?></td><td><?php echo Yii::t('wiki', 'olympiad.35') ?></td></tr>
+          <?php } ?>
           <tr><td><?php echo Yii::t('wiki', 'olympiad.38') ?></td><td><?php echo Yii::t('wiki', 'jewelry.15') ?></td></tr>
           <tr><td><?php echo Yii::t('wiki', 'olympiad.40') ?></td><td><?php echo Yii::t('wiki', 'olympiad.41') ?></td></tr>
           <tr><td><?php echo Yii::t('wiki', 'olympiad.42') ?></td><td><?php echo Yii::t('wiki', 'olympiad.43') ?></td></tr>
@@ -417,6 +430,8 @@ require __DIR__ . '/layouts/_menu.php';
       <div class="wiki__row">Время: 13:00, 19:00, 21:00, 01:00, 06:00.</div>
       <h3 class="wiki__sub">Death Match</h3>
       <div class="wiki__row">Каждый сам за себя, 10 минут, уровни 70–80, до 200 игроков. Первое место: 10 Festival Adena и 1 Craft Coin.</div>
+      <div class="wiki__row">Второе место: 7 Festival Adena.</div>
+      <div class="wiki__row">Третье место: 3 Festival Adena.</div>
       <div class="wiki__row">Время: 11:00, 14:00, 20:00, 23:00, 02:00.</div>
       <h3 class="wiki__sub">GvG</h3>
       <div class="wiki__row">Группа на группу.</div>

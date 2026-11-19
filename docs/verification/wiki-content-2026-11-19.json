@@ -1,0 +1,42 @@
+{
+  "checks": 30,
+  "errors": [],
+  "fonts": [
+    "Inter, system-ui, sans-serif",
+    "14.4px",
+    "400"
+  ],
+  "section_ids": [
+    "general",
+    "features",
+    "instances",
+    "augment",
+    "jewelry",
+    "career",
+    "clan",
+    "sieges",
+    "bosses",
+    "olympiad",
+    "events",
+    "seals",
+    "currency",
+    "tournaments"
+  ],
+  "date": "2026-11-19T12:57:51.546Z",
+  "url": "https://la2plus.com/wiki/",
+  "language": "ru",
+  "confirmed_exchange_adena": 1000000,
+  "deployment": [
+    {
+      "path": "cms-private/protected/messages/ru/wiki.php",
+      "before_sha256": "979f9fd57a91d76a11caf683f85e7fea7e76b673afa0968351855c53d02975fb",
+      "sha256": "be222182b52db1aa79f953a634ac98f7f67a93b010f4d78bcd0b7339cf4db005"
+    },
+    {
+      "path": "cms-private/themes/la2plus/views/wiki.php",
+      "before_sha256": "06717d32de5db966697847772a151ae3e7dac3e74c0353b6e248b281a52549b2",
+      "sha256": "686cc9b949ecbcd244c26789165279c326b6640d82abfa5792e0f8df85849f16"
+    }
+  ],
+  "baseline_commit": "c7b682d"
+}
