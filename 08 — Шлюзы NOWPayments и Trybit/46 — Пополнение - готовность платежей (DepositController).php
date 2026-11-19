@@ -79,8 +79,48 @@ class DepositController extends CabinetBaseController
         }
     }
 
+    /** Справочные курсы: они не меняют валюту и сумму заявки в USD. */
+    public function actionCurrencyRates()
+    {
+        $cache = app()->cache;
+        $data = $cache->get('deposit.usd-rates.v1');
+        if (!is_array($data)) {
+            try {
+                $context = stream_context_create(['http' => ['timeout' => 5], 'ssl' => ['verify_peer' => true, 'verify_peer_name' => true]]);
+                $raw = @file_get_contents('https://open.er-api.com/v6/latest/USD', false, $context);
+                $payload = json_decode((string) $raw, true);
+                if (!is_array($payload) || !isset($payload['base_code'], $payload['rates'], $payload['time_last_update_unix']) || $payload['base_code'] !== 'USD') {
+                    throw new RuntimeException('Invalid exchange rates');
+                }
+                $updated = (int) $payload['time_last_update_unix'];
+                if ($updated < time() - 3 * 86400 || $updated > time() + 3600) {
+                    throw new RuntimeException('Outdated exchange rates');
+                }
+                $rates = ['USD' => 1];
+                foreach (['EUR','UAH','GBP','PLN','KZT','TRY','BRL','GEL','MDL','AMD','AZN','CAD','AUD','CHF','AED','INR','MXN','RON','CZK'] as $code) {
+                    if (isset($payload['rates'][$code]) && is_numeric($payload['rates'][$code]) && is_finite((float) $payload['rates'][$code]) && (float) $payload['rates'][$code] > 0) {
+                        $rates[$code] = (float) $payload['rates'][$code];
+                    }
+                }
+                $data = ['rates' => $rates, 'updated' => gmdate('Y-m-d', $updated)];
+                $cache->set('deposit.usd-rates.v1', $data, 3600);
+            } catch (Throwable $e) {
+                Yii::log('deposit: exchange rates unavailable', CLogger::LEVEL_WARNING, 'deposit');
+                $data = ['rates' => ['USD' => 1], 'updated' => null];
+            }
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data);
+        app()->end();
+    }
+
     public function actionIndex()
     {
+        // Пополнение — отдельная публичная страница в каркасе главного сайта,
+        // без бокового меню игрового кабинета.
+        $this->layout = '//layouts/landing';
+        $this->setPageTitle('Пополнение баланса — LA2PLUS');
+
         Yii::import('application.modules.cabinet.controllers.ShopCoinController');
 
         $this->syncPendingPayments();
@@ -132,11 +172,64 @@ class DepositController extends CabinetBaseController
             'gateways' => isset($shop['gateways']) ? $shop['gateways'] : [],
             'currency' => isset($shop['currency']) ? $shop['currency'] : 'USD',
             'rate' => isset($shop['rate']) ? $shop['rate'] : 1.0,
+            'payMins' => isset($shop['payMins']) ? $shop['payMins'] : [],
             'pendingTx' => $pendingTx,
             'characters' => $characters,
             'adenaCoins' => self::coinsPerAdena(),
             'isPaymentReady' => $this->isPaymentReady(),
         ]);
+    }
+
+    /**
+     * Состояние только собственной заявки игрока. Страница пополнения
+     * запрашивает его после возврата от шлюза без создания второй заявки.
+     */
+    public function actionPaymentStatus()
+    {
+        if (user()->isGuest) {
+            $this->paymentStatusJson(['ok' => false, 'error' => 'auth'], 403);
+        }
+
+        $id = (int) request()->getQuery('id', 0);
+
+        if ($id <= 0) {
+            $this->paymentStatusJson(['ok' => false, 'error' => 'id'], 422);
+        }
+
+        $this->syncPendingPayments();
+
+        try {
+            $row = db()->createCommand()
+                ->select('id, count, status')
+                ->from('{{transactions}}')
+                ->where('id = :id AND user_id = :user_id', [
+                    ':id' => $id,
+                    ':user_id' => (int) user()->getId(),
+                ])
+                ->queryRow();
+        } catch (Throwable $e) {
+            Yii::log('deposit: payment status error: ' . $e->getMessage(), CLogger::LEVEL_WARNING, 'deposit');
+            $this->paymentStatusJson(['ok' => false, 'error' => 'server'], 500);
+        }
+
+        if (!$row) {
+            $this->paymentStatusJson(['ok' => false, 'error' => 'not_found'], 404);
+        }
+
+        $this->paymentStatusJson([
+            'ok' => true,
+            'id' => (int) $row['id'],
+            'paid' => (int) $row['status'] === (int) Transactions::STATUS_SUCCESS,
+            'coins' => (float) $row['count'],
+        ]);
+    }
+
+    private function paymentStatusJson(array $data, $status = 200)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($status);
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+        app()->end();
     }
 
     /**
@@ -181,6 +274,14 @@ class DepositController extends CabinetBaseController
 
         try {
             if ((new Paypalych())->isEnabled() || (new Payop())->isEnabled()) {
+                return true;
+            }
+        } catch (Throwable $e) {
+            // игнорируем
+        }
+
+        try {
+            if ((new Wayforpay())->isEnabled()) {
                 return true;
             }
         } catch (Throwable $e) {

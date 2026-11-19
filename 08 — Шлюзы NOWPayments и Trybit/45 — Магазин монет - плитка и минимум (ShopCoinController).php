@@ -93,7 +93,7 @@ class ShopCoinController extends CabinetBaseController
         try {
             $utopay = new Utopay();
 
-            if ((int) config('utopay.allow') === 1) {
+            if ($utopay->isEnabled()) {
                 $utopayProviders = $utopay->getProviders($utopay->toChargeAmount(100));
                 $utopayCoins = (int) config('utopay.crypto_allow') === 1 ? $utopay->getCryptoCoins() : [];
             }
@@ -137,8 +137,8 @@ class ShopCoinController extends CabinetBaseController
             if ((new Payop())->isEnabled()) {
                 $gateways[] = [
                     'id' => 'payop',
-                    'title' => 'PayOp',
-                    'hint' => 'Карты Visa/Mastercard, Revolut',
+                    'title' => 'Международные карты',
+                    'hint' => 'PayOp · Visa, Mastercard и доступные цифровые кошельки',
                     'region' => 'GLOBAL',
                     'icon' => 'globe',
                 ];
@@ -214,6 +214,12 @@ class ShopCoinController extends CabinetBaseController
             }
         }
 
+        foreach ($utopayProviders as $provider) {
+            if (!empty($provider['id']) && !empty($provider['minimum_amount'])) {
+                $payMins['utopay:' . $provider['id']] = (float) $provider['minimum_amount'];
+            }
+        }
+
         return [
             'wfpMethods' => $wfpMethods,
             'utopayProviders' => $utopayProviders,
@@ -254,19 +260,56 @@ class ShopCoinController extends CabinetBaseController
         $group = (string) request()->getPost('pay_group', '');
         $payId = trim((string) request()->getPost('pay_id', ''));
         $character = trim((string) request()->getPost('character', ''));
+        // Страна и валюта — контекст игрока. Сумма и начисление остаются в USD.
+        $country = strtoupper(trim((string) request()->getPost('country', '')));
+        $displayCurrency = strtoupper(trim((string) request()->getPost('display_currency', 'USD')));
+        $countries = ['UA','US','GB','DE','PL','FR','ES','IT','PT','NL','BE','AT','IE','GR','CY','LT','LV','EE','FI','SK','SI','HR','MT','LU','KZ','TR','BR','GE','MD','AM','AZ','CA','AU','CH','AE','IN','MX','RO','CZ','RU','BY','IL','OTHER'];
+        $currencies = ['USD','EUR','UAH','GBP','PLN','KZT','TRY','BRL','GEL','MDL','AMD','AZN','CAD','AUD','CHF','AED','INR','MXN','RON','CZK'];
+        if (($country !== '' && !in_array($country, $countries, true)) || !in_array($displayCurrency, $currencies, true)) {
+            $this->json(['ok' => false, 'error' => 'locale', 'message' => 'Выберите страну и валюту из списка.'], 422);
+        }
+
 
         if ($amount < 1) {
             $this->json(['ok' => false, 'error' => 'min'], 422);
         }
 
-        // Минимальная сумма конкретного способа (у крипто-шлюзов свои пороги)
-        $mins = [
-            'utopay:trc20/usdt' => 10,
-            'gateway:nowpayments' => 5,
-            'gateway:trybit' => 1,
-        ];
+        if ($payId === '' || !in_array($group, ['wayforpay', 'utopay', 'gateway'], true)) {
+            $this->json(['ok' => false, 'error' => 'method'], 422);
+        }
+
+        // Принимаем только тот способ, который сейчас включён и был показан игроку.
+        // Это не даёт вручную подставить выключенный или неизвестный provider.
+        $shop = self::shopData();
+        $allowedMethods = [];
+
+        foreach ((array) $shop['wfpMethods'] as $id => $title) {
+            $allowedMethods['wayforpay:' . $id] = true;
+        }
+        foreach ((array) $shop['utopayProviders'] as $provider) {
+            if (!empty($provider['id'])) {
+                $allowedMethods['utopay:' . $provider['id']] = true;
+            }
+        }
+        foreach ((array) $shop['utopayCoins'] as $coin) {
+            if (!empty($coin['id'])) {
+                $allowedMethods['utopay:' . $coin['id']] = true;
+            }
+        }
+        foreach ((array) $shop['gateways'] as $gateway) {
+            if (!empty($gateway['id'])) {
+                $allowedMethods['gateway:' . $gateway['id']] = true;
+            }
+        }
+
+        $mins = isset($shop['payMins']) ? (array) $shop['payMins'] : [];
 
         $key = $group . ':' . $payId;
+
+        if (empty($allowedMethods[$key])) {
+            $this->json(['ok' => false, 'error' => 'method', 'message' => 'Этот способ оплаты сейчас недоступен.'], 422);
+        }
+
         $methodMin = isset($mins[$key]) ? (float) $mins[$key] : 1;
 
         if ($amount < $methodMin) {
@@ -280,10 +323,6 @@ class ShopCoinController extends CabinetBaseController
 
         if ($amount > 100000) {
             $this->json(['ok' => false, 'error' => 'max'], 422);
-        }
-
-        if ($payId === '' || !in_array($group, ['wayforpay', 'utopay', 'gateway'], true)) {
-            $this->json(['ok' => false, 'error' => 'method'], 422);
         }
 
         // Сколько монет игрок получает: сумма + бонус. Бонус начисляем сразу,
@@ -314,6 +353,8 @@ class ShopCoinController extends CabinetBaseController
                     'bonus' => $bonus,
                     'coins' => $coins,
                     'character' => $character,
+                    'country' => $country,
+                    'display_currency' => $displayCurrency,
                     'pay_group' => $group,
                     'pay_id' => $payId,
                     'gateway' => $group === 'gateway' ? preg_replace('/^manual:/', 'manual', $payId) : null,
